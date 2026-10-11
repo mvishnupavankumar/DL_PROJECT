@@ -1,0 +1,14 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.streamlit/secrets.toml
+data/*.sqlite3
+data/*.db
+models/live_lstm_autoencoder.pt
+models/live_lstm_autoencoder.json
+*.sqlite
+*.sqlite3-shm
+*.sqlite3-wal

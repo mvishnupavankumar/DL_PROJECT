@@ -1,0 +1,38 @@
+{
+  "mean": [
+    42.05933380126953,
+    53.97087097167969,
+    76.89183044433594,
+    0.23941098153591156,
+    48.26873779296875
+  ],
+  "std": [
+    5.785898208618164,
+    3.5649337768554688,
+    6.089803218841553,
+    0.05497075617313385,
+    4.335353851318359
+  ],
+  "threshold": 0.7093990445137024,
+  "feature_thresholds": [
+    0.8048005700111389,
+    0.32787129282951355,
+    1.2829490900039673,
+    1.6172876358032227,
+    0.31049203872680664
+  ],
+  "features": [
+    "cpu_pct",
+    "memory_pct",
+    "latency_ms",
+    "error_rate_pct",
+    "disk_pct"
+  ],
+  "sequence_length": 24,
+  "hidden_size": 16,
+  "epochs": 22,
+  "training_windows": 850,
+  "validation_windows": 150,
+  "final_training_loss": 0.49562358430453707,
+  "threshold_method": "99th percentile of held-out normal reconstruction error"
+}

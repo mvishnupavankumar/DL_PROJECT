@@ -1,0 +1,154 @@
+[
+  {
+    "id": "INC-1001",
+    "title": "Payment API returning HTTP 500",
+    "category": "API",
+    "description": "The payment service is reachable, but customer payment requests fail with HTTP 500.",
+    "logs": [
+      "10:21:03 payment-api request received",
+      "10:21:04 database connection failed: pool exhausted",
+      "10:21:04 retry attempt 1 failed",
+      "10:21:05 HTTP 500 returned",
+      "10:21:06 connection pool active=100 idle=0"
+    ],
+    "environment": "payment-api v3.2, PostgreSQL backend, connection pool size 100",
+    "root_cause": "Database connection pool exhaustion",
+    "valid_actions": [
+      "restart_connection_pool",
+      "restart_payment_service",
+      "increase_connection_pool"
+    ],
+    "verification": "Payment API health check returns HTTP 200 and a test payment request succeeds.",
+    "effects": {
+      "restart_connection_pool": true,
+      "restart_payment_service": false,
+      "increase_connection_pool": true
+    }
+  },
+  {
+    "id": "INC-1002",
+    "title": "Customer database unavailable",
+    "category": "DATABASE",
+    "description": "Applications cannot connect to the customer database.",
+    "logs": [
+      "09:14:22 customer-db service status=stopped",
+      "09:14:24 connection refused on port 5432",
+      "09:14:25 application retry exhausted",
+      "09:14:27 database health endpoint unavailable"
+    ],
+    "environment": "PostgreSQL 16, primary customer-db node",
+    "root_cause": "Database service stopped",
+    "valid_actions": [
+      "restart_database_service",
+      "restart_application_service",
+      "clear_database_connection_pool"
+    ],
+    "verification": "Database health check is healthy and a SELECT 1 query succeeds.",
+    "effects": {
+      "restart_database_service": true,
+      "restart_application_service": false,
+      "clear_database_connection_pool": false
+    }
+  },
+  {
+    "id": "INC-1003",
+    "title": "Production server CPU at 98 percent",
+    "category": "SERVER",
+    "description": "CPU utilization has remained above 95 percent for more than 10 minutes and requests are slowing down.",
+    "logs": [
+      "14:33:01 cpu=97%",
+      "14:34:02 cpu=98%",
+      "14:35:02 cpu=99%",
+      "14:36:02 worker-service threads=500",
+      "14:37:02 response latency p95=4.8s"
+    ],
+    "environment": "Linux application server, worker-service enabled",
+    "root_cause": "Worker service thread exhaustion causing sustained CPU saturation",
+    "valid_actions": [
+      "restart_worker_service",
+      "restart_web_service",
+      "scale_worker_instances"
+    ],
+    "verification": "CPU falls below 80 percent and response latency returns below 1 second.",
+    "effects": {
+      "restart_worker_service": true,
+      "restart_web_service": false,
+      "scale_worker_instances": true
+    }
+  },
+  {
+    "id": "INC-1004",
+    "title": "Server disk space almost full",
+    "category": "STORAGE",
+    "description": "The application server is reporting low disk capacity and logs show write failures.",
+    "logs": [
+      "16:02:01 /var usage=98%",
+      "16:02:05 application log write failed: no space left",
+      "16:02:09 /var/log/app.log size=42GB",
+      "16:02:12 warning: filesystem threshold exceeded"
+    ],
+    "environment": "Ubuntu server, /var mounted on 50GB volume",
+    "root_cause": "Runaway application log growth consumed disk capacity",
+    "valid_actions": [
+      "rotate_application_logs",
+      "restart_application_service",
+      "restart_database_service"
+    ],
+    "verification": "Disk usage falls below 80 percent and application logging succeeds.",
+    "effects": {
+      "rotate_application_logs": true,
+      "restart_application_service": false,
+      "restart_database_service": false
+    }
+  },
+  {
+    "id": "INC-1005",
+    "title": "Users cannot log in",
+    "category": "AUTHENTICATION",
+    "description": "Valid users receive authentication errors while attempting to sign in.",
+    "logs": [
+      "11:48:12 auth-service token validation failed",
+      "11:48:13 oauth configuration checksum mismatch",
+      "11:48:14 invalid issuer URL",
+      "11:48:15 login request rejected"
+    ],
+    "environment": "OAuth2 identity provider, auth-service v5.1",
+    "root_cause": "Incorrect OAuth issuer configuration",
+    "valid_actions": [
+      "restore_oauth_configuration",
+      "restart_auth_service",
+      "clear_login_cache"
+    ],
+    "verification": "A test user can authenticate successfully and receives a valid access token.",
+    "effects": {
+      "restore_oauth_configuration": true,
+      "restart_auth_service": false,
+      "clear_login_cache": false
+    }
+  },
+  {
+    "id": "INC-1006",
+    "title": "Internal API timeout",
+    "category": "NETWORK",
+    "description": "Service A times out when calling Service B.",
+    "logs": [
+      "13:17:08 outbound request service-a -> service-b",
+      "13:17:10 connection timeout after 2000ms",
+      "13:17:13 route check: service-b endpoint unreachable",
+      "13:17:16 retry attempt 2 timeout"
+    ],
+    "environment": "Internal Kubernetes network, service-b healthy according to local process status",
+    "root_cause": "Broken service route between service-a and service-b",
+    "valid_actions": [
+      "refresh_service_route",
+      "restart_service_b",
+      "restart_service_a"
+    ],
+    "verification": "Service A successfully receives a response from Service B within 500ms.",
+    "effects": {
+      "refresh_service_route": true,
+      "restart_service_b": false,
+      "restart_service_a": false
+    }
+  }
+]
