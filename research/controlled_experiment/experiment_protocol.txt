@@ -1,0 +1,128 @@
+﻿AegisOps controlled research experiment
+=======================================
+
+Target: 40 fault episodes
+Fault classes: 20 latency; 20 HTTP-error
+Controls: Healthy-only trials recorded separately
+
+Primary evaluation:
+1. Detection performance by detector and fault class.
+2. Detection latency from injection to first alert.
+3. False alarms during verified healthy periods.
+4. Root-cause diagnosis accuracy against the known injected fault.
+5. Recovery success based on independent post-action verification.
+6. Time to verified recovery, plus failed or incomplete trials.
+
+Experimental safeguards:
+- Do not use individual telemetry samples as independent fault episodes.
+- Do not count an approval or action-completed message as proof of recovery.
+- Record raw model, rule-based, and combined decisions separately.
+- Record every eligible trial, including missed detections and failed recovery.
+- Record diagnosis before revealing the known fault label to the evaluator where practical.
+- Use explicitly approved local-demo recovery only.
+- Do not overwrite the existing database or model checkpoint.
+- Preserve timestamps in UTC and document any missing measurements.
+
+Important:
+This file is an initial protocol outline, not a completed experiment.
+Freeze thresholds and comparison procedures before the evaluation run.
+
+
+Trial procedure and scoring rules
+---------------------------------
+1. Freeze and record the model checkpoint, model threshold, rule thresholds,
+   application version, configuration, and comparison procedures before trials.
+   Do not tune them using evaluation-trial outcomes.
+
+2. Use one fault episode as the unit of analysis. Each episode begins from a
+   verified healthy service state. Record a UTC baseline timestamp, inject one
+   fault, observe for a predeclared fixed observation window, reset the fault,
+   and independently verify recovery. Record the exact observation-window
+   duration before starting formal trials.
+
+3. Randomize the order of the 20 latency and 20 HTTP-error episodes where
+   practical. Record the randomization procedure and seed. Do not exclude
+   episodes because a detector misses the fault or recovery fails.
+
+4. Record raw model predictions, rule-based predictions, and combined alerts
+   separately. Preserve score, threshold, detector mode, timestamps, and
+   relevant telemetry. A missing alert by the end of the observation window
+   is a missed detection, not a missing trial.
+
+5. Evaluate detection against the injected fault episode, not individual
+   correlated telemetry rows. Report episode-level detection rate by fault
+   class, false-positive rate during verified healthy controls, precision and
+   recall where labels support them, and detection latency. Define the alert
+   onset rule before the evaluation; do not choose it after seeing results.
+
+6. Evaluate diagnosis against the injected fault class: latency or HTTP error.
+   Capture the baseline and agent-assisted diagnoses before revealing the
+   injected label to the evaluator where practical. Use the same evidence
+   availability and scoring rubric across compared workflows. Record
+   unclassifiable and missing diagnoses explicitly.
+
+7. Recovery is successful only when independent post-action checks confirm
+   the service is healthy, the fault mode is normal, the probe returns HTTP
+   200, and latency is below the predeclared limit of 1000 ms. Record each
+   check, recovery attempt, and verification timestamp. Approval or an action
+   completion message alone is insufficient evidence.
+
+8. Report time to verified recovery from fault injection to the first
+   successful independent verification. Report unsuccessful or unverified
+   recoveries separately; do not calculate successful-recovery time for them
+   as though they succeeded.
+
+9. Healthy controls must use the same observation duration and alert criteria
+   as specified in the protocol. Verify normal service state during the
+   control period and record any alerts. Determine the number and scheduling
+   of healthy controls before the evaluation.
+
+10. Preserve raw records and UTC timestamps. Document missing data, service
+    interruptions, deviations, and exclusions with reasons. Never silently
+    remove failed, incomplete, or inconvenient trials.
+
+11. Report results by fault class and comparison workflow, with uncertainty
+    appropriate to the number of independent episodes. Forty episodes are a
+    pilot-scale evaluation; avoid broad claims of generalization from this
+    single local demo service.
+
+Pre-trial readiness gate
+------------------------
+Formal trials must not begin until:
+- The observation-window duration and healthy-control count are specified.
+- The detector, rules, diagnosis workflows, and scoring rubric are frozen.
+- Raw model, rule, and combined outputs can be captured for every trial.
+- A trial recorder preserves injection, alert, reset, and verification times.
+- A healthy baseline has been checked and the existing high alert rate has
+  been investigated and documented.
+- The local service is bound only to 127.0.0.1 and recovery remains explicitly
+  approved and local-only.
+
+Current status
+--------------
+Protocol preparation only. No formal trial results are represented by the
+existing exploratory telemetry. The current live pipeline persists the
+combined anomaly flag in telemetry; the raw model prediction must be recorded
+separately for valid detector comparisons.
+
+
+Frozen pilot settings
+---------------------
+Status: Settings confirmed; formal evaluation has not started.
+
+- Fault episodes: 40 total.
+- Latency faults: 20 episodes.
+- HTTP-error faults: 20 episodes.
+- Fault observation window: 30 seconds after injection.
+- Healthy controls: 10 periods of 60 seconds each.
+- Nominal telemetry cadence: 5 seconds; use actual timestamps.
+- Recovery: explicitly approved local-demo recovery, followed by
+  independent post-action verification.
+- Model checkpoint and thresholds: freeze before formal evaluation.
+  Do not tune using evaluation-trial outcomes.
+
+Readiness note
+--------------
+These are the confirmed pilot settings, not experimental results.
+The healthy-alert baseline still requires investigation and documentation.
+Formal trials must not begin until the readiness gate is satisfied.

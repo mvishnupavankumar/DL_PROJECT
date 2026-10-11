@@ -43,13 +43,23 @@ class TelemetryStore:
                     data_source TEXT NOT NULL DEFAULT 'live_local_host_and_http_probe',
                     anomaly_score REAL,
                     is_anomaly INTEGER,
-                    detector_mode TEXT NOT NULL DEFAULT 'bootstrap_rules'
+                    detector_mode TEXT NOT NULL DEFAULT 'bootstrap_rules',
+                    model_anomaly INTEGER,
+                    rule_anomaly INTEGER,
+                    combined_anomaly INTEGER
                 )
             """)
             # Add columns when upgrading a database created by an earlier prototype build.
             columns = {row[1] for row in conn.execute("PRAGMA table_info(telemetry_samples)").fetchall()}
             if "fault_mode" not in columns:
                 conn.execute("ALTER TABLE telemetry_samples ADD COLUMN fault_mode TEXT NOT NULL DEFAULT 'unknown'")
+            if "model_anomaly" not in columns:
+                conn.execute("ALTER TABLE telemetry_samples ADD COLUMN model_anomaly INTEGER")
+            if "rule_anomaly" not in columns:
+                conn.execute("ALTER TABLE telemetry_samples ADD COLUMN rule_anomaly INTEGER")
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(telemetry_samples)").fetchall()}
+            if "combined_anomaly" not in columns:
+                conn.execute("ALTER TABLE telemetry_samples ADD COLUMN combined_anomaly INTEGER")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_timestamp ON telemetry_samples(timestamp)")
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS incident_events (
@@ -101,10 +111,31 @@ class TelemetryStore:
             """).fetchall()
         return [dict(row) for row in rows]
 
-    def annotate_sample(self, sample_id: int, score: float | None, is_anomaly: bool, mode: str) -> None:
+    def annotate_sample(
+        self,
+        sample_id: int,
+        score: float | None,
+        is_anomaly: bool,
+        mode: str,
+        model_anomaly: bool | None = None,
+        rule_anomaly: bool | None = None,
+    ) -> None:
         with self._connect() as conn:
-            conn.execute("UPDATE telemetry_samples SET anomaly_score=?, is_anomaly=?, detector_mode=? WHERE id=?",
-                         (None if score is None else float(score), int(is_anomaly), mode, int(sample_id)))
+            conn.execute(
+                """UPDATE telemetry_samples
+                   SET anomaly_score=?, is_anomaly=?, detector_mode=?,
+                       model_anomaly=?, rule_anomaly=?, combined_anomaly=?
+                   WHERE id=?""",
+                (
+                    None if score is None else float(score),
+                    int(is_anomaly),
+                    mode,
+                    None if model_anomaly is None else int(model_anomaly),
+                    None if rule_anomaly is None else int(rule_anomaly),
+                    int(is_anomaly),
+                    int(sample_id),
+                ),
+            )
 
     def sample_count(self) -> int:
         with self._connect() as conn:

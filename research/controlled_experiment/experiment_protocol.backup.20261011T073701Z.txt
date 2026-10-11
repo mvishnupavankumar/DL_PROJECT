@@ -1,0 +1,28 @@
+﻿AegisOps controlled research experiment
+=======================================
+
+Target: 40 fault episodes
+Fault classes: 20 latency; 20 HTTP-error
+Controls: Healthy-only trials recorded separately
+
+Primary evaluation:
+1. Detection performance by detector and fault class.
+2. Detection latency from injection to first alert.
+3. False alarms during verified healthy periods.
+4. Root-cause diagnosis accuracy against the known injected fault.
+5. Recovery success based on independent post-action verification.
+6. Time to verified recovery, plus failed or incomplete trials.
+
+Experimental safeguards:
+- Do not use individual telemetry samples as independent fault episodes.
+- Do not count an approval or action-completed message as proof of recovery.
+- Record raw model, rule-based, and combined decisions separately.
+- Record every eligible trial, including missed detections and failed recovery.
+- Record diagnosis before revealing the known fault label to the evaluator where practical.
+- Use explicitly approved local-demo recovery only.
+- Do not overwrite the existing database or model checkpoint.
+- Preserve timestamps in UTC and document any missing measurements.
+
+Important:
+This file is an initial protocol outline, not a completed experiment.
+Freeze thresholds and comparison procedures before the evaluation run.

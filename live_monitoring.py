@@ -220,6 +220,8 @@ def _analyze_latest(
                 analysis.get("score"),
                 analysis["is_anomaly"],
                 mode,
+                model_anomaly=analysis["model_anomaly"],
+                rule_anomaly=bool(guard_reasons) or not latest.get("service_available", False),
             )
 
             return analysis, mode
@@ -243,6 +245,8 @@ def _analyze_latest(
         None,
         analysis["is_anomaly"],
         "bootstrap_rules",
+        model_anomaly=None,
+        rule_anomaly=analysis["is_anomaly"],
     )
 
     return analysis, "bootstrap_rules"

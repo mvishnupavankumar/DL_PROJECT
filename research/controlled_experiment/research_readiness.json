@@ -1,0 +1,141 @@
+{
+  "generated_utc": "2026-10-11T10:21:11Z",
+  "project_root": "C:\\Users\\mvish\\python\\python\\Downloads\\AegisOps_Windows_Approval_Hardening\\AegisOps",
+  "database": "C:\\Users\\mvish\\python\\python\\Downloads\\AegisOps_Windows_Approval_Hardening\\AegisOps\\data\\aegisops_live.sqlite3",
+  "checks": [
+    {
+      "name": "project_root",
+      "passed": true,
+      "detail": "app.py located in project root"
+    },
+    {
+      "name": "pytest_available",
+      "passed": true,
+      "detail": "Python executable: C:\\Users\\mvish\\python\\python\\Downloads\\AegisOps_Windows_Approval_Hardening\\AegisOps\\.venv\\Scripts\\python.exe"
+    },
+    {
+      "name": "software_tests",
+      "passed": true,
+      "detail": "exit=0; output=....................................                                     [100%]\n36 passed in 3.58s"
+    },
+    {
+      "name": "protocol_exists",
+      "passed": true,
+      "detail": "C:\\Users\\mvish\\python\\python\\Downloads\\AegisOps_Windows_Approval_Hardening\\AegisOps\\research\\controlled_experiment\\experiment_protocol.txt"
+    },
+    {
+      "name": "trial_log_exists",
+      "passed": true,
+      "detail": "C:\\Users\\mvish\\python\\python\\Downloads\\AegisOps_Windows_Approval_Hardening\\AegisOps\\research\\controlled_experiment\\trial_log.csv"
+    },
+    {
+      "name": "protocol_40 fault episodes",
+      "passed": true,
+      "detail": "protocol text checked"
+    },
+    {
+      "name": "protocol_30-second observation",
+      "passed": true,
+      "detail": "protocol text checked"
+    },
+    {
+      "name": "protocol_10 healthy controls",
+      "passed": true,
+      "detail": "protocol text checked"
+    },
+    {
+      "name": "protocol_approval-gated recovery",
+      "passed": true,
+      "detail": "protocol text checked"
+    },
+    {
+      "name": "trial_log_headers",
+      "passed": true,
+      "detail": "27 columns; 0 rows"
+    },
+    {
+      "name": "trial_ids_unique",
+      "passed": true,
+      "detail": "0 nonempty IDs"
+    },
+    {
+      "name": "database_exists",
+      "passed": true,
+      "detail": "C:\\Users\\mvish\\python\\python\\Downloads\\AegisOps_Windows_Approval_Hardening\\AegisOps\\data\\aegisops_live.sqlite3"
+    },
+    {
+      "name": "telemetry_table",
+      "passed": true,
+      "detail": "incident_events, recovery_approvals, sqlite_sequence, telemetry_samples"
+    },
+    {
+      "name": "telemetry_nonempty",
+      "passed": true,
+      "detail": "1792 rows"
+    },
+    {
+      "name": "telemetry_schema",
+      "passed": true,
+      "detail": "missing=[]"
+    },
+    {
+      "name": "incident_events_table",
+      "passed": true,
+      "detail": "107 events"
+    },
+    {
+      "name": "raw_model_prediction_code_path",
+      "passed": true,
+      "detail": "raw model flag variable exists in source"
+    },
+    {
+      "name": "per_sample_raw_prediction_persistence",
+      "passed": true,
+      "detail": "raw prediction columns found=['model_anomaly']"
+    },
+    {
+      "name": "recovery_verification_code_path",
+      "passed": true,
+      "detail": "recovery/verification keywords present"
+    },
+    {
+      "name": "model_metadata",
+      "passed": true,
+      "detail": "models\\live_lstm_autoencoder.json, models\\lstm_autoencoder.json"
+    }
+  ],
+  "details": [
+    {
+      "trial_rows": 0,
+      "trial_ids": []
+    },
+    {
+      "telemetry_rows": 1792,
+      "telemetry_columns": [
+        "anomaly_score",
+        "combined_anomaly",
+        "cpu_pct",
+        "data_source",
+        "detector_mode",
+        "disk_pct",
+        "error_message",
+        "error_rate_pct",
+        "fault_mode",
+        "id",
+        "is_anomaly",
+        "latency_ms",
+        "memory_pct",
+        "model_anomaly",
+        "rule_anomaly",
+        "service_available",
+        "status_code",
+        "timestamp"
+      ]
+    },
+    {
+      "incident_event_rows": 107
+    }
+  ],
+  "blocking_check_count": 0,
+  "status": "READY_FOR_REVIEW"
+}
