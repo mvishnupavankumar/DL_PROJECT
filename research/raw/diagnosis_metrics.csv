@@ -1,0 +1,8 @@
+configuration,execution_mode,dl_evidence,total_incidents,completed_incidents,unassessable,correct_strict,partially_correct,incorrect,full_cohort_accuracy,per_protocol_accuracy,lenient_accuracy,mean_latency_ms
+1. Rule-based Baseline,deterministic_rule,False,6,6,0,6,0,0,1.0,1.0,1.0,0.01
+2. Single-Agent (Offline),deterministic_offline,True,6,6,0,3,0,3,0.5,0.5,0.5,0.03
+3. Multi-Agent Full (Offline),deterministic_offline,True,6,6,0,3,0,3,0.5,0.5,0.5,0.57
+4. Multi-Agent No-DL (Offline),deterministic_offline,False,6,6,0,6,0,0,1.0,1.0,1.0,0.11
+5. Single-Agent (Groq LLM),Groq LLM (openai/gpt-oss-20b),True,6,6,0,4,0,2,0.6667,0.6667,0.6667,2534.89
+6. Multi-Agent Full (Groq LLM),Groq LLM (openai/gpt-oss-20b),True,6,6,0,5,1,0,0.8333,0.8333,1.0,23188.72
+7. Multi-Agent No-DL (Groq LLM),Groq LLM (openai/gpt-oss-20b),False,6,6,0,4,1,1,0.6667,0.6667,0.8333,16066.41

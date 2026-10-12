@@ -28,19 +28,27 @@ def generate_manifest():
         ROOT / "models" / "lstm_autoencoder.json",
         ROOT / "data" / "aegisops_live.sqlite3",
         ROOT / "data" / "incidents.json",
-        ROOT / "research" / "exports" / "telemetry.csv",
-        ROOT / "research" / "exports" / "incident_episodes.csv",
-        ROOT / "research" / "results" / "detection_metrics.csv",
-        ROOT / "research" / "results" / "detection_predictions.csv",
-        ROOT / "research" / "results" / "diagnosis_metrics.csv",
-        ROOT / "research" / "results" / "diagnosis_predictions.csv",
-        ROOT / "research" / "results" / "safety_metrics.csv",
-        ROOT / "research" / "results" / "safety_test_results.csv",
+        ROOT / "research" / "PROJECT_VERSION_AND_ENVIRONMENT.md",
+        ROOT / "research" / "DATA_AND_LABEL_AUDIT.md",
+        ROOT / "research" / "STATISTICAL_AUDIT.md",
+        ROOT / "research" / "SAFETY_EVALUATION.md",
+        ROOT / "research" / "FINAL_EXPERIMENT_REPORT.md",
+        ROOT / "research" / "raw" / "detection_metrics.csv",
+        ROOT / "research" / "raw" / "detection_predictions.csv",
+        ROOT / "research" / "raw" / "diagnosis_metrics.csv",
+        ROOT / "research" / "raw" / "diagnosis_predictions.csv",
+        ROOT / "research" / "raw" / "safety_metrics.csv",
+        ROOT / "research" / "raw" / "safety_test_results.csv",
+        ROOT / "research" / "audits" / "REPOSITORY_AUDIT.md",
+        ROOT / "research" / "audits" / "DATABASE_AUDIT.md",
+        ROOT / "research" / "audits" / "MODEL_AND_EXECUTION_AUDIT.md",
+        ROOT / "research" / "audits" / "TEST_RESULTS.md",
+        ROOT / "research" / "audits" / "PHASE_1_VERDICT.md",
         ROOT / "research" / "figures" / "detection_confusion_matrices.png",
         ROOT / "research" / "figures" / "detection_comparison.png",
     ]
     manifest = {
-        "manifest_version": "1.0.0",
+        "manifest_version": "2.0.0",
         "timestamp_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "project_root": str(ROOT),
         "artifacts": {}
@@ -66,7 +74,7 @@ def main():
     start_total = time.perf_counter()
 
     # Step 1: Run pytest regression suite
-    print("\n[Step 1/5] Running Pytest Regression Suite...")
+    print("\n[Step 1/5] Running Pytest Regression Suite (42 tests)...")
     res = subprocess.run([sys.executable, "-m", "pytest", "-q"], cwd=ROOT, capture_output=True, text=True)
     print(res.stdout.strip())
     if res.returncode != 0:
@@ -77,13 +85,15 @@ def main():
     print("\n[Step 2/5] Running Experiment A (Anomaly Detection)...")
     run_experiment_a()
 
-    # Step 3: Run Experiment B (Root-Cause Diagnosis)
-    print("\n[Step 3/5] Running Experiment B (Root-Cause Diagnosis)...")
-    run_experiment_b()
+    # Step 3: Run Experiment B (Root-Cause Diagnosis Rubric Audit)
+    print("\n[Step 3/5] Running Experiment B (Diagnosis Rubric Evaluation)...")
+    diag_script = ROOT / "research" / "experiments" / "generate_diagnosis_audit.py"
+    subprocess.run([sys.executable, str(diag_script)], cwd=ROOT, check=True)
 
-    # Step 4: Run Experiment C (Safety & Verification)
-    print("\n[Step 4/5] Running Experiment C (Safety & Verification)...")
-    run_experiment_c()
+    # Step 4: Run Experiment C (Safety & Verification on Live FastAPI Service)
+    print("\n[Step 4/5] Running Experiment C (Safety & Verification Audit)...")
+    safety_script = ROOT / "research" / "experiments" / "run_safety_audit.py"
+    subprocess.run([sys.executable, str(safety_script)], cwd=ROOT, check=True)
 
     # Step 5: Statistical Analysis & Manifest
     print("\n[Step 5/5] Generating Statistical Analysis & Checksum Manifest...")

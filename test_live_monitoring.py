@@ -107,3 +107,39 @@ def test_csv_training_requires_health_metadata_or_explicit_confirmation(tmp_path
     with pytest.raises(ValueError, match="no health/label columns"):
         load_healthy_samples(csv)
     assert len(load_healthy_samples(csv, assume_healthy=True)) == 180
+
+
+def test_build_live_incident_scoping_and_name_error_prevention(monkeypatch):
+    """
+    Regression test for historical 'NameError: name is_local_target is not defined'.
+    Verifies that _build_live_incident resolves target locality via _is_loopback_target(service_url)
+    and does not rely on an external or uninitialized 'is_local_target' variable.
+    """
+    from live_monitoring import _build_live_incident
+
+    sample = {
+        "id": 42,
+        "status_code": 500,
+        "latency_ms": 120.0,
+        "cpu_pct": 25.0,
+        "memory_pct": 50.0,
+        "disk_pct": 40.0,
+        "error_rate_pct": 10.0,
+    }
+    analysis = {
+        "model": "LSTM Autoencoder",
+        "is_anomaly": True,
+        "score": 0.85,
+        "threshold": 0.709,
+    }
+
+    # 1. Local loopback target: should identify as loopback and handle health checks gracefully
+    local_incident = _build_live_incident(sample, analysis, "http://127.0.0.1:8765")
+    assert local_incident["id"] == "LIVE-000042"
+    assert "Live AegisOps monitoring detected" in local_incident["description"]
+
+    # 2. Remote target: should not raise NameError and must restrict valid_actions to read-only
+    remote_incident = _build_live_incident(sample, analysis, "https://remote.api.production.internal")
+    assert remote_incident["id"] == "LIVE-000042"
+    assert remote_incident["valid_actions"] == ["capture_read_only_diagnostics"]
+

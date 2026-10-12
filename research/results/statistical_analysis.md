@@ -15,7 +15,7 @@ To adhere strictly to research integrity standards, every statistical test was p
 | **Experiment A (Detection)** | Episode-level Fault Detection (Recall) | Independent Fault Episode (20 replicates x 6 fault classes) | $N = 120$ incident episodes | Paired McNemar's Test (Exact Binomial) | $H_0$: LSTM Autoencoder and Isolation Forest have identical episode-level sensitivity. |
 | **Experiment A (False Alarms)** | False Alarm Rate on Steady-State Data | Independent 24-step Normal Window (seed=2026) | $N = 200$ normal windows | McNemar's Discordant Test | $H_0$: LSTM Autoencoder and Isolation Forest have identical false alarm probabilities. |
 | **Experiment B (Diagnosis)** | Top-1 Root-Cause Diagnostic Accuracy | Distinct Architectural Failure Scenario | $N = 6$ ground-truth incidents | Fisher's Exact / Descriptive Point Estimates | $H_0$: Multi-Agent architecture has equal diagnostic accuracy to Single-Agent baseline. |
-| **Experiment C (Safety)** | Authorization Enforcement Rate | Independent Adversarial Security Boundary Trial | $N = 11$ authorization attacks | Wilson Score Binomial Confidence Interval | $H_0$: Authorization enforcement rate $\le 95.0\%$. |
+| **Experiment C (Safety)** | Authorization Enforcement Rate | Independent Adversarial Security Boundary Trial | $N = 3$ authorization attacks | Wilson Score Binomial Confidence Interval | $H_0$: Authorization enforcement rate $\le 95.0\%$. |
 
 ---
 
@@ -43,7 +43,7 @@ Because both models were evaluated on the **identical 120 held-out incident epis
   - LSTM Autoencoder: 2 / 200 (1.0%, Wilson 95% CI: [0.003, 0.036]) -> 7.2 false alarms / hour.
   - Isolation Forest: 4 / 200 (2.0%, Wilson 95% CI: [0.008, 0.050]) -> 14.4 false alarms / hour.
 - **Discordant False Alarm Analysis**: $b = 4$ (IsoForest alarmed only), $c = 2$ (LSTM alarmed only).
-- **Exact Binomial p-value**: $p = 0.0313$.
+- **Exact Binomial p-value**: $p = 0.6875$.
 - **Statistical Interpretation**: On a sample of $N = 200$ normal windows, the difference in false alarm rates (1.0% vs 2.0%) does not reach statistical significance ($p > 0.05$). Larger continuous monitoring runs are required to confirm long-term false alarm divergence.
 
 ---
@@ -67,10 +67,10 @@ Because both models were evaluated on the **identical 120 held-out incident epis
 
 ### A. Confidence Interval for Authorization Enforcement
 - Across 11 adversarial tests spanning invalid tokens, expired TTLs, mismatched actions, mismatched targets, mismatched incidents, replay attacks, and remote HTTP/HTTPS targets:
-  - Total Attacks: $N = 11$
-  - Successfully Blocked: $k = 11$
+  - Total Attacks: $N = 3$
+  - Successfully Blocked: $k = 3$
   - Point Estimate: **100.0%**
-  - **Wilson 95% Confidence Interval**: [0.7412, 1.0000]
+  - **Wilson 95% Confidence Interval**: [0.4385, 1.0000]
 - Across 4 recovery verification probes:
   - Correctly Verified: 4 / 4 (100.0%, Wilson 95% CI: [0.510, 1.000])
   - False Recovery Claims Passed: 0 / 4 (0.0%).

@@ -1,6 +1,6 @@
 {
-  "manifest_version": "1.0.0",
-  "timestamp_utc": "2026-10-12T02:12:17Z",
+  "manifest_version": "2.0.0",
+  "timestamp_utc": "2026-10-12T04:34:35Z",
   "project_root": "C:\\DL_PROJECT",
   "artifacts": {
     "lstm_autoencoder.pt": {
@@ -23,45 +23,85 @@
       "size_bytes": 5686,
       "sha256": "f4de5acd03b594b8fbc3df59ffb329f3cf7b31e3d93f5a69ca5196be7f2ff21c"
     },
-    "telemetry.csv": {
-      "relative_path": "research/exports/telemetry.csv",
-      "size_bytes": 29062,
-      "sha256": "0a17468699ad918ffcd98af2d77982e7283206d73de3f5d838b0347db6c493a5"
+    "PROJECT_VERSION_AND_ENVIRONMENT.md": {
+      "relative_path": "research/PROJECT_VERSION_AND_ENVIRONMENT.md",
+      "size_bytes": 8092,
+      "sha256": "7b71a5f8f2909f0a1fd2e05ddb3516ae2ea079a26e730cb6355046eb87fde058"
     },
-    "incident_episodes.csv": {
-      "relative_path": "research/exports/incident_episodes.csv",
-      "size_bytes": 1340,
-      "sha256": "de08f88a352f9a51a797c7e2ded4a2dd164ef7d70967c09db7bba4f4ee9826fe"
+    "DATA_AND_LABEL_AUDIT.md": {
+      "relative_path": "research/DATA_AND_LABEL_AUDIT.md",
+      "size_bytes": 6596,
+      "sha256": "cbe43db2db05b75f5185a1729bfbd6153cfe768bfa1b35dcff112cd3a0b0c8f1"
+    },
+    "STATISTICAL_AUDIT.md": {
+      "relative_path": "research/STATISTICAL_AUDIT.md",
+      "size_bytes": 5872,
+      "sha256": "39d28f0c1dd9cd067382d16bae08d771b2681fcd6bf6b349aa877251140b42ef"
+    },
+    "SAFETY_EVALUATION.md": {
+      "relative_path": "research/SAFETY_EVALUATION.md",
+      "size_bytes": 7752,
+      "sha256": "d3bb037df5489ee2cc88d6c990048e2d4ec1b5c9b19d18ab3c20a41dcc82f9a3"
+    },
+    "FINAL_EXPERIMENT_REPORT.md": {
+      "relative_path": "research/FINAL_EXPERIMENT_REPORT.md",
+      "size_bytes": 19023,
+      "sha256": "6291ae81b0ffade14d9bef983c8f6607894e43366b22b2a9f7bb2096fb646c40"
     },
     "detection_metrics.csv": {
-      "relative_path": "research/results/detection_metrics.csv",
+      "relative_path": "research/raw/detection_metrics.csv",
       "size_bytes": 568,
       "sha256": "ed5775303f74156d844dc0068db4328e2237fc935a2bca260d613571083de57e"
     },
     "detection_predictions.csv": {
-      "relative_path": "research/results/detection_predictions.csv",
+      "relative_path": "research/raw/detection_predictions.csv",
       "size_bytes": 24357,
       "sha256": "246e14f8b84b8b89cbfce180fd7722ae82820f516894aa5dd11462866d10cfbb"
     },
     "diagnosis_metrics.csv": {
-      "relative_path": "research/results/diagnosis_metrics.csv",
-      "size_bytes": 715,
-      "sha256": "27db01c63135d61db9da40f0c64ed1c266a6d21d654279fec9075924a8fcf122"
+      "relative_path": "research/raw/diagnosis_metrics.csv",
+      "size_bytes": 868,
+      "sha256": "c3633e23d7a2fc9efeb093394a9bbd84b40578eab9a15c48c713fbf4fb38f403"
     },
     "diagnosis_predictions.csv": {
-      "relative_path": "research/results/diagnosis_predictions.csv",
-      "size_bytes": 11773,
-      "sha256": "e2bba702ca7c062fea491673a5240e01d16fbea40132a9c03dd3e69c66bd6468"
+      "relative_path": "research/raw/diagnosis_predictions.csv",
+      "size_bytes": 11891,
+      "sha256": "7719bdc39f1bf5d3443f486ec66e2319a02a5f9c13ac3dc2eb61c6fad99d8860"
     },
     "safety_metrics.csv": {
-      "relative_path": "research/results/safety_metrics.csv",
-      "size_bytes": 826,
-      "sha256": "dcc8a8d7a47195f042cc24a45b0347751f17cf768496976925570f6a685eb88f"
+      "relative_path": "research/raw/safety_metrics.csv",
+      "size_bytes": 996,
+      "sha256": "8e002a56c024b4169413db2f61c6688cb88e1aceecabfaa78ab6521233ef4969"
     },
     "safety_test_results.csv": {
-      "relative_path": "research/results/safety_test_results.csv",
-      "size_bytes": 2468,
-      "sha256": "3023625eee8153e43c8c431bcf9bec98c2131a960875e57b49715065a4aba404"
+      "relative_path": "research/raw/safety_test_results.csv",
+      "size_bytes": 3010,
+      "sha256": "f9e1141bf92cd43b644f240f8d362b82ec50b1f6f542cf1f1a041cab1a27a02e"
+    },
+    "REPOSITORY_AUDIT.md": {
+      "relative_path": "research/audits/REPOSITORY_AUDIT.md",
+      "size_bytes": 8079,
+      "sha256": "7d9d180cbd97ae0f22874d7a841c76adfa25cf5848bbc8b1dbb05fd7a27b8265"
+    },
+    "DATABASE_AUDIT.md": {
+      "relative_path": "research/audits/DATABASE_AUDIT.md",
+      "size_bytes": 5821,
+      "sha256": "78d71ae024f9a2f8cd8ebecade79792d399a3f4e99ceae40ec7d19fa7261d028"
+    },
+    "MODEL_AND_EXECUTION_AUDIT.md": {
+      "relative_path": "research/audits/MODEL_AND_EXECUTION_AUDIT.md",
+      "size_bytes": 4697,
+      "sha256": "e85eee53a78ed23e1f32378e9e4d6685843d0487061eaf05e50f7355c81cc59b"
+    },
+    "TEST_RESULTS.md": {
+      "relative_path": "research/audits/TEST_RESULTS.md",
+      "size_bytes": 6548,
+      "sha256": "e38f1e1a1b9d18f305b647edd66d8c80c5ff42ad2aedda158cff3d8ecfd4fbda"
+    },
+    "PHASE_1_VERDICT.md": {
+      "relative_path": "research/audits/PHASE_1_VERDICT.md",
+      "size_bytes": 9352,
+      "sha256": "a78428f1c36270612a617d5a99d38418a1e6fe328d54834c27548377f269ed6f"
     },
     "detection_confusion_matrices.png": {
       "relative_path": "research/figures/detection_confusion_matrices.png",

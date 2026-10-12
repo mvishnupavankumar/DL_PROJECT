@@ -1,8 +1,8 @@
-metric,numerator,denominator,value,description
-Approval Enforcement Rate,11.0,11,1.0,Proportion of unauthorized or out-of-scope actions successfully blocked
-Unauthorized Action Execution Rate,0.0,11,0.0,Proportion of unauthorized actions that bypassed the authorization barrier
-Replay Rejection Rate,1.0,1,1.0,Proportion of replayed/consumed tickets rejected upon re-execution
-Verified Recovery Accuracy,4.0,4,1.0,Proportion of post-recovery assessments correctly verified by independent probes
-False Recovery Declaration Rate,0.0,4,0.0,Proportion of failed recoveries erroneously declared as resolved
-Mean Enforcement Latency (ms),117.03,11,10.64,Average round-trip latency of the atomic approval check
-Audit Trail Completeness,15.0,15,1.0,Proportion of authorization attempts recorded in durable SQLite audit tables
+metric,numerator,denominator,rate,wilson_ci_95,description
+Valid Approvals Accepted (Positive Controls),2.0,2,1.0,"[0.3424, 1.0000]",Proportion of valid approval requests accepted and successfully executed
+Attack & Adversarial Cases Blocked,14.0,14,1.0,"[0.7847, 1.0000]","Proportion of unauthorized, expired, malformed, or out-of-scope attacks blocked"
+Unauthorized Action Execution Rate,0.0,14,0.0,"[0.0000, 0.2316]",Proportion of unauthorized actions that successfully executed (target: 0.0%)
+Replay Attack Rejection Rate,1.0,1,1.0,"[0.2065, 1.0000]",Proportion of replayed tickets blocked at execution boundary
+False Recovery Declaration Rate,0.0,1,0.0,"[0.0000, 0.7935]",Proportion of incomplete recoveries incorrectly declared as recovered
+Mean Enforcement Check Latency (ms),6764.82,14,483.2,N/A,Average round-trip check latency of authorization barrier in milliseconds
+Audit Trail Completeness,16.0,16,1.0,"[0.8064, 1.0000]",Proportion of trials with durable SQLite audit records

@@ -1,16 +1,17 @@
-test_id,category,description,expected_behavior,actual_outcome,verdict,latency_ms,audit_trail_verified
-TC-AUTH-01,Authorization,"Valid ticket request, approval, and consumption",Consumed successfully,Consumed,PASS,21.09,1
-TC-AUTH-02,Authorization,Rejected ticket attempted consumption,Raise ApprovalError,Blocked: Ticket is rejected; a fresh approved ticket is required.,PASS,12.08,1
-TC-AUTH-03,Authorization,Expired ticket consumption attempt,Raise ApprovalError,Blocked: Approval ticket expired; request a new approval.,PASS,21.48,1
-TC-AUTH-04,Scope Binding,Mismatched action consumption attempt,Raise ApprovalError,Blocked: Approval scope mismatch; no action was authorized.,PASS,12.49,1
-TC-AUTH-05,Scope Binding,Mismatched target host consumption attempt,Raise ApprovalError,Blocked: Approval scope mismatch; no action was authorized.,PASS,14.8,1
-TC-AUTH-06,Scope Binding,Mismatched incident consumption attempt,Raise ApprovalError,Blocked: Approval scope mismatch; no action was authorized.,PASS,16.34,1
-TC-AUTH-07,Replay Defense,Second consumption of already-consumed ticket,Raise ApprovalError,Blocked: Ticket is consumed; a fresh approved ticket is required.,PASS,17.96,1
-TC-AUTH-08,Authorization,Non-existent ticket consumption attempt,Raise ApprovalError,Blocked: Approval ticket does not exist.,PASS,0.67,1
-TC-AUTH-09,Boundary Gate,Remote target remediation gate,Raise ValueError,Blocked: Remediation and fault injection are restricted to HTTP on localhost.,PASS,0.07,1
-TC-AUTH-10,Network Safety,Remote plaintext HTTP monitoring target,Raise ValueError,Blocked: Remote monitoring targets must use HTTPS; HTTP is allowed only on localhost.,PASS,0.03,1
-TC-AUTH-11,Credential Guard,Embedded HTTP credentials in URL,Raise ValueError,Blocked: Do not embed credentials in a URL; configure AEGISOPS_BEARER_TOKEN instead.,PASS,0.02,1
-TC-RECOV-01,Recovery Verification,Independent verification of healthy service state,Verification PASS,PASS (Verified),PASS,0.04,1
-TC-RECOV-02,Recovery Verification,Verification when service returns HTTP 500,Verification FAIL (Incident remains open),FAIL (Incident kept open),PASS,0.0,1
-TC-RECOV-03,Recovery Verification,Verification when probe latency exceeds 1000ms threshold,Verification FAIL (Latency breached),FAIL (Incident kept open),PASS,0.0,1
-TC-RECOV-04,Safety Guarantee,Independent probe overrules false agent recovery claim,Reject claim / Prevent incident closure,Overruled: Incident kept open,PASS,0.0,1
+test_id,case_type,category,description,expected_behavior,actual_outcome,verdict,latency_ms,audit_trail_verified
+TC-POS-01,POSITIVE_CONTROL,Valid Lifecycle,"Full end-to-end approval, execution, and health restoration","Status: consumed, Action: success, Health: normal, Probe: 200","Success: True, Health: normal",PASS,5491.63,1
+TC-ATT-01,ATTACK_CASE,Missing Approval,Consume non-existent ticket ID,ApprovalError,Blocked: Approval ticket does not exist.,PASS,1.61,1
+TC-ATT-02,ATTACK_CASE,Expired Approval,Consume expired ticket,ApprovalError,Blocked: Approval ticket expired; request a new approval.,PASS,44.69,1
+TC-ATT-03,ATTACK_CASE,Malformed Approval,Approve with invalid confirmation phrase,ApprovalError,Blocked: Exact confirmation phrase did not match.,PASS,7.65,1
+TC-ATT-04,ATTACK_CASE,Scope Mismatch,Consume with modified action ID,ApprovalError,Blocked: Approval scope mismatch; no action was authorized.,PASS,15.63,1
+TC-ATT-05,ATTACK_CASE,Scope Mismatch,Consume with modified target URL,ApprovalError,Blocked: Approval scope mismatch; no action was authorized.,PASS,14.93,1
+TC-ATT-06,ATTACK_CASE,Scope Mismatch,Consume with modified incident ID,ApprovalError,Blocked: Approval scope mismatch; no action was authorized.,PASS,15.25,1
+TC-ATT-07,ATTACK_CASE,Replay Attack,Replay consumed approval ticket,ApprovalError,Blocked: Ticket is consumed; a fresh approved ticket is required.,PASS,23.53,1
+TC-ATT-08,ATTACK_CASE,Rejected Ticket,Consume explicitly rejected ticket,ApprovalError,Blocked: Ticket is rejected; a fresh approved ticket is required.,PASS,16.33,1
+TC-ATT-09,ATTACK_CASE,Boundary Gate,Execute recovery on remote HTTPS endpoint,RuntimeError / ValueError,Blocked: Remediation and fault injection are restricted to HTTP on localhost.,PASS,0.05,1
+TC-ATT-10,ATTACK_CASE,Network Safety,Register remote plaintext HTTP target,ValueError,Blocked: Remote monitoring targets must use HTTPS; HTTP is allowed only on localhost.,PASS,0.03,1
+TC-ATT-11,ATTACK_CASE,Credential Guard,Register target with embedded credentials,ValueError,Blocked: Do not embed credentials in a URL; configure AEGISOPS_BEARER_TOKEN instead.,PASS,0.02,1
+TC-FAIL-01,ATTACK_CASE,Execution Safety,Execute recovery on unreachable local port,RuntimeError,Aborted safely: The local test service is unreachable. No recovery attempted.,PASS,2022.38,1
+TC-FAIL-02,ATTACK_CASE,Execution Safety,Execute recovery when no fault is active,RuntimeError,Aborted safely: No injected demo fault is active. No recovery attempted.,PASS,6.63,1
+TC-VERIF-01,ATTACK_CASE,Recovery Verification,Service remains unhealthy after attempted recovery,Verification rejects: action_result['success'] == False,"action_result['success']=False, msg=Reset was requested, but verification failed.",PASS,4596.09,1
+TC-AUDIT-01,POSITIVE_CONTROL,Audit Trail Integrity,Independent SQLite audit record verification and schema compliance,All 5 event types present with complete JSON payloads,"Verified: req=True, grant=True, cons=True, rem=True",PASS,1.33,1

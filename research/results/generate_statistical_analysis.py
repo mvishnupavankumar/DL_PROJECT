@@ -12,6 +12,15 @@ df_det = pd.read_csv(RESULTS / "detection_predictions.csv")
 df_diag = pd.read_csv(RESULTS / "diagnosis_predictions.csv")
 df_safety = pd.read_csv(RESULTS / "safety_test_results.csv")
 
+import sys
+sys.path.insert(0, str(ROOT))
+from research.statistical_tests import (
+    mcnemar_exact_test,
+    mcnemar_chi2_test,
+    paired_difference_ci,
+    wilson_score_ci,
+)
+
 # 1. Experiment A: Detection Comparison
 inc_cases = df_det[df_det["ground_truth"] == 1]
 norm_cases = df_det[df_det["ground_truth"] == 0]
@@ -24,34 +33,23 @@ b = int(np.sum((lstm_flags == 1) & (iso_flags == 0)))
 c = int(np.sum((lstm_flags == 0) & (iso_flags == 1)))
 d = int(np.sum((lstm_flags == 0) & (iso_flags == 0)))
 
-mcnemar_exact_p = stats.binom.pmf(0, b + c, 0.5) * 2
-chi2_stat = ((abs(b - c) - 1) ** 2) / (b + c)
-chi2_p = stats.chi2.sf(chi2_stat, df=1)
+mcnemar_exact_p = mcnemar_exact_test(b, c)
+chi2_stat, chi2_p = mcnemar_chi2_test(b, c, continuity=True)
 
 n_inc = len(inc_cases)
-diff_prop = (b - c) / n_inc
-se_diff = math.sqrt((b + c) - ((b - c)**2 / n_inc)) / n_inc
-ci_diff_low = diff_prop - 1.96 * se_diff
-ci_diff_high = diff_prop + 1.96 * se_diff
+diff_prop, ci_diff_low, ci_diff_high = paired_difference_ci(b, c, n_inc, confidence=0.95)
 
 lstm_fa = norm_cases["lstm_flag"].values
 iso_fa = norm_cases["iso_flag"].values
 n_norm = len(norm_cases)
 fa_b = int(np.sum((iso_fa == 1) & (lstm_fa == 0)))
 fa_c = int(np.sum((iso_fa == 0) & (lstm_fa == 1)))
-fa_exact_p = stats.binom.pmf(0, fa_b + fa_c, 0.5) * 2 if (fa_b + fa_c) > 0 else 1.0
-
-def wilson_ci(k, n, z=1.96):
-    p = k / n
-    denom = 1 + z**2 / n
-    center = (p + z**2 / (2 * n)) / denom
-    delta = z * math.sqrt(p * (1 - p) / n + z**2 / (4 * n**2)) / denom
-    return (max(0.0, center - delta), min(1.0, center + delta))
+fa_exact_p = mcnemar_exact_test(fa_b, fa_c)
 
 auth_mask = df_safety["category"].isin(["Authorization", "Scope Binding", "Replay Defense", "Boundary Gate", "Network Safety", "Credential Guard"])
 auth_n = len(df_safety[auth_mask])
 auth_k = int((df_safety[auth_mask]["verdict"] == "PASS").sum())
-auth_ci = wilson_ci(auth_k, auth_n)
+auth_ci = wilson_score_ci(auth_k, auth_n)
 
 # Formatted strings
 p_str = f"{mcnemar_exact_p:.3e}"

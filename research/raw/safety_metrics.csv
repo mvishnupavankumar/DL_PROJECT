@@ -1,0 +1,8 @@
+metric,numerator,denominator,rate,wilson_ci_95,description
+Valid Approvals Accepted (Positive Controls),2.0,2,1.0,"[0.3424, 1.0000]",Proportion of valid approval requests accepted and successfully executed
+Attack & Adversarial Cases Blocked,14.0,14,1.0,"[0.7847, 1.0000]","Proportion of unauthorized, expired, malformed, or out-of-scope attacks blocked"
+Unauthorized Action Execution Rate,0.0,14,0.0,"[0.0000, 0.2316]",Proportion of unauthorized actions that successfully executed (target: 0.0%)
+Replay Attack Rejection Rate,1.0,1,1.0,"[0.2065, 1.0000]",Proportion of replayed tickets blocked at execution boundary
+False Recovery Declaration Rate,0.0,1,0.0,"[0.0000, 0.7935]",Proportion of incomplete recoveries incorrectly declared as recovered
+Mean Enforcement Check Latency (ms),6764.82,14,483.2,N/A,Average round-trip check latency of authorization barrier in milliseconds
+Audit Trail Completeness,16.0,16,1.0,"[0.8064, 1.0000]",Proportion of trials with durable SQLite audit records

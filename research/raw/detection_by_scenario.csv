@@ -1,0 +1,7 @@
+scenario,n_episodes,rule_recall,isolation_forest_recall,lstm_autoencoder_recall,combined_alert_recall
+INC-1001,20,1.0,0.4,1.0,1.0
+INC-1002,20,1.0,0.25,1.0,1.0
+INC-1003,20,1.0,0.85,1.0,1.0
+INC-1004,20,1.0,0.75,1.0,1.0
+INC-1005,20,1.0,0.4,1.0,1.0
+INC-1006,20,1.0,0.2,1.0,1.0
