@@ -1,0 +1,77 @@
+{
+  "manifest_version": "1.0.0",
+  "timestamp_utc": "2026-10-12T02:12:17Z",
+  "project_root": "C:\\DL_PROJECT",
+  "artifacts": {
+    "lstm_autoencoder.pt": {
+      "relative_path": "models/lstm_autoencoder.pt",
+      "size_bytes": 19797,
+      "sha256": "1cf44e6e82e459f543fcace25334f3076b76c77a357d46f65c11e3c44fd382de"
+    },
+    "lstm_autoencoder.json": {
+      "relative_path": "models/lstm_autoencoder.json",
+      "size_bytes": 846,
+      "sha256": "24826b053833b08e80fb84e7e694adfad5b4a1124d935ccf3e3cd4f575eb045f"
+    },
+    "aegisops_live.sqlite3": {
+      "relative_path": "data/aegisops_live.sqlite3",
+      "size_bytes": 86016,
+      "sha256": "b8f33f63fef6e781fbf7ba45045d8ba5e5eaab3c041fa85250d71ae276c484d7"
+    },
+    "incidents.json": {
+      "relative_path": "data/incidents.json",
+      "size_bytes": 5686,
+      "sha256": "f4de5acd03b594b8fbc3df59ffb329f3cf7b31e3d93f5a69ca5196be7f2ff21c"
+    },
+    "telemetry.csv": {
+      "relative_path": "research/exports/telemetry.csv",
+      "size_bytes": 29062,
+      "sha256": "0a17468699ad918ffcd98af2d77982e7283206d73de3f5d838b0347db6c493a5"
+    },
+    "incident_episodes.csv": {
+      "relative_path": "research/exports/incident_episodes.csv",
+      "size_bytes": 1340,
+      "sha256": "de08f88a352f9a51a797c7e2ded4a2dd164ef7d70967c09db7bba4f4ee9826fe"
+    },
+    "detection_metrics.csv": {
+      "relative_path": "research/results/detection_metrics.csv",
+      "size_bytes": 568,
+      "sha256": "ed5775303f74156d844dc0068db4328e2237fc935a2bca260d613571083de57e"
+    },
+    "detection_predictions.csv": {
+      "relative_path": "research/results/detection_predictions.csv",
+      "size_bytes": 24357,
+      "sha256": "246e14f8b84b8b89cbfce180fd7722ae82820f516894aa5dd11462866d10cfbb"
+    },
+    "diagnosis_metrics.csv": {
+      "relative_path": "research/results/diagnosis_metrics.csv",
+      "size_bytes": 715,
+      "sha256": "27db01c63135d61db9da40f0c64ed1c266a6d21d654279fec9075924a8fcf122"
+    },
+    "diagnosis_predictions.csv": {
+      "relative_path": "research/results/diagnosis_predictions.csv",
+      "size_bytes": 11773,
+      "sha256": "e2bba702ca7c062fea491673a5240e01d16fbea40132a9c03dd3e69c66bd6468"
+    },
+    "safety_metrics.csv": {
+      "relative_path": "research/results/safety_metrics.csv",
+      "size_bytes": 826,
+      "sha256": "dcc8a8d7a47195f042cc24a45b0347751f17cf768496976925570f6a685eb88f"
+    },
+    "safety_test_results.csv": {
+      "relative_path": "research/results/safety_test_results.csv",
+      "size_bytes": 2468,
+      "sha256": "3023625eee8153e43c8c431bcf9bec98c2131a960875e57b49715065a4aba404"
+    },
+    "detection_confusion_matrices.png": {
+      "relative_path": "research/figures/detection_confusion_matrices.png",
+      "size_bytes": 27954,
+      "sha256": "393b348e6eca44ee5bc86e5cbab069620639a142bb57839bced98a5b5dbc2c2c"
+    },
+    "detection_comparison.png": {
+      "relative_path": "research/figures/detection_comparison.png",
+      "size_bytes": 16879,
+      "sha256": "8e33bdb564f6ead7beb90091711ff4aed3c99a761bcd96c89f51c0abb9ac09e2"
+    }
+  }
+}

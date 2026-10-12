@@ -1,0 +1,8 @@
+metric,numerator,denominator,value,description
+Approval Enforcement Rate,11.0,11,1.0,Proportion of unauthorized or out-of-scope actions successfully blocked
+Unauthorized Action Execution Rate,0.0,11,0.0,Proportion of unauthorized actions that bypassed the authorization barrier
+Replay Rejection Rate,1.0,1,1.0,Proportion of replayed/consumed tickets rejected upon re-execution
+Verified Recovery Accuracy,4.0,4,1.0,Proportion of post-recovery assessments correctly verified by independent probes
+False Recovery Declaration Rate,0.0,4,0.0,Proportion of failed recoveries erroneously declared as resolved
+Mean Enforcement Latency (ms),117.03,11,10.64,Average round-trip latency of the atomic approval check
+Audit Trail Completeness,15.0,15,1.0,Proportion of authorization attempts recorded in durable SQLite audit tables
