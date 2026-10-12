@@ -1,0 +1,62 @@
+graph TB
+    subgraph DataIngestion["Phase 1: Ingestion & Sliding Window Buffer"]
+        M1["Host OS Metrics<br/>CPU%, RAM%, Disk%"]
+        M2["Probe Endpoint<br/>Latency (ms), Error Rate"]
+        Collector["Metric Collector<br/>collectors/system_metrics.py"]
+        SQLStore[("Telemetry Store<br/>storage/telemetry_store.py")]
+        WindowBuffer["Sliding Window Buffer<br/>Shape: (W=24, D=5)<br/>Normalized Features"]
+    end
+
+    subgraph DualDetection["Phase 2: Dual-Gate Anomaly Detection"]
+        subgraph RulePath["Deterministic Rule Gate"]
+            RuleEval{"Threshold Checks<br/>CPU >= 90%<br/>RAM >= 95%<br/>Lat >= 1000ms<br/>Err > 0.5%"}
+            RuleResult["Rule Alert Signal<br/>(Binary 0/1)"]
+        end
+
+        subgraph NeuralPath["Learned LSTM Autoencoder Gate"]
+            Encoder["LSTM Encoder<br/>Input: 5 -> Hidden: 32 -> Latent: 16"]
+            Decoder["LSTM Decoder<br/>Latent: 16 -> Hidden: 32 -> Output: 5"]
+            LossCalc["Reconstruction Loss<br/>MSE = (1/120) * sum((X - X_hat)^2)"]
+            ThreshCheck{"Score >= tau?<br/>tau = 0.709399"}
+            NeuralResult["Neural Alert Signal<br/>(Binary 0/1, Score s)"]
+        end
+
+        CombinedGate{"Alert Logic Gate<br/>Alert = Rule OR Neural"}
+        IncidentEvent["Incident Alert Event<br/>(ID, Timestamp, Score, Trigger Source)"]
+    end
+
+    subgraph DiagnosticPipeline["Phase 3: Multi-Agent Diagnostic Workflow (IncidentAgents)"]
+        ManagerAgent["1. Manager Agent<br/>Prioritizes incident, structures diagnostic goals"]
+        InvestigatorAgent["2. Investigation Agent<br/>Gathers log snippets & DL reconstruction error trace"]
+        DiagnosisAgent["3. Diagnosis Agent<br/>Synthesizes causal mechanism & assigns confidence"]
+        ResolutionAgent["4. Resolution Agent<br/>Selects remediation action from authorized catalog"]
+        DiagnosticReport["Diagnostic Output<br/>Root Cause, Evidence, Confidence, Proposed Remediation"]
+    end
+
+    %% Data flow links
+    M1 --> Collector
+    M2 --> Collector
+    Collector --> SQLStore
+    SQLStore --> WindowBuffer
+
+    WindowBuffer --> RuleEval
+    RuleEval --> RuleResult
+
+    WindowBuffer --> Encoder
+    Encoder --> Decoder
+    Decoder --> LossCalc
+    LossCalc --> ThreshCheck
+    ThreshCheck --> NeuralResult
+
+    RuleResult --> CombinedGate
+    NeuralResult --> CombinedGate
+    CombinedGate -- "Alert Triggered" --> IncidentEvent
+
+    IncidentEvent --> ManagerAgent
+    SQLStore -. "Telemetry Context" .-> InvestigatorAgent
+    LossCalc -. "Feature MSE Attribution" .-> InvestigatorAgent
+
+    ManagerAgent --> InvestigatorAgent
+    InvestigatorAgent --> DiagnosisAgent
+    DiagnosisAgent --> ResolutionAgent
+    ResolutionAgent --> DiagnosticReport

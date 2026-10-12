@@ -1,0 +1,58 @@
+graph TB
+    subgraph MonitoredEnvironment["1. Monitored Microservice Environment"]
+        Service["Target Service (FastAPI / Demo Service)<br/>http://127.0.0.1:8765"]
+        AdminFault["Fault Injection / Reset Endpoint<br/>/admin/fault"]
+        ProbeEndpoint["HTTP Health & Synthetic Probe<br/>/probe & /health"]
+        HostOS["Host OS Metrics (psutil)<br/>CPU, Memory, Disk Usage"]
+    end
+
+    subgraph TelemetryLayer["2. Telemetry Ingestion & Storage"]
+        Collector["Metric Collector & Probe Runner<br/>collectors/system_metrics.py"]
+        Store["Telemetry Store (SQLite)<br/>storage/telemetry_store.py"]
+        Buffer["Sliding Window Buffer (24 Steps)<br/>Sequence Length = 24, Dim = 5"]
+    end
+
+    subgraph DetectionLayer["3. Dual-Gate Anomaly Detection"]
+        StaticRules["Operational Rules Gate<br/>CPU>=90%, RAM>=95%, Lat>=1000ms, Err>0.5%"]
+        LSTMAutoencoder["Frozen LSTM Autoencoder (PyTorch)<br/>hidden_dim=32, threshold tau=0.709399"]
+        CombinedGate{"Combined Alert Logic<br/>Alert = Rule OR LSTM"}
+    end
+
+    subgraph MultiAgentLayer["4. Multi-Agent Root-Cause Diagnosis (IncidentAgents)"]
+        ManagerAgent["Manager Agent<br/>Prioritizes incident & plans tasks"]
+        InvestigatorAgent["Investigation Agent<br/>Gathers log signals & DL anomaly context"]
+        DiagnosisAgent["Diagnosis Agent<br/>Synthesizes causal mechanism & confidence"]
+        ResolutionAgent["Resolution Agent<br/>Selects remediation action from catalog"]
+    end
+
+    subgraph GovernanceLayer["5. Two-Man-Rule Authorization & Recovery"]
+        ApprovalEngine["Approval Store (approval.py)<br/>BEGIN IMMEDIATE SQLite Transactions"]
+        HumanOperator["Human SRE / Operator<br/>Reviews ticket & submits confirmation phrase"]
+        ExecutionBarrier{"Execution Boundary Gate<br/>Validate: Nonce, TTL, Target, Scope"}
+        RemediationAction["Loopback Remediation Dispatcher<br/>live_monitoring._resolve_local_test_fault"]
+        VerificationAgent["Verification Agent & Probe<br/>Validates HTTP 200 & Latency < 1000ms"]
+    end
+
+    %% Connections
+    Service --> ProbeEndpoint
+    ProbeEndpoint --> Collector
+    HostOS --> Collector
+    Collector --> Store
+    Store --> Buffer
+    Buffer --> StaticRules
+    Buffer --> LSTMAutoencoder
+    StaticRules --> CombinedGate
+    LSTMAutoencoder --> CombinedGate
+    CombinedGate -- "Anomaly Alert" --> ManagerAgent
+    Store -- "Logs & Context" --> InvestigatorAgent
+    ManagerAgent --> InvestigatorAgent
+    InvestigatorAgent --> DiagnosisAgent
+    DiagnosisAgent --> ResolutionAgent
+    ResolutionAgent --> ApprovalEngine
+    HumanOperator -- "Exact Confirmation Phrase" --> ApprovalEngine
+    ApprovalEngine --> ExecutionBarrier
+    ExecutionBarrier -- "Authorized & Unexpired" --> RemediationAction
+    RemediationAction --> AdminFault
+    AdminFault --> Service
+    Service --> VerificationAgent
+    VerificationAgent -- "Verification State" --> Store

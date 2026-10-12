@@ -1,0 +1,58 @@
+graph TB
+    subgraph TicketGeneration["1. Incident Resolution Proposal"]
+        DiagnosticReport["Diagnostic Resolution Agent<br/>Proposes Remediation Action"]
+        CreateTicket["Approval Store (approval.py)<br/>create_ticket(incident_id, action, target)"]
+        TicketRecord[("Approval Ticket in SQLite<br/>Nonce: UUIDv4<br/>TTL: 300s<br/>Target: http://127.0.0.1:8765<br/>Expected Phrase: 'APPROVE <nonce>'<br/>Status: PENDING")]
+    end
+
+    subgraph HumanAuthorization["2. Two-Man-Rule Human Approval Gate"]
+        HumanOperator["Human SRE / Operator<br/>Reviews Incident Diagnostic Context"]
+        RiskAssessment{"Review Safety & Scope<br/>Verify Remediation Impact"}
+        SubmitApproval["Submit Approval Call<br/>approve_ticket(ticket_id, phrase)"]
+    end
+
+    subgraph SecurityValidation["3. Transactional Validation & Execution Boundary"]
+        DBTx["BEGIN IMMEDIATE Transaction<br/>Atomic SQLite State Lock"]
+        NonceCheck{"1. Nonce Valid & Unused?<br/>2. Status == PENDING?<br/>3. Expired? (now <= created_at + TTL)<br/>4. Phrase Matches Exactly?"}
+        RejectExecution["REJECT & LOG AUDIT<br/>Ticket Status: EXPIRED / REJECTED / INVALID"]
+        
+        BoundaryCheck{"Boundary Guardrails Check<br/>- Target == Loopback Allowed?<br/>- Action in Authorized Catalog?<br/>- Parameter Injection Sanitized?"}
+        AbortBoundary["BLOCK EXECUTION<br/>Log Security Violation Alert"]
+    end
+
+    subgraph ExecutionRemediation["4. Controlled Remediation Dispatch"]
+        TransitionApproved["Mark Ticket: APPROVED<br/>(One-Time Token Consumed)"]
+        Dispatcher["Loopback Remediation Dispatcher<br/>live_monitoring._resolve_local_test_fault"]
+        TargetEndpoint["Monitored Service Admin Port<br/>POST http://127.0.0.1:8765/admin/fault<br/>Payload: {'fault_type': 'none'}"]
+    end
+
+    subgraph PostActionVerification["5. Post-Remediation Verification & Audit Closure"]
+        VerificationProbe["Verification Probe<br/>GET /probe & GET /health"]
+        HealthEvaluation{"Health Criteria Met?<br/>HTTP Status == 200 AND<br/>Response Latency < 1000ms"}
+        IncidentResolved["Incident Status: RESOLVED<br/>Write Immutable Audit Record"]
+        IncidentRollback["Incident Status: VERIFICATION_FAILED<br/>Escalate Alert to High Priority"]
+    end
+
+    %% Connections
+    DiagnosticReport --> CreateTicket
+    CreateTicket --> TicketRecord
+
+    TicketRecord -. "Ticket ID & Phrase" .-> HumanOperator
+    HumanOperator --> RiskAssessment
+    RiskAssessment -- "Authorized" --> SubmitApproval
+
+    SubmitApproval --> DBTx
+    DBTx --> NonceCheck
+    NonceCheck -- "Failure (TTL/Nonce/Phrase)" --> RejectExecution
+    NonceCheck -- "Pass" --> BoundaryCheck
+
+    BoundaryCheck -- "Violation (SSRF/Cmd Injection)" --> AbortBoundary
+    BoundaryCheck -- "Pass" --> TransitionApproved
+
+    TransitionApproved --> Dispatcher
+    Dispatcher --> TargetEndpoint
+
+    TargetEndpoint --> VerificationProbe
+    VerificationProbe --> HealthEvaluation
+    HealthEvaluation -- "Healthy" --> IncidentResolved
+    HealthEvaluation -- "Degraded" --> IncidentRollback
