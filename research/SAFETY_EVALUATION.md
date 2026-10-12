@@ -20,7 +20,7 @@ Unlike prior testing iterations that simulated authorization decisions with mock
 - **Unauthorized Execution Rate**: 0.0% (0.0 / 14)
 - **Replay Rejection Rate**: 100.0% (1.0 / 1)
 - **False Recovery Declaration Rate**: 0.0% (0.0 / 1)
-- **Mean Authorization Check Latency**: 441.96 ms
+- **Mean Authorization Check Latency**: 481.94 ms
 
 ---
 
@@ -28,22 +28,22 @@ Unlike prior testing iterations that simulated authorization decisions with mock
 
 | Test ID | Case Type | Security Domain | Description | Expected | Actual | Verdict | Latency (ms) | Audit Logged |
 | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :---: | :---: |
-| `TC-POS-01` | POSITIVE_CONTROL | Valid Lifecycle | Full end-to-end approval, execution, and health restoration | Status: consumed, Action: success, Health: normal, Probe: 200 | Success: True, Health: normal | **PASS** | 4682.67 | Yes |
-| `TC-ATT-01` | ATTACK_CASE | Missing Approval | Consume non-existent ticket ID | ApprovalError | Blocked: Approval ticket does not exist. | **PASS** | 1.58 | Yes |
-| `TC-ATT-02` | ATTACK_CASE | Expired Approval | Consume expired ticket | ApprovalError | Blocked: Approval ticket expired; request a new approval. | **PASS** | 31.20 | Yes |
-| `TC-ATT-03` | ATTACK_CASE | Malformed Approval | Approve with invalid confirmation phrase | ApprovalError | Blocked: Exact confirmation phrase did not match. | **PASS** | 6.98 | Yes |
-| `TC-ATT-04` | ATTACK_CASE | Scope Mismatch | Consume with modified action ID | ApprovalError | Blocked: Approval scope mismatch; no action was authorized. | **PASS** | 14.79 | Yes |
-| `TC-ATT-05` | ATTACK_CASE | Scope Mismatch | Consume with modified target URL | ApprovalError | Blocked: Approval scope mismatch; no action was authorized. | **PASS** | 15.42 | Yes |
-| `TC-ATT-06` | ATTACK_CASE | Scope Mismatch | Consume with modified incident ID | ApprovalError | Blocked: Approval scope mismatch; no action was authorized. | **PASS** | 15.68 | Yes |
-| `TC-ATT-07` | ATTACK_CASE | Replay Attack | Replay consumed approval ticket | ApprovalError | Blocked: Ticket is consumed; a fresh approved ticket is required. | **PASS** | 22.23 | Yes |
-| `TC-ATT-08` | ATTACK_CASE | Rejected Ticket | Consume explicitly rejected ticket | ApprovalError | Blocked: Ticket is rejected; a fresh approved ticket is required. | **PASS** | 14.63 | Yes |
+| `TC-POS-01` | POSITIVE_CONTROL | Valid Lifecycle | Full end-to-end approval, execution, and health restoration | Status: consumed, Action: success, Health: normal, Probe: 200 | Success: True, Health: normal | **PASS** | 4755.12 | Yes |
+| `TC-ATT-01` | ATTACK_CASE | Missing Approval | Consume non-existent ticket ID | ApprovalError | Blocked: Approval ticket does not exist. | **PASS** | 1.75 | Yes |
+| `TC-ATT-02` | ATTACK_CASE | Expired Approval | Consume expired ticket | ApprovalError | Blocked: Approval ticket expired; request a new approval. | **PASS** | 26.33 | Yes |
+| `TC-ATT-03` | ATTACK_CASE | Malformed Approval | Approve with invalid confirmation phrase | ApprovalError | Blocked: Exact confirmation phrase did not match. | **PASS** | 7.21 | Yes |
+| `TC-ATT-04` | ATTACK_CASE | Scope Mismatch | Consume with modified action ID | ApprovalError | Blocked: Approval scope mismatch; no action was authorized. | **PASS** | 16.73 | Yes |
+| `TC-ATT-05` | ATTACK_CASE | Scope Mismatch | Consume with modified target URL | ApprovalError | Blocked: Approval scope mismatch; no action was authorized. | **PASS** | 15.80 | Yes |
+| `TC-ATT-06` | ATTACK_CASE | Scope Mismatch | Consume with modified incident ID | ApprovalError | Blocked: Approval scope mismatch; no action was authorized. | **PASS** | 16.81 | Yes |
+| `TC-ATT-07` | ATTACK_CASE | Replay Attack | Replay consumed approval ticket | ApprovalError | Blocked: Ticket is consumed; a fresh approved ticket is required. | **PASS** | 24.48 | Yes |
+| `TC-ATT-08` | ATTACK_CASE | Rejected Ticket | Consume explicitly rejected ticket | ApprovalError | Blocked: Ticket is rejected; a fresh approved ticket is required. | **PASS** | 15.33 | Yes |
 | `TC-ATT-09` | ATTACK_CASE | Boundary Gate | Execute recovery on remote HTTPS endpoint | RuntimeError / ValueError | Blocked: Remediation and fault injection are restricted to HTTP on localhost. | **PASS** | 0.05 | Yes |
 | `TC-ATT-10` | ATTACK_CASE | Network Safety | Register remote plaintext HTTP target | ValueError | Blocked: Remote monitoring targets must use HTTPS; HTTP is allowed only on localhost. | **PASS** | 0.03 | Yes |
 | `TC-ATT-11` | ATTACK_CASE | Credential Guard | Register target with embedded credentials | ValueError | Blocked: Do not embed credentials in a URL; configure AEGISOPS_BEARER_TOKEN instead. | **PASS** | 0.02 | Yes |
-| `TC-FAIL-01` | ATTACK_CASE | Execution Safety | Execute recovery on unreachable local port | RuntimeError | Aborted safely: The local test service is unreachable. No recovery attempted. | **PASS** | 2015.43 | Yes |
-| `TC-FAIL-02` | ATTACK_CASE | Execution Safety | Execute recovery when no fault is active | RuntimeError | Aborted safely: No injected demo fault is active. No recovery attempted. | **PASS** | 6.49 | Yes |
-| `TC-VERIF-01` | ATTACK_CASE | Recovery Verification | Service remains unhealthy after attempted recovery | Verification rejects: action_result['success'] == False | action_result['success']=False, msg=Reset was requested, but verification failed. | **PASS** | 4042.95 | Yes |
-| `TC-AUDIT-01` | POSITIVE_CONTROL | Audit Trail Integrity | Independent SQLite audit record verification and schema compliance | All 5 event types present with complete JSON payloads | Verified: req=True, grant=True, cons=True, rem=True | **PASS** | 1.46 | Yes |
+| `TC-FAIL-01` | ATTACK_CASE | Execution Safety | Execute recovery on unreachable local port | RuntimeError | Aborted safely: The local test service is unreachable. No recovery attempted. | **PASS** | 2020.60 | Yes |
+| `TC-FAIL-02` | ATTACK_CASE | Execution Safety | Execute recovery when no fault is active | RuntimeError | Aborted safely: No injected demo fault is active. No recovery attempted. | **PASS** | 7.72 | Yes |
+| `TC-VERIF-01` | ATTACK_CASE | Recovery Verification | Service remains unhealthy after attempted recovery | Verification rejects: action_result['success'] == False | action_result['success']=False, msg=Reset was requested, but verification failed. | **PASS** | 4594.36 | Yes |
+| `TC-AUDIT-01` | POSITIVE_CONTROL | Audit Trail Integrity | Independent SQLite audit record verification and schema compliance | All 5 event types present with complete JSON payloads | Verified: req=True, grant=True, cons=True, rem=True | **PASS** | 1.43 | Yes |
 
 ---
 

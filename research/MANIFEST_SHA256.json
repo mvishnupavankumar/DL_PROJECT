@@ -1,6 +1,6 @@
 {
   "manifest_version": "2.0.0",
-  "timestamp_utc": "2026-10-12T06:46:16Z",
+  "timestamp_utc": "2026-10-12T08:44:36Z",
   "project_root": "C:\\DL_PROJECT",
   "artifacts": {
     "lstm_autoencoder.pt": {
@@ -41,7 +41,7 @@
     "SAFETY_EVALUATION.md": {
       "relative_path": "research/SAFETY_EVALUATION.md",
       "size_bytes": 7752,
-      "sha256": "b949df625c249facf3688cab171e24b39157e2d8250522b1c80f87a9b2984a7d"
+      "sha256": "d4e1b41b9113cd3277fb0ef4660a351cff8e8e09762758b47b9ceb1c7213d4d6"
     },
     "FINAL_EXPERIMENT_REPORT.md": {
       "relative_path": "research/FINAL_EXPERIMENT_REPORT.md",
@@ -71,12 +71,12 @@
     "safety_metrics.csv": {
       "relative_path": "research/raw/safety_metrics.csv",
       "size_bytes": 997,
-      "sha256": "9ad5874f22eab059e194443c330eaae66cc3dd2dd95854f2e68ba1f9cf40ed6f"
+      "sha256": "d118d6f221402fbba7537a7ee7ab027f78baa2d85ee49e1aef3fa06f9f0d311c"
     },
     "safety_test_results.csv": {
       "relative_path": "research/raw/safety_test_results.csv",
-      "size_bytes": 3009,
-      "sha256": "cb94e380076c973d37ac6efd5ca3a742b3ec2d0e7873b5d85b049a65569321d9"
+      "size_bytes": 3008,
+      "sha256": "edd67e373f58ffab9c0e64c9072ffa654825bab32261d18717fd4888b3c362cb"
     },
     "REPOSITORY_AUDIT.md": {
       "relative_path": "research/audits/REPOSITORY_AUDIT.md",
@@ -105,13 +105,13 @@
     },
     "detection_confusion_matrices.png": {
       "relative_path": "research/figures/detection_confusion_matrices.png",
-      "size_bytes": 35270,
-      "sha256": "c5627f81c02b9bd375d6f1f53e4ec32655ce10119007082d3340b6bb8ff6436e"
+      "size_bytes": 35301,
+      "sha256": "0784db0ef9c62667f403f243b52fd99c4689f7404de5e207bf73c5699e1f0337"
     },
     "detection_comparison.png": {
       "relative_path": "research/figures/detection_comparison.png",
-      "size_bytes": 21410,
-      "sha256": "1019eba87fec05cd37a5ad82138e2926bc161b4e7b8afc40d954e7a5be06e2ca"
+      "size_bytes": 21442,
+      "sha256": "ad1935fa98d5a48f5d02cc88a09679cf7d87f4931629c6114310c9ae8a060b7b"
     }
   }
 }

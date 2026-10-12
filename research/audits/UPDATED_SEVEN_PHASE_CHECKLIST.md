@@ -17,7 +17,7 @@
 | **Phase 4** | Root-Cause Diagnosis Benchmark (Experiment B) | **VERIFIED COMPLETE** | Factorial design ($7 \times 6 = 42$) reconciled; full-cohort ITT vs. completed cases mapped. |
 | **Phase 5** | Execution Boundary Safety Evaluation (Experiment C) | **VERIFIED COMPLETE** | 16-case taxonomy reconciled (11 attacks, 2 failure checks, 1 verification, 2 controls). |
 | **Phase 6** | Unified Reproducibility Pipeline & Manifest | **VERIFIED COMPLETE** | `run_all.py` executed (exit 0, 53.6s); fresh SHA-256 manifest produced. |
-| **Phase 7** | Manuscript Synthesis & Camera-Ready Publication | **NOT STARTED** | Gated pending user sign-off on evidence reconciliation. |
+| **Phase 7** | Manuscript Synthesis & Camera-Ready Publication | **DRAFT COMPLETED (EVIDENCE-GATE CONDITIONAL; SUBMISSION BLOCKED)** | 14 sections authored; evidence matrix, reference verification, and figure index reconciled; blocked from camera-ready pending external wild-production validation. |
 
 ---
 
@@ -93,6 +93,7 @@
 ---
 
 ### Phase 7: Manuscript Synthesis & Camera-Ready Publication
-- **Status**: **NOT STARTED**
-- **Objective**: Author the camera-ready research paper adhering to scientific integrity, embedding reconciled figures, and citing verified evidence.
-- **Current State**: Intentionally deferred as instructed by the user prompt. Awaits user authorization following the reconciliation gate.
+- **Status**: **DRAFT COMPLETED / CONDITIONAL EVIDENCE GATE CLEARED (SUBMISSION-READY BLOCKED)**
+- **Objective**: Author the comprehensive research paper adhering to scientific integrity, embedding reconciled figures, citing verified evidence, and establishing the final evidence audit gate.
+- **Current State**: Complete research manuscript [`research/paper/AEGISOPS_RESEARCH_PAPER.md`](file:///c:/DL_PROJECT/research/paper/AEGISOPS_RESEARCH_PAPER.md) authored across all 14 mandatory sections. Supported by [`research/paper/MANUSCRIPT_EVIDENCE_MATRIX.md`](file:///c:/DL_PROJECT/research/paper/MANUSCRIPT_EVIDENCE_MATRIX.md), [`research/paper/REFERENCE_VERIFICATION.md`](file:///c:/DL_PROJECT/research/paper/REFERENCE_VERIFICATION.md), [`research/paper/FIGURE_AND_TABLE_INDEX.md`](file:///c:/DL_PROJECT/research/paper/FIGURE_AND_TABLE_INDEX.md), and [`research/paper/FINAL_EVIDENCE_AUDIT.md`](file:///c:/DL_PROJECT/research/paper/FINAL_EVIDENCE_AUDIT.md).
+- **Camera-Ready Blockers Disclosed**: In strict compliance with scientific integrity rules, the manuscript is **not** labeled camera-ready or submission-ready due to four remaining material limitations: (1) synthetic-to-production domain gap (validation on wild telemetry pending); (2) continuous operational false alarms/hour unavailable for batch evaluation; (3) small scenario sample size ($N=6$, power $1-\beta \approx 0.14$) and rubric test-set leakage; (4) containment verified strictly on local application loopback boundary.

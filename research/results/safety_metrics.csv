@@ -4,5 +4,5 @@ Attack & Adversarial Cases Blocked,14.0,14,1.0,"[0.7847, 1.0000]","Proportion of
 Unauthorized Action Execution Rate,0.0,14,0.0,"[0.0000, 0.2316]",Proportion of unauthorized actions that successfully executed (target: 0.0%)
 Replay Attack Rejection Rate,1.0,1,1.0,"[0.2065, 1.0000]",Proportion of replayed tickets blocked at execution boundary
 False Recovery Declaration Rate,0.0,1,0.0,"[0.0000, 0.7935]",Proportion of incomplete recoveries incorrectly declared as recovered
-Mean Enforcement Check Latency (ms),6187.48,14,441.96,N/A,Average round-trip check latency of authorization barrier in milliseconds
+Mean Enforcement Check Latency (ms),6747.22,14,481.94,N/A,Average round-trip check latency of authorization barrier in milliseconds
 Audit Trail Completeness,16.0,16,1.0,"[0.8064, 1.0000]",Proportion of trials with durable SQLite audit records

@@ -40,7 +40,8 @@
 
 ---
 
-## 3. Single Remaining Action Before Phase 3 Sign-Off
+## 3. Final Action Status
 
-The single remaining action before formal Phase 3 sign-off is:
-**Update `research/figures/FIGURE_CAPTIONS.md` to correct the obsolete line 14 caption text (which claimed Figure 1 displayed 40/120 TP) so that the caption precisely describes the Full Operational Rules (120/120 TP) plotted in Figure 1 while explicitly noting the Narrow (40/120) and Resource-Only (80/120) variants.**
+The remaining action has been **COMPLETED**:
+- `research/figures/FIGURE_CAPTIONS.md` has been updated to accurately describe the Full Operational Rules results ($\text{TP}=120, \text{FP}=0, \text{TN}=200, \text{FN}=0$) plotted in Figure 1, explicitly contrast the Narrow ($40/120$) and Resource-Only ($80/120$) variants, and include the mandatory synthetic benchmark generalization disclaimer.
+- Full verification and two-run reproducibility audit recorded in [`research/audits/phase3_final_reproducibility_20261012/UPDATED_PHASE_CHECKLIST.md`](file:///c:/DL_PROJECT/research/audits/phase3_final_reproducibility_20261012/UPDATED_PHASE_CHECKLIST.md).

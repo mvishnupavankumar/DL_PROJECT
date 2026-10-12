@@ -47,13 +47,18 @@ def plot_confusion_matrices(df: pd.DataFrame, out_path: Path):
     yt = df["ground_truth"].values
 
     models = [
-        ("Operational Rules", df["rule_flag"].values, 120, 0, 200, 0, 60, 110),
-        ("Isolation Forest", df["iso_flag"].values, 57, 4, 196, 63, 530, 110),
-        ("LSTM Autoencoder (Frozen)", df["lstm_flag"].values, 120, 2, 198, 0, 60, 420),
-        ("Combined Alert (Rules OR LSTM)", df["combined_flag"].values, 120, 2, 198, 0, 530, 420),
+        ("Full Operational Rules", df["rule_flag"].values, 60, 110),
+        ("Isolation Forest", df["iso_flag"].values, 530, 110),
+        ("LSTM Autoencoder (Frozen)", df["lstm_flag"].values, 60, 420),
+        ("Combined Alert (Rules OR LSTM)", df["combined_flag"].values, 530, 420),
     ]
 
-    for title, y_pred, tp, fp, tn, fn, ox, oy in models:
+    for title, y_pred, ox, oy in models:
+        tp = int(np.sum((yt == 1) & (y_pred == 1)))
+        fp = int(np.sum((yt == 0) & (y_pred == 1)))
+        tn = int(np.sum((yt == 0) & (y_pred == 0)))
+        fn = int(np.sum((yt == 1) & (y_pred == 0)))
+
         prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
         rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
@@ -145,13 +150,26 @@ def plot_comparison_chart(df: pd.DataFrame, out_path: Path):
     # Base line
     draw.line([(origin_x, origin_y), (origin_x + chart_w, origin_y)], fill=(148, 163, 184), width=2)
 
-    # Data items
-    groups = [
-        ("Operational Rules", 1.00, 1.00, 1.00, "FA/hr: 0.0"),
-        ("Isolation Forest", 0.9344, 0.4750, 0.6298, "FA/hr: 14.4"),
-        ("LSTM Autoencoder", 0.9836, 1.00, 0.9917, "FA/hr: 7.2"),
-        ("Combined Alert", 0.9836, 1.00, 0.9917, "FA/hr: 7.2"),
+    # Compute data dynamically from predictions dataframe
+    yt = df["ground_truth"].values
+    n_norm = int(np.sum(yt == 0))
+    groups_config = [
+        ("Full Operational Rules", df["rule_flag"].values),
+        ("Isolation Forest", df["iso_flag"].values),
+        ("LSTM Autoencoder", df["lstm_flag"].values),
+        ("Combined Alert", df["combined_flag"].values),
     ]
+
+    groups = []
+    for name, yp in groups_config:
+        tp = int(np.sum((yt == 1) & (yp == 1)))
+        fp = int(np.sum((yt == 0) & (yp == 1)))
+        fn = int(np.sum((yt == 1) & (yp == 0)))
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+        fa_per_hr = (fp / n_norm) * (3600.0 / 5.0) if n_norm > 0 else 0.0
+        groups.append((name, prec, rec, f1, f"FA/hr: {fa_per_hr:.1f}"))
 
     group_spacing = chart_w / len(groups)
     bar_w = 28

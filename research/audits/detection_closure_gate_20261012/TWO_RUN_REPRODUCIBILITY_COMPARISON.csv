@@ -1,0 +1,7 @@
+Artifact,Run_1_Value,Run_2_Value,Match,Details
+Isolation Forest Threshold,-0.018694,-0.018694,True,Deterministic calibration quantile
+detection_predictions.csv,246e14f8b84b8b89,246e14f8b84b8b89,True,"320 rows, 11 columns identical"
+detection_metrics.csv,ed5775303f74156d,ed5775303f74156d,True,4 methods evaluated
+detection_by_scenario.csv,7bc8400653683465,7bc8400653683465,True,6 scenarios evaluated
+detection_confusion_matrices.png,0784db0ef9c62667,0784db0ef9c62667,True,1000x750 Pillow rendered image
+detection_comparison.png,ad1935fa98d5a48f,ad1935fa98d5a48f,True,950x550 Pillow rendered image
