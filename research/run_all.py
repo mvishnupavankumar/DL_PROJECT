@@ -82,8 +82,10 @@ def main():
         return res.returncode
 
     # Step 2: Run Experiment A (Anomaly Detection)
-    print("\n[Step 2/5] Running Experiment A (Anomaly Detection)...")
+    print("\n[Step 2/5] Running Experiment A (Anomaly Detection & Figure Generation)...")
     run_experiment_a()
+    plot_script = ROOT / "research" / "experiments" / "plot_detection_figures.py"
+    subprocess.run([sys.executable, str(plot_script)], cwd=ROOT, check=True)
 
     # Step 3: Run Experiment B (Root-Cause Diagnosis Rubric Audit)
     print("\n[Step 3/5] Running Experiment B (Diagnosis Rubric Evaluation)...")

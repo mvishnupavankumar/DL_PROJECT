@@ -1,6 +1,6 @@
 {
   "manifest_version": "2.0.0",
-  "timestamp_utc": "2026-10-12T04:34:35Z",
+  "timestamp_utc": "2026-10-12T06:46:16Z",
   "project_root": "C:\\DL_PROJECT",
   "artifacts": {
     "lstm_autoencoder.pt": {
@@ -41,7 +41,7 @@
     "SAFETY_EVALUATION.md": {
       "relative_path": "research/SAFETY_EVALUATION.md",
       "size_bytes": 7752,
-      "sha256": "d3bb037df5489ee2cc88d6c990048e2d4ec1b5c9b19d18ab3c20a41dcc82f9a3"
+      "sha256": "b949df625c249facf3688cab171e24b39157e2d8250522b1c80f87a9b2984a7d"
     },
     "FINAL_EXPERIMENT_REPORT.md": {
       "relative_path": "research/FINAL_EXPERIMENT_REPORT.md",
@@ -70,13 +70,13 @@
     },
     "safety_metrics.csv": {
       "relative_path": "research/raw/safety_metrics.csv",
-      "size_bytes": 996,
-      "sha256": "8e002a56c024b4169413db2f61c6688cb88e1aceecabfaa78ab6521233ef4969"
+      "size_bytes": 997,
+      "sha256": "9ad5874f22eab059e194443c330eaae66cc3dd2dd95854f2e68ba1f9cf40ed6f"
     },
     "safety_test_results.csv": {
       "relative_path": "research/raw/safety_test_results.csv",
-      "size_bytes": 3010,
-      "sha256": "f9e1141bf92cd43b644f240f8d362b82ec50b1f6f542cf1f1a041cab1a27a02e"
+      "size_bytes": 3009,
+      "sha256": "cb94e380076c973d37ac6efd5ca3a742b3ec2d0e7873b5d85b049a65569321d9"
     },
     "REPOSITORY_AUDIT.md": {
       "relative_path": "research/audits/REPOSITORY_AUDIT.md",
@@ -105,13 +105,13 @@
     },
     "detection_confusion_matrices.png": {
       "relative_path": "research/figures/detection_confusion_matrices.png",
-      "size_bytes": 27954,
-      "sha256": "393b348e6eca44ee5bc86e5cbab069620639a142bb57839bced98a5b5dbc2c2c"
+      "size_bytes": 35270,
+      "sha256": "c5627f81c02b9bd375d6f1f53e4ec32655ce10119007082d3340b6bb8ff6436e"
     },
     "detection_comparison.png": {
       "relative_path": "research/figures/detection_comparison.png",
-      "size_bytes": 16879,
-      "sha256": "8e33bdb564f6ead7beb90091711ff4aed3c99a761bcd96c89f51c0abb9ac09e2"
+      "size_bytes": 21410,
+      "sha256": "1019eba87fec05cd37a5ad82138e2926bc161b4e7b8afc40d954e7a5be06e2ca"
     }
   }
 }
