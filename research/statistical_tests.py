@@ -83,3 +83,21 @@ def wilson_score_ci(
     center = (p + (z ** 2) / (2.0 * n)) / denom
     margin = (z * math.sqrt(p * (1.0 - p) / n + (z ** 2) / (4.0 * (n ** 2)))) / denom
     return max(0.0, center - margin), min(1.0, center + margin)
+
+
+def wilcoxon_signed_rank_test(
+    x: list[float],
+    y: list[float],
+    zero_method: str = "wilcox",
+    alternative: str = "two-sided",
+) -> Tuple[float, float]:
+    """
+    Computes the Wilcoxon signed-rank test for paired continuous samples.
+    Under H0, differences are symmetric about 0.
+    For n=6 strictly positive differences, exact two-sided p = 2 * (1/2)^6 = 0.03125.
+    """
+    if len(x) != len(y):
+        raise ValueError(f"Length mismatch: len(x)={len(x)}, len(y)={len(y)}.")
+    res = stats.wilcoxon(x, y, zero_method=zero_method, alternative=alternative)
+    return float(res.statistic), float(res.pvalue)
+

@@ -19,6 +19,7 @@
 | **Phase 5** | Execution Boundary Safety Audit (Experiment C) | **VERIFIED COMPLETE** | 16-case empirical taxonomy evaluated against live FastAPI service; 100% attack containment (11/11 attacks blocked, 0.0% breach rate); atomic SQLite audit logging. | Evaluated strictly on localhost loopback boundary; does not evaluate distributed cluster network policies. |
 | **Phase 6** | Unified Reproducibility Pipeline & Manifest | **VERIFIED COMPLETE** | `research/run_all.py` executes end-to-end (Exit code: 0, 52.7s); SHA-256 manifest produced (`MANIFEST_SHA256.json`); 2-run comparison identical. | Requires `.venv` environment with pre-installed PyTorch and scikit-learn. |
 | **Phase 7** | Camera-Ready Manuscript Synthesis & Submission | **DRAFT COMPLETED (EVIDENCE-GATE CONDITIONAL; SUBMISSION BLOCKED)** | 14 manuscript sections authored in `research/paper/AEGISOPS_RESEARCH_PAPER.md`; verified by `MANUSCRIPT_EVIDENCE_MATRIX.md`, `REFERENCE_VERIFICATION.md`, `FIGURE_AND_TABLE_INDEX.md`, and `FINAL_EVIDENCE_AUDIT.md`. | Blocked from camera-ready pending external wild-production telemetry validation, continuous streaming false-alarm tally, and expanded RCA sample size. |
+| **Phase 8** | Reproducibility Closure & External Validation | **REPRODUCIBILITY CLOSED; PROTOCOL FROZEN; EXTERNAL RUN BLOCKED** | `REPRODUCIBILITY_CLOSURE.md`, `EXTERNAL_DATASET_FEASIBILITY.md`, `EXTERNAL_EVALUATION_PROTOCOL.md`, `PHASE8_FINAL_REPORT.md`. | Threshold discrepancy resolved (-0.018694 deterministic); AnoMod selected; run blocked by Zenodo rate limiting (>10h). |
 
 ---
 
@@ -79,3 +80,26 @@
 - **Objective**: Author final research paper with reconciled figures, citations, and methodological caveats, establishing the final evidence gate.
 - **Current State**: Complete research manuscript [`research/paper/AEGISOPS_RESEARCH_PAPER.md`](file:///c:/DL_PROJECT/research/paper/AEGISOPS_RESEARCH_PAPER.md) authored across all 14 mandatory sections. Backed by [`research/paper/MANUSCRIPT_EVIDENCE_MATRIX.md`](file:///c:/DL_PROJECT/research/paper/MANUSCRIPT_EVIDENCE_MATRIX.md), [`research/paper/REFERENCE_VERIFICATION.md`](file:///c:/DL_PROJECT/research/paper/REFERENCE_VERIFICATION.md), [`research/paper/FIGURE_AND_TABLE_INDEX.md`](file:///c:/DL_PROJECT/research/paper/FIGURE_AND_TABLE_INDEX.md), and [`research/paper/FINAL_EVIDENCE_AUDIT.md`](file:///c:/DL_PROJECT/research/paper/FINAL_EVIDENCE_AUDIT.md).
 - **Submission-Ready Blockers**: In accordance with scientific integrity rules, the manuscript is **not** labeled camera-ready or submission-ready due to four remaining material limitations: (1) synthetic-to-production domain gap (validation on wild telemetry pending); (2) continuous operational false alarms/hour unavailable for batch evaluation; (3) small scenario sample size ($N=6$, power $1-\beta \approx 0.14$) and rubric test-set leakage; (4) containment verified strictly on local application loopback boundary.
+
+### Phase 8: Reproducibility Closure & Manuscript Consistency
+- **Status**: **VERIFIED COMPLETE**
+- **Supporting Evidence**:
+  - `research/audits/PHASE8_CHECKLIST_RECONCILIATION.md`: Baseline reconciliation and cryptographic verification.
+  - `research/audits/MANUSCRIPT_CONSISTENCY_AUDIT.md`: Line-by-line audit correcting stale threshold (-0.018694) and model checkpoint references.
+  - `research/audits/phase8_external_validation/REPRODUCIBILITY_CLOSURE.md`: Isolation Forest threshold discrepancy definitively resolved (-0.018694 deterministic active pipeline threshold vs. +0.089886 un-negated quantile and -0.090333 transcription drift). Two consecutive runs confirmed 100% bit-for-bit identical across all predictions, metrics, and logs.
+  - `research/audits/phase8_external_validation/EXTERNAL_DATASET_FEASIBILITY.md`: Comparative audit selecting AnoMod (MSR 2026, Zenodo DOI: `10.5281/zenodo.18342898`, CC-BY-4.0) over TrainTicket.
+  - `research/audits/phase8_external_validation/EXTERNAL_EVALUATION_PROTOCOL.md`: Pre-registered evaluation protocol defining RQ1-ext and RQ2-ext, 5D container metric mapping, zero-leakage normalization on nominal warmup only, and paired McNemar test.
+  - `research/audits/phase8_external_validation/PHASE8_FINAL_REPORT.md`: Full synthesis documenting the transfer blocker (Zenodo download throttled to ~5.38 KB/s, requiring >10.4 hours transfer) without manufacturing synthetic proxies.
+
+### Phase 9: External Benchmark Validation (AnoMod Execution)
+- **Status**: **NOT STARTED (READY FOR STAGE 2 INGESTION)**
+- **Supporting Evidence & Readiness Citations**:
+  - `research/audits/PHASE9_EXTERNAL_VALIDATION_READINESS.md`: Readiness verification and resumable ingestion architecture.
+- **The 6-Stage External Validation Lifecycle**:
+  - Stage 1: Protocol Pre-Registration & Freezing: **VERIFIED COMPLETE**
+  - Stage 2: Resumable Dataset Download & Integrity Verification: **COMPLETE** (`research/scripts/ingest_anomod.py` executed, archive MD5 and SHA-256 verified)
+  - Stage 3: Archive Extraction & Schema Feature Validation: **COMPLETE** (38,349 items extracted, schema verified in `research/audits/ANOMOD_DATASET_INSPECTION.md`)
+  - Stage 4: Execution of Frozen Anomaly Detection & RCA Protocol: **PENDING**
+  - Stage 5: Independent Verification of Predictions & Statistics: **PENDING**
+  - Stage 6: Manuscript Synthesis & Final Evidence Gate Pass: **PENDING**
+

@@ -1,0 +1,498 @@
+{
+  "audit_title": "AegisOps Experiment D Temporal Eligibility and Trace Coverage Audit",
+  "benchmark": "AnoMod (MSR 2026, Zenodo record 18342898)",
+  "total_scenarios_audited": 26,
+  "sn_scenario_count": 13,
+  "tt_scenario_count": 13,
+  "summary_sn": {
+    "total_metric_intervals": 1069,
+    "total_active_intervals": 703,
+    "total_empty_intervals": 366,
+    "total_eligible_w8_windows": 303,
+    "normal_baseline_eligible_w8_windows": 19
+  },
+  "summary_tt": {
+    "total_metric_intervals": 1002,
+    "total_active_intervals": 190,
+    "total_empty_intervals": 812,
+    "total_eligible_w8_windows": 74,
+    "normal_baseline_eligible_w8_windows": 8
+  },
+  "scenarios": [
+    {
+      "scenario": "Code_Stop_MediaService_20251104_024819_metrics_2025-11-04_03-21-39",
+      "cohort": "SocialNetwork",
+      "metric_rows": 102,
+      "start_time": "2025-11-04 02:56:45",
+      "end_time": "2025-11-04 03:22:00",
+      "duration_seconds": 1515.0,
+      "trace_spans": 1595,
+      "trace_duration_seconds": 1351.315278,
+      "active_15s_intervals": 55,
+      "empty_15s_intervals": 47,
+      "empty_interval_pct": 46.08,
+      "contiguous_active_runs": [
+        37
+      ],
+      "eligible_w8_windows": 30,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Code_Stop_TextService_20251104_022416_metrics_2025-11-04_02-45-14",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-04 02:25:30",
+      "end_time": "2025-11-04 02:45:30",
+      "duration_seconds": 1200.0,
+      "trace_spans": 1540,
+      "trace_duration_seconds": 1046.68586,
+      "active_15s_intervals": 61,
+      "empty_15s_intervals": 20,
+      "empty_interval_pct": 24.69,
+      "contiguous_active_runs": [
+        16,
+        27
+      ],
+      "eligible_w8_windows": 29,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Code_Stop_UserService_20251104_020019_metrics_2025-11-04_02-21-10",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-04 02:01:30",
+      "end_time": "2025-11-04 02:21:30",
+      "duration_seconds": 1200.0,
+      "trace_spans": 2219,
+      "trace_duration_seconds": 1088.873364,
+      "active_15s_intervals": 53,
+      "empty_15s_intervals": 28,
+      "empty_interval_pct": 34.57,
+      "contiguous_active_runs": [
+        32
+      ],
+      "eligible_w8_windows": 25,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "DB_Redis_CacheLimit_HomeTimeline_20251104_004905_metrics_2025-11-04_01-09-27",
+      "cohort": "SocialNetwork",
+      "metric_rows": 80,
+      "start_time": "2025-11-04 00:50:00",
+      "end_time": "2025-11-04 01:09:45",
+      "duration_seconds": 1185.0,
+      "trace_spans": 2205,
+      "trace_duration_seconds": 1050.814809,
+      "active_15s_intervals": 57,
+      "empty_15s_intervals": 23,
+      "empty_interval_pct": 28.75,
+      "contiguous_active_runs": [
+        37
+      ],
+      "eligible_w8_windows": 30,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "DB_Redis_CacheLimit_SocialGraph_20251104_013615_metrics_2025-11-04_01-57-06",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-04 01:37:30",
+      "end_time": "2025-11-04 01:57:30",
+      "duration_seconds": 1200.0,
+      "trace_spans": 2152,
+      "trace_duration_seconds": 992.848348,
+      "active_15s_intervals": 54,
+      "empty_15s_intervals": 27,
+      "empty_interval_pct": 33.33,
+      "contiguous_active_runs": [
+        8,
+        22
+      ],
+      "eligible_w8_windows": 16,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "DB_Redis_CacheLimit_UserTimeline_20251104_011238_metrics_2025-11-04_01-33-04",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-04 01:13:30",
+      "end_time": "2025-11-04 01:33:30",
+      "duration_seconds": 1200.0,
+      "trace_spans": 2050,
+      "trace_duration_seconds": 1062.212819,
+      "active_15s_intervals": 52,
+      "empty_15s_intervals": 29,
+      "empty_interval_pct": 35.8,
+      "contiguous_active_runs": [
+        8,
+        18
+      ],
+      "eligible_w8_windows": 12,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Normal_Baseline_20251103_220228_metrics_2025-11-03_22-22-55",
+      "cohort": "SocialNetwork",
+      "metric_rows": 80,
+      "start_time": "2025-11-03 22:03:30",
+      "end_time": "2025-11-03 22:23:15",
+      "duration_seconds": 1185.0,
+      "trace_spans": 2060,
+      "trace_duration_seconds": 1056.009179,
+      "active_15s_intervals": 57,
+      "empty_15s_intervals": 23,
+      "empty_interval_pct": 28.75,
+      "contiguous_active_runs": [
+        11,
+        11,
+        18
+      ],
+      "eligible_w8_windows": 19,
+      "is_normal_baseline": true
+    },
+    {
+      "scenario": "Perf_CPU_Contention_20251103_222601_metrics_2025-11-03_22-46-44",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-03 22:27:00",
+      "end_time": "2025-11-03 22:47:00",
+      "duration_seconds": 1200.0,
+      "trace_spans": 2098,
+      "trace_duration_seconds": 1073.485842,
+      "active_15s_intervals": 56,
+      "empty_15s_intervals": 25,
+      "empty_interval_pct": 30.86,
+      "contiguous_active_runs": [
+        28
+      ],
+      "eligible_w8_windows": 21,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Perf_Disk_IO_Stress_20251103_231335_metrics_2025-11-03_23-34-08",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-03 23:14:30",
+      "end_time": "2025-11-03 23:34:30",
+      "duration_seconds": 1200.0,
+      "trace_spans": 1870,
+      "trace_duration_seconds": 1056.819599,
+      "active_15s_intervals": 51,
+      "empty_15s_intervals": 30,
+      "empty_interval_pct": 37.04,
+      "contiguous_active_runs": [
+        40
+      ],
+      "eligible_w8_windows": 33,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Perf_Network_Loss_20251103_224954_metrics_2025-11-03_23-10-24",
+      "cohort": "SocialNetwork",
+      "metric_rows": 80,
+      "start_time": "2025-11-03 22:51:00",
+      "end_time": "2025-11-03 23:10:45",
+      "duration_seconds": 1185.0,
+      "trace_spans": 1713,
+      "trace_duration_seconds": 1008.114383,
+      "active_15s_intervals": 47,
+      "empty_15s_intervals": 33,
+      "empty_interval_pct": 41.25,
+      "contiguous_active_runs": [
+        11,
+        18
+      ],
+      "eligible_w8_windows": 15,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Svc_Kill_Media_20251104_000111_metrics_2025-11-04_00-21-42",
+      "cohort": "SocialNetwork",
+      "metric_rows": 80,
+      "start_time": "2025-11-04 00:02:15",
+      "end_time": "2025-11-04 00:22:00",
+      "duration_seconds": 1185.0,
+      "trace_spans": 2209,
+      "trace_duration_seconds": 1007.819945,
+      "active_15s_intervals": 57,
+      "empty_15s_intervals": 23,
+      "empty_interval_pct": 28.75,
+      "contiguous_active_runs": [
+        10,
+        34
+      ],
+      "eligible_w8_windows": 30,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Svc_Kill_SocialGraph_20251104_002506_metrics_2025-11-04_00-45-42",
+      "cohort": "SocialNetwork",
+      "metric_rows": 80,
+      "start_time": "2025-11-04 00:26:15",
+      "end_time": "2025-11-04 00:46:00",
+      "duration_seconds": 1185.0,
+      "trace_spans": 1887,
+      "trace_duration_seconds": 1061.551849,
+      "active_15s_intervals": 46,
+      "empty_15s_intervals": 34,
+      "empty_interval_pct": 42.5,
+      "contiguous_active_runs": [
+        24
+      ],
+      "eligible_w8_windows": 17,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Svc_Kill_UserTimeline_20251103_233717_metrics_2025-11-03_23-57-47",
+      "cohort": "SocialNetwork",
+      "metric_rows": 81,
+      "start_time": "2025-11-03 23:38:15",
+      "end_time": "2025-11-03 23:58:15",
+      "duration_seconds": 1200.0,
+      "trace_spans": 1979,
+      "trace_duration_seconds": 1040.394661,
+      "active_15s_intervals": 57,
+      "empty_15s_intervals": 24,
+      "empty_interval_pct": 29.63,
+      "contiguous_active_runs": [
+        33
+      ],
+      "eligible_w8_windows": 26,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_C_exception_injection_20251103T185917Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 84,
+      "start_time": "2025-11-03 19:01:00",
+      "end_time": "2025-11-03 19:21:45",
+      "duration_seconds": 1245.0,
+      "trace_spans": 4931,
+      "trace_duration_seconds": 252.256,
+      "active_15s_intervals": 15,
+      "empty_15s_intervals": 69,
+      "empty_interval_pct": 82.14,
+      "contiguous_active_runs": [
+        10
+      ],
+      "eligible_w8_windows": 3,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_C_security_check_20251103T183145Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 75,
+      "start_time": "2025-11-03 18:33:30",
+      "end_time": "2025-11-03 18:52:00",
+      "duration_seconds": 1110.0,
+      "trace_spans": 4897,
+      "trace_duration_seconds": 182.487,
+      "active_15s_intervals": 13,
+      "empty_15s_intervals": 62,
+      "empty_interval_pct": 82.67,
+      "contiguous_active_runs": [
+        13
+      ],
+      "eligible_w8_windows": 6,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_C_travel_detail_failure_20251103T192904Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 73,
+      "start_time": "2025-11-03 19:31:00",
+      "end_time": "2025-11-03 19:49:00",
+      "duration_seconds": 1080.0,
+      "trace_spans": 4962,
+      "trace_duration_seconds": 386.863,
+      "active_15s_intervals": 15,
+      "empty_15s_intervals": 58,
+      "empty_interval_pct": 79.45,
+      "contiguous_active_runs": [
+        13
+      ],
+      "eligible_w8_windows": 6,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_D_CONNECTION_POOL_exhaustion_20251103T173702Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 76,
+      "start_time": "2025-11-03 17:38:30",
+      "end_time": "2025-11-03 17:57:15",
+      "duration_seconds": 1125.0,
+      "trace_spans": 4910,
+      "trace_duration_seconds": 386.932,
+      "active_15s_intervals": 16,
+      "empty_15s_intervals": 60,
+      "empty_interval_pct": 78.95,
+      "contiguous_active_runs": [
+        14
+      ],
+      "eligible_w8_windows": 7,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_D_TRANSACTION_timeout_20251103T180430Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 75,
+      "start_time": "2025-11-03 18:06:00",
+      "end_time": "2025-11-03 18:24:30",
+      "duration_seconds": 1110.0,
+      "trace_spans": 4896,
+      "trace_duration_seconds": 176.395,
+      "active_15s_intervals": 12,
+      "empty_15s_intervals": 63,
+      "empty_interval_pct": 84.0,
+      "contiguous_active_runs": [
+        12
+      ],
+      "eligible_w8_windows": 5,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_D_cachelimit_20251103T170657Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 82,
+      "start_time": "2025-11-03 17:09:30",
+      "end_time": "2025-11-03 17:29:45",
+      "duration_seconds": 1215.0,
+      "trace_spans": 4914,
+      "trace_duration_seconds": 183.773,
+      "active_15s_intervals": 14,
+      "empty_15s_intervals": 68,
+      "empty_interval_pct": 82.93,
+      "contiguous_active_runs": [
+        14
+      ],
+      "eligible_w8_windows": 7,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_P_CPU_preserve_20251103T140939Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 97,
+      "start_time": "2025-11-03 14:11:00",
+      "end_time": "2025-11-03 14:35:00",
+      "duration_seconds": 1440.0,
+      "trace_spans": 5000,
+      "trace_duration_seconds": 882.631,
+      "active_15s_intervals": 15,
+      "empty_15s_intervals": 82,
+      "empty_interval_pct": 84.54,
+      "contiguous_active_runs": [
+        13
+      ],
+      "eligible_w8_windows": 6,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_P_DISKIO_preserve_20251103T144212Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 63,
+      "start_time": "2025-11-03 14:43:30",
+      "end_time": "2025-11-03 14:59:00",
+      "duration_seconds": 930.0,
+      "trace_spans": 5000,
+      "trace_duration_seconds": 406.461,
+      "active_15s_intervals": 16,
+      "empty_15s_intervals": 47,
+      "empty_interval_pct": 74.6,
+      "contiguous_active_runs": [
+        13
+      ],
+      "eligible_w8_windows": 6,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_P_NETLOSS_preserve_20251103T150613Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 65,
+      "start_time": "2025-11-03 15:07:30",
+      "end_time": "2025-11-03 15:23:30",
+      "duration_seconds": 960.0,
+      "trace_spans": 4895,
+      "trace_duration_seconds": 191.054,
+      "active_15s_intervals": 14,
+      "empty_15s_intervals": 51,
+      "empty_interval_pct": 78.46,
+      "contiguous_active_runs": [
+        14
+      ],
+      "eligible_w8_windows": 7,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_S_DNSFAIL_preserve_no_order_20251103T153116Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 63,
+      "start_time": "2025-11-03 15:32:45",
+      "end_time": "2025-11-03 15:48:15",
+      "duration_seconds": 930.0,
+      "trace_spans": 4922,
+      "trace_duration_seconds": 180.277,
+      "active_15s_intervals": 13,
+      "empty_15s_intervals": 50,
+      "empty_interval_pct": 79.37,
+      "contiguous_active_runs": [
+        13
+      ],
+      "eligible_w8_windows": 6,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_S_HTTPABORT_preserve_20251103T155524Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 132,
+      "start_time": "2025-11-03 15:56:15",
+      "end_time": "2025-11-03 16:29:00",
+      "duration_seconds": 1965.0,
+      "trace_spans": 4960,
+      "trace_duration_seconds": 1280.64,
+      "active_15s_intervals": 17,
+      "empty_15s_intervals": 115,
+      "empty_interval_pct": 87.12,
+      "contiguous_active_runs": [
+        8
+      ],
+      "eligible_w8_windows": 1,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Lv_S_KILLPOD_preserve_20251103T163624Z_em",
+      "cohort": "TrainTicket",
+      "metric_rows": 65,
+      "start_time": "2025-11-03 16:37:15",
+      "end_time": "2025-11-03 16:53:15",
+      "duration_seconds": 960.0,
+      "trace_spans": 5000,
+      "trace_duration_seconds": 380.735,
+      "active_15s_intervals": 15,
+      "empty_15s_intervals": 50,
+      "empty_interval_pct": 76.92,
+      "contiguous_active_runs": [
+        13
+      ],
+      "eligible_w8_windows": 6,
+      "is_normal_baseline": false
+    },
+    {
+      "scenario": "Normal_case_em_20251103T134716Z",
+      "cohort": "TrainTicket",
+      "metric_rows": 52,
+      "start_time": "2025-11-03 13:48:45",
+      "end_time": "2025-11-03 14:01:30",
+      "duration_seconds": 765.0,
+      "trace_spans": 4688,
+      "trace_duration_seconds": 202.72,
+      "active_15s_intervals": 15,
+      "empty_15s_intervals": 37,
+      "empty_interval_pct": 71.15,
+      "contiguous_active_runs": [
+        15
+      ],
+      "eligible_w8_windows": 8,
+      "is_normal_baseline": true
+    }
+  ]
+}

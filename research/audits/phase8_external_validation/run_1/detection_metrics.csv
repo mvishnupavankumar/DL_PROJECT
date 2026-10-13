@@ -1,0 +1,5 @@
+method,TP,FP,TN,FN,precision,precision_ci95_low,precision_ci95_high,recall,recall_ci95_low,recall_ci95_high,f1_score,pr_auc,false_alarm_rate,false_alarms_per_hour,episode_detection_rate
+Operational Rules,120,0,200,0,1.0,0.969,1.0,1.0,0.969,1.0,1.0,1.0,0.0,0.0,1.0
+Isolation Forest,57,4,196,63,0.9344,0.8432,0.9742,0.475,0.3878,0.5637,0.6298,0.9056,0.02,14.4,0.475
+LSTM Autoencoder (Frozen),120,2,198,0,0.9836,0.9422,0.9955,1.0,0.969,1.0,0.9917,1.0,0.01,7.2,1.0
+Combined Alert (Rules OR LSTM),120,2,198,0,0.9836,0.9422,0.9955,1.0,0.969,1.0,0.9917,N/A,0.01,7.2,1.0

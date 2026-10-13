@@ -12,7 +12,7 @@ To adhere strictly to research integrity standards, every statistical test was p
 
 | Experiment | Primary Outcome | Independent Unit of Analysis | Sample Size ($N$) | Statistical Test | Hypothesis Tested |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Experiment A (Detection)** | Episode-level Fault Detection (Recall) | Independent Fault Episode (20 replicates x 6 fault classes) | $N = 120$ incident episodes | Paired McNemar's Test (Exact Binomial) | $H_0$: LSTM Autoencoder and Isolation Forest have identical episode-level sensitivity. |
+| **Experiment A (Detection)** | Episode-level Fault Detection (Recall) | Synthetic Fault Episode ($N = 120$, clustered in 6 classes) | $N = 120$ incident episodes | Paired McNemar's Test (Descriptive) & Wilcoxon Signed-Rank Test | $H_0$: LSTM Autoencoder and Isolation Forest have identical sensitivity. |
 | **Experiment A (False Alarms)** | False Alarm Rate on Steady-State Data | Independent 24-step Normal Window (seed=2026) | $N = 200$ normal windows | McNemar's Discordant Test | $H_0$: LSTM Autoencoder and Isolation Forest have identical false alarm probabilities. |
 | **Experiment B (Diagnosis)** | Top-1 Root-Cause Diagnostic Accuracy | Distinct Architectural Failure Scenario | $N = 6$ ground-truth incidents | Fisher's Exact / Descriptive Point Estimates | $H_0$: Multi-Agent architecture has equal diagnostic accuracy to Single-Agent baseline. |
 | **Experiment C (Safety)** | Authorization Enforcement Rate | Independent Adversarial Security Boundary Trial | $N = 3$ authorization attacks | Wilson Score Binomial Confidence Interval | $H_0$: Authorization enforcement rate $\le 95.0\%$. |
@@ -30,15 +30,31 @@ Because both models were evaluated on the **identical 120 held-out incident epis
 | **LSTM Autoencoder Missed (0)** | $c = 0$ | $d = 0$ | **0** (0.0%) |
 | **Total** | **57** (47.5%) | **63** (52.5%) | **120** |
 
-### B. Hypothesis Testing & Effect Size
+### B. Window-Level Hypothesis Testing & Caveat
 - **Discordant Pairs**: $b = 63$ (LSTM detected, IsoForest missed), $c = 0$ (IsoForest detected, LSTM missed).
 - **Test Statistic**: $\chi^2_{\text{continuity}} = \frac{(|b - c| - 1)^2}{b + c} = 61.02$
 - **Exact Two-Sided Binomial p-value**: $p = 2 \times (0.5)^{63} = 2.168e-19$
-  Since $p < 0.001$, we **reject the null hypothesis** at $\alpha = 0.01$. The LSTM Autoencoder demonstrates statistically superior episode-level recall compared to the Isolation Forest baseline.
 - **Effect Size (Paired Absolute Difference)**: $\Delta_{\text{Recall}} = +0.5250$ (95% CI: [+0.4357, +0.6143])
-- **Odds Ratio**: $\text{OR} = b / c \to \infty$.
+- **Critical Independence Caveat**: The 120 incident windows are not fully independent observations; they are clustered (20 replicates $\times$ 6 architectural failure scenarios). While the window-level McNemar test is mathematically exact for the 120 evaluated windows, its small $p$-value ($p < 10^{-18}$) reflects sharp separation on controlled synthetic inputs and must NOT be interpreted as cross-system generalization.
 
-### C. Normal False Alarms Comparison ($N = 200$ Normal Windows)
+### C. Cluster-Adjusted Scenario-Level Analysis (Wilcoxon Signed-Rank Test)
+To eliminate intra-cluster replicate correlation, performance is aggregated across the 6 distinct architectural failure scenarios:
+
+| Scenario ID | Name / Fault Archetype | LSTM Recall ($N=20$) | IsoForest Recall ($N=20$) | Paired Difference ($\Delta$) |
+| :--- | :--- | :---: | :---: | :---: |
+| **INC-1001** | Payment API pool exhaustion | 1.00 (20/20) | 0.40 (8/20) | **+0.60** |
+| **INC-1002** | Customer DB unavailable | 1.00 (20/20) | 0.25 (5/20) | **+0.75** |
+| **INC-1003** | Server CPU saturation | 1.00 (20/20) | 0.85 (17/20) | **+0.15** |
+| **INC-1004** | Storage disk capacity exhausted | 1.00 (20/20) | 0.75 (15/20) | **+0.25** |
+| **INC-1005** | Auth token validation failures | 1.00 (20/20) | 0.40 (8/20) | **+0.60** |
+| **INC-1006** | Service-to-service timeouts | 1.00 (20/20) | 0.20 (4/20) | **+0.80** |
+
+- **Paired Differences**: All $6$ differences are strictly positive (zero differences $= 0$). Tied absolute differences occur at $|+0.60|$ (ranks 3 and 4, average rank 3.5).
+- **Wilcoxon Statistic**: $W = 0.0$ (sum of negative ranks $W^- = 0.0$, sum of positive ranks $W^+ = 21.0$).
+- **Exact Two-Sided p-value**: $p = 2 \times (1/2)^6 = 0.03125$.
+- **Interpretation & Limitations**: The performance advantage of the LSTM Autoencoder remains statistically significant after cluster adjustment ($p = 0.03125 < 0.05$). However, with $N = 6$ scenarios, $p = 0.03125$ is the absolute minimum attainable two-sided $p$-value ($2/64$). Statistical power is low ($1 - \beta \approx 0.14$), confirming the necessity of large-scale external validation.
+
+### D. Normal False Alarms Comparison ($N = 200$ Normal Windows)
 - **Observed False Alarms**:
   - LSTM Autoencoder: 2 / 200 (1.0%, Wilson 95% CI: [0.003, 0.036]) -> 7.2 false alarms / hour.
   - Isolation Forest: 4 / 200 (2.0%, Wilson 95% CI: [0.008, 0.050]) -> 14.4 false alarms / hour.

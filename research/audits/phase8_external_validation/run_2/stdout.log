@@ -1,0 +1,9 @@
+======================================================================
+EXPERIMENT A: ANOMALY DETECTION EVALUATION
+======================================================================
+Loaded LSTM Autoencoder (Threshold: 0.709399)
+Calibrated Isolation Forest Threshold (99th pct on val): -0.018694
+Held-out test set: 200 normal windows, 120 incident windows
+Saved raw test predictions: C:\DL_PROJECT\research\results\detection_predictions.csv
+Saved detection metrics: C:\DL_PROJECT\research\results\detection_metrics.csv
+Saved scenario breakdown: C:\DL_PROJECT\research\results\detection_by_scenario.csv

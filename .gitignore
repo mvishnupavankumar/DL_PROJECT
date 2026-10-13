@@ -12,3 +12,6 @@ models/live_lstm_autoencoder.json
 *.sqlite
 *.sqlite3-shm
 *.sqlite3-wal
+
+# External Datasets (Third-party benchmark archives and extracted telemetry)
+/data/external/anomod/

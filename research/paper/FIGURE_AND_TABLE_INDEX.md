@@ -45,7 +45,7 @@ This index validates every figure, table, caption, and quantitative entry in the
 | **Narrow Rules** (lat $\ge$ 1000, mem $\ge$ 95) | 40 | 0 | 200 | 80 | 33.33% | 100.00% | 100.00% | 0.5000 | 0.00% | UNAVAILABLE | 0.3333 | 0.01 ms |
 | **Resource-Only Rules** (+ cpu $\ge$ 90, disk $\ge$ 95) | 80 | 0 | 200 | 40 | 66.67% | 100.00% | 100.00% | 0.8000 | 0.00% | UNAVAILABLE | 0.6667 | 0.01 ms |
 | **Full Operational Rules** (+ error $\ge$ 0.5%) | 120 | 0 | 200 | 0 | 100.00% | 100.00% | 100.00% | 1.0000 | 0.00% | UNAVAILABLE | 1.0000 | 0.01 ms |
-| **Isolation Forest** (Calibrated $\tau = -0.090333$) | 57 | 4 | 196 | 63 | 47.50% | 93.44% | 98.00% | 0.6298 | 2.00% | UNAVAILABLE | 0.9056 | 1.84 ms |
+| **Isolation Forest** (Calibrated $\tau = -0.018694$) | 57 | 4 | 196 | 63 | 47.50% | 93.44% | 98.00% | 0.6298 | 2.00% | UNAVAILABLE | 0.9056 | 1.84 ms |
 | **LSTM Autoencoder** (Calibrated $\tau = 0.709399$) | 120 | 2 | 198 | 0 | 100.00% | 98.36% | 99.00% | 0.9917 | 1.00% | UNAVAILABLE | 0.9998 | 0.17 ms |
 | **Combined Alert** (Full Rules $\lor$ LSTM AE) | 120 | 2 | 198 | 0 | 100.00% | 98.36% | 99.00% | 0.9917 | 1.00% | UNAVAILABLE | N/A | 0.18 ms |
 
@@ -116,9 +116,9 @@ This index validates every figure, table, caption, and quantitative entry in the
 
 | Statistical Test | Comparison Target | Sample Unit ($N$) | Test Statistic | Exact $p$-Value | Effect Size / Interval | Methodological Validity Notes |
 | :--- | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Exact McNemar Test** | LSTM Autoencoder vs Isolation Forest | $N = 120$ paired fault windows | $b = 63, c = 0$ | $p = 2.168 \times 10^{-19}$ | $\Delta = +0.5250$ | Assumes cross-window independence. Valid at window unit of analysis. |
+| **Exact McNemar Test** | LSTM Autoencoder vs Isolation Forest | $N = 120$ paired fault windows | $b = 63, c = 0$ | $p = 2.168 \times 10^{-19}$ | $\Delta = +0.5250$ | Descriptive at window level ($N=120$). Caveat: Clustered within 6 scenarios (20 replicates each). |
 | **Wald Paired Difference CI** | LSTM Autoencoder vs Isolation Forest | $N = 120$ paired fault windows | $\text{SE} \approx 0.0456$ | N/A | $95\%\ \text{CI}: [+0.4357, +0.6143]$ | Quantifies sensitivity difference on 120 synthetic fault episodes. |
-| **Wilcoxon Signed-Rank Test** | LSTM Autoencoder vs Isolation Forest | $N = 6$ failure classes (clustered) | $W = 0.0$ | $p = 0.03125$ | $\Delta_{\text{median}} = +0.525$ | Cluster-adjusted test treating scenarios as primary sampling unit. Statistically significant at $\alpha = 0.05$. |
+| **Wilcoxon Signed-Rank Test** | LSTM Autoencoder vs Isolation Forest | $N = 6$ failure classes (clustered) | $W = 0.0$ | $p = 0.03125$ | $\Delta_{\text{median}} = +0.600$ | Cluster-adjusted test treating scenarios as primary sampling unit. Statistically significant at $\alpha = 0.05$ (minimum possible $p = 2/64$). |
 | **Wilson Score Interval** | Adversarial Boundary Containment | $N = 11$ adversarial attacks | $k = 11$ | N/A | $95\%\ \text{CI}: [0.7412, 1.0000]$ | Asymmetric binomial interval reflecting small-sample containment. |
 
 *Status*: **VERIFIED & CONCORDANT**. Both window-level and cluster-adjusted tests reported with full transparency.
