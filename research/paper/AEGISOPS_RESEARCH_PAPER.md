@@ -1,816 +1,282 @@
-# AegisOps: An Integrated Framework for Multivariate Anomaly Detection, Multi-Agent Root-Cause Diagnosis, and Approval-Gated Recovery in Microservice Operations
+# AegisOps: An Evidence-Audited Workflow for Anomaly Detection, Diagnosis, and Approval-Gated Local Recovery
 
-**Author**: AegisOps Research & Engineering Group  
-**Affiliation**: Systems and Machine Learning Laboratory  
-**Date**: October 2026  
-**Artifact Repository**: `https://github.com/mvishnupavankumar/DL_PROJECT` (Audited Baseline Commit: `ec83d2fe501ba50f56839944ba7bd6347544f585`, Branch: `main`)  
-**Status**: Research Manuscript — Systems & Empirical Machine Learning Track  
-
----
+**Author:** Author confirmation required  
+**Affiliation:** Affiliation confirmation required  
+**Venue:** Venue confirmation required  
+**Manuscript date:** Date confirmation required  
+**Status:** Internal supervisor-review manuscript source; not a publication-ready claim.
 
 ## Abstract
 
-Modern cloud-native microservice architectures generate voluminous, high-dimensional telemetry streams that render manual incident triage inefficient and error-prone. While machine learning techniques—particularly deep learning autoencoders and ensemble isolation methods—have demonstrated high theoretical sensitivity in detecting telemetry anomalies, production systems frequently falter during the subsequent phases of the incident lifecycle: identifying causal mechanisms, authorizing remediation safely, and verifying operational recovery. In this paper, we present **AegisOps**, an end-to-end operational framework integrating: (1) a dual-gate anomaly detector combining deterministic operational threshold rules with a frozen multivariate Long Short-Term Memory Autoencoder (LSTM AE); (2) a multi-agent diagnostic orchestration pipeline that contextualizes telemetry signals into structured root-cause hypotheses; and (3) an approval-gated remediation engine enforcing two-man-rule cryptographic validation, bounded execution barriers, and automated post-action verification.
+Operational incident handling links detection, interpretation, authorization, action, and verification, yet evaluations can conflate component presence with evidence of operational performance. AegisOps is an evidence-audited prototype integrating deterministic detection rules, a frozen Long Short-Term Memory (LSTM) autoencoder, configurable diagnosis components, an approval record, a restricted local demonstration recovery action, and event persistence. This paper reports only evidence supported by controlling artifacts. On a constructed synthetic benchmark of 320 telemetry windows (200 nominal and 120 fault windows across six scenarios), the frozen LSTM recorded 120 true positives, 2 false positives, 198 true negatives, and 0 false negatives (precision 0.9836, recall 1.0000, F1 0.9917). The recorded Isolation Forest comparator recorded 57, 4, 196, and 63, respectively. These are synthetic-window results with repeated scenario structure, not live operational rates. A seven-configuration diagnosis pilot contains 42 records across six hand-authored cases; strict intent-to-treat (ITT) reporting retains two `UNASSESSABLE` API omissions. A deterministic rule baseline achieved 6/6 strict matches, so the pilot does not support LLM or multi-agent superiority. In a bounded 16-case local harness, 11/11 specified attack cases were contained and 16/16 cases had complete SQLite audit trails. The audited live session contains 200 bootstrap-rule-mode records and 200 null LSTM scores; it demonstrates collection, persistence, fallback-rule operation, and logging, not live-LSTM performance. AnoMod archive provenance is present, but contract-valid external predictions and metrics are unavailable. The defensible contribution is an evidence-audited engineering integration and evaluation of a bounded anomaly-detection, diagnosis, and approval-gated local recovery workflow.
 
-We evaluate AegisOps across three empirical benchmarks. In **Experiment A** ($N = 320$ synthetic sequence windows; 200 normal steady-state, 120 fault episodes across six failure classes), the LSTM Autoencoder achieved 100.0% episode recall ($120/120$, 95% Wilson CI $[0.9690, 1.0000]$), 98.36% precision ($120/122$), an F1-score of 0.9917, and a continuous PR-AUC of 0.9998, significantly outperforming an Isolation Forest baseline (47.50% recall, 93.44% precision, F1 of 0.6298; descriptive window-level paired exact McNemar test $p = 2.168 \times 10^{-19}$; exploratory cluster-adjusted scenario-level Wilcoxon signed-rank test $W = 0.0, p = 0.03125$). We evaluate three distinct operational rule baselines: Narrow Rules (33.33% recall), Resource-Only Rules (66.67% recall), and Full Operational Rules with error-rate thresholding (100.0% recall). We report a False-Positive Window Rate ($\text{FPR}_{\text{window}}$) of 1.00% for the LSTM AE, 2.00% for Isolation Forest, and 0.00% for rules; operational false alarms per hour are explicitly classified as unavailable for non-streaming batch windows. In **Experiment B** ($N = 6$ canonical incident scenarios across seven diagnostic configurations), multi-agent diagnostic pipelines utilizing deep learning context achieved 83.33% Intent-to-Treat (ITT) strict causal match ($5/6$) and 100.0% lenient match ($6/6$) under live Large Language Model (LLM) execution (Groq Llama-3-70b), compared to 66.67% strict match without deep learning signals. However, a deterministic rule-based heuristic achieved 100.0% strict accuracy ($6/6$) in 0.01 ms; we do not claim LLM or multi-agent superiority over classical expert rules on this 6-scenario suite, and we explicitly disclose the small sample size ($N = 6$, statistical power $1 - \beta \approx 0.14$) and rubric keyword overlap. In **Experiment C** ($N = 16$ safety evaluations), the approval gate blocked 100.0% of adversarial boundary violations ($11/11$, 95% Wilson CI $[0.7412, 1.0000]$), successfully aborted two precondition failures, rejected an unconfirmed recovery probe, and completed two authorized positive controls with full SQLite audit trail persistence. 
+## Keywords
 
-We analyze key empirical caveats: on the synthetic detection benchmark, combined dual-gate alerting yielded classification outcomes identical to the standalone LSTM Autoencoder (zero additive statistical sensitivity); live LLM diagnostic execution exhibited network latency and API timeouts; and security guarantees apply strictly within the local application execution boundary. All code, datasets, evaluation scripts, and SHA-256 manifests are open-source and reproducibly verifiable.
+AIOps; anomaly detection; LSTM autoencoder; incident diagnosis; human approval; reproducibility; microservices; safety boundary.
 
----
+## 1. Introduction and Problem Motivation
 
-## 1. Introduction and Motivation
+An incident-management workflow is credible only when its stages can be distinguished and audited. Detecting an unusual telemetry pattern is not the same as identifying its cause; proposing a remediation is not the same as being authorized to execute it; and recording an action is not the same as proving production safety. These distinctions matter especially for systems combining machine-learned anomaly scores, deterministic checks, language-model-mediated diagnosis, and control actions.
 
-Cloud-native microservice architectures, container orchestration environments, and distributed serverless topologies provide unprecedented scalability and elasticity. However, this architectural decentralization fundamentally complicates operational observability and reliability engineering. A single distributed transaction may traverse dozens of loosely coupled services, ephemeral containers, message brokers, and managed databases. Consequently, infrastructure faults—such as memory leaks, thread pool exhaustion, cascading downstream HTTP failures, and configuration drifts—manifest as complex, non-linear perturbations across multi-dimensional metric streams.
+The practical problem addressed here is how to represent and evaluate a bounded workflow that connects these stages without allowing evidence from one stage to be promoted into a claim about another. AegisOps integrates telemetry collection and persistence, deterministic rules, optional frozen-model inference, diagnosis workflow components, an approval-ticket record, a restricted local action, and post-action verification persistence. Its evidence is heterogeneous: the detection result is synthetic, the diagnosis study is a small hand-authored pilot, the approval result is a finite local harness, and the live session lacks model scores and independent labels.
 
-### 1.1 Operational Detection and Diagnosis Challenges
+Accordingly, this manuscript treats evidence boundaries as first-class results. It does not present a novel LSTM architecture, causal diagnosis, LLM or multi-agent superiority, authenticated dual authorization, NIST compliance, production-security certification, autonomous production recovery, live-LSTM accuracy, operational false-alarm rates, or external generalization. Each quantitative statement is linked to a current controlling artifact, and unavailable evidence is reported as unavailable rather than interpreted as success or failure.
 
-Traditionally, Site Reliability Engineering (SRE) teams have relied upon static threshold alerting (e.g., triggering alerts when CPU utilization exceeds 90% or request latency exceeds 1,000 milliseconds). While computationally negligible and conceptually transparent, static threshold rules suffer from two fundamental operational pathologies:
-1. **Alert Fatigue**: Transient spikes, routine batch processing, and non-critical traffic surges trigger high volumes of false positive alerts, degrading operator responsiveness.
-2. **Detection Blindness**: Subtle, correlated anomalies—such as a memory leak that slowly degrades database query throughput while keeping CPU utilization moderate—remain invisible to static univariate checks until catastrophic service failure occurs.
+## 2. Research Gap, Objectives, Questions, and Contributions
 
-To address these limitations, multivariate anomaly detection algorithms, including tree-based partitioning (e.g., Isolation Forests) and deep generative networks (e.g., Long Short-Term Memory Autoencoders), have been widely investigated. These models capture temporal autocorrelations and cross-metric interdependencies, flagging anomalies based on multidimensional reconstruction error or path length isolation. 
+Prior work establishes individual ingredients for time-series anomaly detection, microservice diagnosis, and role-oriented agent workflows, but it does not itself validate this particular integration or its operating boundary. The bounded gap addressed by AegisOps is not a claim of algorithmic novelty. It is the absence of an evidence-audited account that separates implemented workflow stages, evaluates the available synthetic/pilot/local-harness evidence, and preserves the limits of a partially observed live and external-evaluation pathway.
 
-However, detecting an anomaly represents only the first milestone in the incident lifecycle. In real-world enterprise environments, automated monitoring platforms face four major bottlenecks:
-- **Diagnostic Ambiguity**: An anomaly score indicates *that* an outage is unfolding, but rarely clarifies *why* or *what* component initiated the failure.
-- **Remediation Risk**: Fully autonomous remediation ("self-healing") introduces substantial operational risk. Without cryptographic safeguards, authorization boundaries, and human-in-the-loop oversight, autonomous remediation scripts can execute catastrophic actions, succumb to Server-Side Request Forgery (SSRF), or trigger destructive commands.
-- **Verification Neglect**: Systems often assume that dispatching a remediation command resolves the incident without conducting rigorous, post-action health verification.
-- **Reproducibility Deficits**: In published literature, AIOps benchmarks frequently suffer from data leakage, conflated evaluation denominators, unverified synthetic metrics, or unreleased models and codebases.
+The objectives are to: (i) document the implemented end-to-end workflow and its trust boundaries; (ii) reproduce available controlled results from current raw records; (iii) state hypotheses and denominators that match the tests performed; and (iv) identify evidence required before stronger operational or external claims could be made.
 
-```
-+---------------+      +------------------+      +---------------+      +------------------+
-| Anomaly Event | ---> | Causal Diagnosis | ---> | Human-in-Loop | ---> | Closed-Loop Post |
-|   Detection   |      | & Triage Context |      | Authorization |      |   Verification   |
-+---------------+      +------------------+      +---------------+      +------------------+
-```
+| Research question | Controlling evidence | Bounded answer |
+| --- | --- | --- |
+| RQ1. How do recorded detectors compare on the defined synthetic cohort? | `research/raw/detection_predictions.csv` | Confusion-derived results are available for Full Rules, Isolation Forest, frozen LSTM, and Combined OR on 320 constructed windows. |
+| RQ2. Does the recorded OR combination add synthetic sensitivity beyond the frozen LSTM? | Same raw prediction record | No. Combined OR has the same recorded confusion matrix as the frozen LSTM. |
+| RQ3. What does the diagnosis pilot show across its seven configurations? | `research/raw/diagnosis_predictions.csv` | It records configuration-specific six-case outcomes; strict ITT retains two omissions as zero-score `UNASSESSABLE` outcomes. |
+| RQ4. What local approval boundary was tested? | `research/raw/safety_test_results.csv` | Eleven specified attack cases were contained and 16 cases had audit records in the bounded local harness. |
+| RQ5. What operational and external evidence is currently available? | `research/exports/telemetry.csv`; Phase 1-3 audits | Live collection/logging and AnoMod provenance are available; live-LSTM performance and contract-valid external metrics are not. |
 
-### 1.2 Research Questions and Hypotheses
+The contribution is fourfold, with scope deliberately constrained:
 
-The primary objective of the AegisOps project is to develop and empirically evaluate an end-to-end, reproducible framework bridging the gap between multivariate deep anomaly detection, multi-agent root-cause diagnosis, and policy-enforced, approval-gated operational recovery.
+1. An audited engineering integration of anomaly detection, diagnosis, approval recording, restricted local recovery, and verification persistence.
+2. A frozen-model contract and synthetic detection evaluation traceable to current raw records.
+3. A diagnosis-pilot and local-safety-harness account that preserves omissions, denominators, and non-production boundaries.
+4. An explicit provenance and limitations framework that distinguishes implemented functionality, evaluated behavior, observed live operation, and future design goals.
 
-We investigate four specific research questions:
-- **RQ1 (Detection Efficacy)**: *Does a multivariate temporal LSTM Autoencoder significantly outperform static threshold rules and non-temporal isolation baselines in detecting multi-class microservice degradation episodes while maintaining acceptable false-positive window rates?*
-- **RQ2 (Combined Alerting Utility)**: *Does a dual-gate architecture combining deterministic operational rules with deep neural reconstruction error provide measurable sensitivity or operational resilience advantages over stand-alone models?*
-- **RQ3 (Diagnostic Contribution of Deep Telemetry)**: *Does the explicit injection of deep learning temporal reconstruction traces into multi-agent diagnostic workflows improve root-cause classification accuracy and confidence calibration compared to log analysis alone?*
-- **RQ4 (Safety Boundary Enforcement)**: *Can a transactional two-man-rule approval engine and strict execution boundary effectively prevent unauthorized remediation actions, adversarial parameter tampering, and unverified incident closures?*
+These contributions do not establish that the workflow is novel, superior, causal, generalizable, or production-ready.
 
-### 1.3 Key Contributions and Defensible Claims
+## 3. Related Work and Literature Survey
 
-This manuscript provides the following verified scientific and engineering contributions:
-1. **Integrated Framework Architecture**: We present AegisOps, an open-source, operational framework integrating temporal multivariate anomaly detection, multi-agent LLM root-cause diagnosis, transactional two-man-rule human authorization, and automated post-action health verification.
-2. **Empirical Multi-Model Detection Benchmark**: We conduct a rigorous comparative evaluation ($N = 320$ sequence windows; 200 normal, 120 fault episodes across six failure classes) comparing three distinct static rule definitions (Narrow, Resource-Only, Full Operational Rules), Isolation Forest, and a frozen PyTorch LSTM Autoencoder. We demonstrate that the LSTM AE achieves 100.0% recall ($120/120$) with a 1.00% false-positive window rate, outperforming Isolation Forest (47.50% recall) with exact statistical verification ($p = 2.168 \times 10^{-19}$ window-level; $p = 0.03125$ scenario-level).
-3. **Intent-to-Treat Multi-Agent Diagnosis Evaluation**: We evaluate seven diagnostic configurations across six canonical incident scenarios ($N = 6$), contrasting deterministic offline heuristics against live Groq LLM pipelines. We demonstrate that deep learning context improves strict diagnostic accuracy from 66.67% to 83.33% under live LLM execution while rigorously disclosing that deterministic rules achieve 100.0% accuracy in 0.01 ms, and accounting for API failure modes, rubric keyword leakage, and small-sample power limitations.
-4. **Adversarial Safety and Authorization Verification**: We evaluate a 16-test safety suite comprising eleven adversarial attacks (replay, TTL expiry, SSRF, command injection, authorization bypass), two execution precondition checks, one recovery verification probe, and two positive controls. We establish that the approval engine achieves 100.0% threat mitigation ($11/11$, 95% Wilson CI $[0.7412, 1.0000]$) within the local application boundary and enforces end-to-end audit logging.
-5. **Audited Reproducibility Package**: We reconcile all reported metrics against raw machine-readable records, eliminate narrative exaggerations, publish complete mathematical definitions, and release all code, frozen model checkpoints, raw CSV outputs, and cryptographic SHA-256 manifests.
+### 3.1 Time-series anomaly detection and evaluation
 
----
+Isolation Forest is an established unsupervised anomaly-detection method [6]. LSTM encoder-decoder reconstruction is established prior art for multivariate sequence anomaly detection [15]; USAD [1] and OmniAnomaly [9] provide additional unsupervised multivariate approaches. AegisOps uses a frozen LSTM autoencoder as an evaluated artifact, not as a claimed architectural innovation.
 
-## 2. Related Work and Literature Survey
+Evaluation design is central to interpreting such methods. Kim et al. [4] and Wu and Keogh [12] caution that benchmark construction, thresholding, and protocol choices can materially affect anomaly-detection conclusions. These cautions apply to the constructed AegisOps cohort: a result on repeated synthetic windows cannot estimate deployment performance, a live false-alarm rate, or external generalization. The Full Rules comparator additionally overlaps a simulator error-rate predicate, making its perfect synthetic result unsuitable as evidence of real-world rule superiority.
 
-Our research situates AegisOps at the intersection of multivariate time-series anomaly detection, AIOps root-cause analysis, LLM-based agentic workflows, and safe automated remediation systems.
+### 3.2 Microservice diagnosis and root-cause analysis
 
-```
-                             RELATED WORK LANDSCAPE
-                                        |
-       +--------------------------------+--------------------------------+
-       |                                                                 |
-[Time-Series Anomaly Detection]                                  [Incident Diagnosis & AIOps]
-  * Isolation Forest (Liu et al., 2008)                            * CloudRCA (Zhang et al., 2021)
-  * LSTM AE (Malhotra et al., 2016)                                * MicroRCA (Wu et al., 2020)
-  * OmniAnomaly (Su et al., 2019)                                  * Eadro (Lee et al., ICSE 2023)
-  * USAD (Audibert et al., 2020)                                   * AnoMod Dataset (Ping et al., MSR 2026)
-  * Benchmark Audits (Wu & Keogh, 2021)
-       |                                                                 |
-       +--------------------------------+--------------------------------+
-                                        |
-                 [Multi-Agent Systems & Safe Remediation]
-                   * AutoGen (Wu et al., 2023)
-                   * MetaGPT (Hong et al., 2024)
-                   * Two-Man-Rule & Policy Enforcement (NIST SP 800-53)
-                   * Automated Verification in SRE
-```
+MicroRCA localizes performance issues using attributed graphs [11]. CloudRCA combines multi-source inputs with a knowledge-informed hierarchical Bayesian network [13], and Eadro presents an end-to-end troubleshooting framework over multi-source data [5]. These methods motivate the diagnostic setting but do not validate AegisOps diagnoses, establish causal correctness, or make the seven-configuration pilot comparable to their evaluations. AnoMod is relevant as a dataset context for anomaly detection and root-cause analysis in microservice systems [8]; possession of its archive is not an AegisOps external-evaluation result.
 
-### 2.1 Multivariate Time-Series Anomaly Detection in Systems Telemetry
+### 3.3 Role-oriented LLM workflows and governance context
 
-Anomaly detection in server metrics has evolved from univariate statistical process control (Shewhart charts, Holt-Winters exponential smoothing) to multivariate unsupervised learning. Liu et al. (2008) introduced the **Isolation Forest** algorithm, which isolates anomalous data points by randomly selecting features and split values; anomalies require significantly fewer recursive partitions to isolate than normal clustering points. However, standard Isolation Forests assume exchangeable, independent feature vectors, discarding temporal autocorrelation unless hand-crafted sliding window aggregations are supplied.
+MetaGPT [3] and AutoGen [16] are precedents for role-separated LLM workflows. They support only a generic workflow context here, not claims about DevOps effectiveness, diagnosis accuracy, remediation safety, or multi-agent advantage. NIST SP 800-53 Rev. 5 [14] supplies governance vocabulary; it is not evidence of AegisOps compliance. In particular, the audited approval path stores an unauthenticated approval label and must not be characterized as authenticated dual authorization.
 
-To model temporal dependencies in sequential telemetry, recurrent neural architectures have become prominent. Malhotra et al. (2016) demonstrated that **Long Short-Term Memory Autoencoders (LSTM AE)** can learn normal operational temporal dynamics by encoding multivariate sequences into compact latent representations and reconstructing them. Points or windows exhibiting reconstruction errors exceeding a statistical threshold $\tau$ are flagged as anomalies. Subsequent advancements introduced variational extensions and attention mechanisms, such as OmniAnomaly (Su et al., 2019) and USAD (Audibert et al., 2020). 
+### 3.4 Bounded research gap
 
-Crucially, recent critical surveys by Wu & Keogh (2021) and Kim et al. (2022) highlighted widespread methodological flaws in time-series anomaly detection benchmarks, including trivial synthetic anomalies, flawed precision/recall calculation protocols, and unrealistic threshold tuning. In AegisOps, we adhere to strict methodological safeguards: thresholds are determined strictly *a priori* on nominal training distributions, test sequences are evaluated without label contamination, and PR-AUC scores are derived from continuous reconstruction error curves.
+The literature review does not prove novelty. A stronger novelty claim would require a systematic comparison against an explicit taxonomy and a prospectively designed empirical comparison. The present gap is narrower: an auditable integration account in which each evaluated or unavailable workflow stage is tied to its evidence and boundary.
 
-### 2.2 AIOps Benchmarks and Root-Cause Diagnosis
+## 4. System Model, Assumptions, and Threat Boundaries
 
-Root-Cause Analysis (RCA) in distributed microservices requires isolating the origin of an operational failure amidst cascading network symptoms. Graph-based and metric-correlation techniques—such as MicroRCA (Wu et al., 2020) and CloudRCA (Zhang et al., 2021)—construct dynamic service dependency topologies and traverse anomaly propagation paths using random walks or PageRank variants.
+The system model has five stages: telemetry is collected and persisted; detectors produce or would produce alert state; diagnosis components prepare a response; an approval record gates a restricted demonstration action; and independent health/probe checks and events are persisted. The model assumes that the collector host and configured target can be observed, SQLite persistence is locally available, and a human/workflow actor supplies the approval label. It does not assume that an alert identifies a root cause, that a diagnostic response is causally correct, or that a label represents verified identity.
 
-Recent benchmark initiatives have sought to standardize microservice fault evaluation. Lee et al. (2023) published **Eadro** (ICSE 2023), an end-to-end troubleshooting framework that integrates multi-source telemetry (metrics, logs, traces) to isolate microservice faults across complex service dependency graphs via joint multi-task learning. More recently, Ping et al. (2026) introduced **AnoMod** (MSR 2026), providing an extensive, reproducible dataset and evaluation suite specifically designed for anomaly detection and root-cause localization across heterogeneous microservice failure patterns (performance, service, database, and code-level anomalies).
+The threat boundary is intentionally local. The tested action is `clear_demo_service_fault` for a local demonstration service. The approval field is an unauthenticated audit label, not a cryptographic identity mechanism or dual-control protocol. The safety harness evaluates specified malformed, unauthorized, expired, replayed, or out-of-scope cases in its own local runtime; it does not establish coverage of untested attack classes, network-adversary resistance, remote remediation safety, or a production security posture.
 
-While Eadro and AnoMod demonstrate the power of multi-modal telemetry fusion, they primarily focus on offline diagnostic accuracy. AegisOps complements these contributions by connecting the diagnostic phase directly to an active, policy-enforced remediation engine.
+![Figure A — audited application architecture and trust boundaries](../figures/phase4/FIG_A_ARCHITECTURE.png)
 
-### 2.3 Multi-Agent Diagnostic Workflows and Large Language Models
+**Figure A. Audited application architecture and trust boundaries.** Bootstrap rules were the observed live-session path; optional live-LSTM inference was unavailable and unobserved. Approval is an unauthenticated audit label, and recovery is restricted to `clear_demo_service_fault` for the local demonstration service. Source: Phase 3 architecture audit and Figure Register. The figure is not evidence of remote remediation, authenticated dual control, or production authorization.
 
-With the advent of Large Language Models (LLMs) possessing extensive code and systems comprehension, researchers have explored agentic workflows for software engineering and DevOps (Wu et al., 2023; Hong et al., 2024). Multi-agent architectures decompose complex incident triage into specialized roles:
-- *Manager/Orchestrator Agents* synthesize incoming alerts and direct investigation tasks.
-- *Investigation Agents* parse raw logs, query time-series databases, and identify anomalous signals.
-- *Diagnosis Agents* generate causal hypotheses and counterfactual reasoning.
-- *Resolution Agents* formulate remediation strategies.
+## 5. Proposed Methodology and Complete Architecture
 
-However, LLMs deployed in production operations face critical vulnerabilities: hallucinated root causes, non-deterministic outputs, latency spikes, and API rate limits. Furthermore, when prompt context is limited to textual log snippets, LLMs struggle to detect subtle numerical metric trends. AegisOps investigates whether enriching agent prompts with quantitative deep learning reconstruction traces mitigates diagnostic hallucination and improves causal precision.
+The methodology follows the system data flow rather than treating the repository as a component inventory. First, the collector records collector-host metrics and a configured-target HTTP probe. It derives a rolling error-rate field and persists telemetry. Second, the workflow selects the most recent 24 stored rows in insertion order for an optional model-inference path, while deterministic guards can generate alerts independently. Third, diagnosis may use deterministic offline behavior or a Groq-backed API path; source visibility does not establish that every component executed in every configuration or that the live path implemented retry, timeout, or rate-limit handling. Fourth, a ticket/approval record is consumed only within the limited local recovery workflow. Finally, health/probe checks and verification events are persisted.
 
-### 2.4 Human Authorization, Policy Enforcement, and Safe Remediation
+This architecture yields four evidence modes. Experiment A evaluates recorded detector outputs on a synthetic cohort. Experiment B records diagnostic configuration outputs over hand-authored cases. Experiment C exercises a local policy-enforcement harness. The live session observes collection, persistence, and bootstrap-rule fallback but not live LSTM scoring. These modes are not interchangeable.
 
-Automated remediation ("self-healing infrastructure") has long been an operational ideal, yet industry adoption remains cautious due to the catastrophic blast radius of erroneous automated interventions. Established security guidelines, including NIST SP 800-53 dual authorization recommendations (AC-3), emphasize two-person approval mechanisms for high-impact system modifications. 
+![Figure C — telemetry-to-alert flow and audited live-session boundary](../figures/phase4/FIG_C_TELEMETRY_FLOW.png)
 
-Prior automated remediation literature frequently treats execution as a simple webhook or script execution. In contrast, AegisOps implements a formal governance framework: remediation proposals require cryptographically unique nonces, bounded Time-To-Live (TTL) expiration windows, strict local execution allowlists to eliminate Server-Side Request Forgery (SSRF), and post-remediation health verification before incident closure.
+**Figure C. Telemetry-to-alert flow and audited live-session boundary.** The implemented flow supports collection, persistence, optional inference, and fallback-rule behavior. The audited session contained 200 bootstrap-rule-mode records with 200 null anomaly scores. Intended five-second sampling does not validate timestamp continuity. Source: telemetry export, Phase 2 reconciliation, and Phase 3 audit. This figure provides no independently labelled live detection performance.
 
----
+## 6. Detection Model and Frozen Model Contract
 
-## 3. Problem Formulation
+The evaluated model artifact is `models/lstm_autoencoder.pt`, whose controlling metadata are in `models/lstm_autoencoder.json`. Its contract requires an ordered 24-step window with five features: `cpu_pct`, `memory_pct`, `latency_ms`, `error_rate_pct`, and `disk_pct`. Frozen means and standard deviations normalize the input. The model has hidden size 16 and compares global reconstruction mean-squared error strictly against threshold 0.7093990445137024. The metadata records 850 training windows, 150 validation windows, 22 epochs, and a threshold chosen as the 99th percentile of held-out normal reconstruction error.
 
-### 3.1 Mathematical Notation and Experimental Units
+This is a frozen synthetic-benchmark model contract, not a validated causal representation, a live deployed model, or an external performance guarantee. The Isolation Forest comparator uses a flattened 24-by-5 representation. Full Rules is the current raw-reconstructable deterministic baseline. The recorded combined detector uses \(\hat{y}_{combined}=\hat{y}_{rules}\lor\hat{y}_{LSTM}\). Historical Narrow Rules and Resource-Only Rules narratives are not independently reconstructed and are excluded from the primary quantitative comparison.
 
-We consider a monitored distributed microservice observed over discrete, equidistant time steps $t \in \{1, 2, \dots, T\}$ with sampling interval $\Delta t = 5$ seconds.
+![Figure B — frozen LSTM autoencoder contract](../figures/phase4/FIG_B_FROZEN_LSTM.png)
 
-- **Raw Telemetry Vector**: At each time step $t$, the system records an observation vector:
-  $$\mathbf{x}_t = \left[ x_t^{(1)}, x_t^{(2)}, x_t^{(3)}, x_t^{(4)}, x_t^{(5)} \right]^\top \in \mathbb{R}^5$$
-  corresponding to:
-  1. $x_t^{(1)}$: Host CPU utilization percentage ($\% \in [0, 100]$).
-  2. $x_t^{(2)}$: Host Memory utilization percentage ($\% \in [0, 100]$).
-  3. $x_t^{(3)}$: Host Disk utilization percentage ($\% \in [0, 100]$).
-  4. $x_t^{(4)}$: Synthetic probe HTTP response latency (milliseconds, $\mathbb{R}_{\ge 0}$).
-  5. $x_t^{(5)}$: Synthetic probe HTTP error rate (fraction $\in [0.0, 1.0]$).
+**Figure B. Frozen synthetic-benchmark LSTM autoencoder contract.** The diagram specifies the ordered window, normalization, reconstruction path, and threshold. Source: `models/lstm_autoencoder.json` and Phase 3 audit. It does not establish live inference performance or causal semantics.
 
-- **Evaluation Window**: To capture temporal dynamics, telemetry is segmented into sliding windows of length $W = 24$ steps (representing a 120-second historical horizon):
-  $$\mathbf{X}_i = \left[ \mathbf{x}_{t-W+1}, \mathbf{x}_{t-W+2}, \dots, \mathbf{x}_t \right] \in \mathbb{R}^{W \times 5}$$
-  In **Experiment A**, each non-overlapping sequence window $\mathbf{X}_i$ constitutes an independent **experimental unit** ($i \in \{1, 2, \dots, N\}$ where $N = 320$).
+## 7. Diagnosis and Approval-Controlled Recovery Workflow
 
-- **Ground-Truth Anomaly Label**: Each window $\mathbf{X}_i$ possesses a binary label:
-  $$y_i \in \{0, 1\}$$
-  where $y_i = 0$ denotes nominal steady-state operation, and $y_i = 1$ denotes an active fault injection episode.
+Diagnosis consumes an incident context and produces configuration-dependent diagnostic output. In the pilot, configurations are either deterministic/offline or API-backed. An output can be strictly correct, partially correct, incorrect, or `UNASSESSABLE`; the latter is a missing outcome, not a successful completion. In strict ITT analysis, all six intended case slots remain in the denominator and an `UNASSESSABLE` record receives zero credit. In completed-case analysis, that omitted call is removed from the denominator. Reporting both makes missing API-backed outcomes visible.
 
-- **Anomaly Score and Threshold**: An anomaly detector computes a continuous scalar score:
-  $$s_i = f_{\text{model}}(\mathbf{X}_i) \in \mathbb{R}$$
-  The binary alert decision $\hat{y}_i \in \{0, 1\}$ is determined by a decision threshold $\tau \in \mathbb{R}$:
-  $$\hat{y}_i = \mathbb{I}(s_i \ge \tau)$$
+The recovery pathway begins only after an approval-ticket record is accepted within its local demonstration scope. It then invokes the restricted local action, performs health/probe verification, and writes audit events. The workflow is approval-gated, but the stored approval label is unauthenticated. It is therefore neither autonomous recovery nor authenticated dual authorization.
 
-- **Incident Episode**: In **Experiment B**, an operational incident $I_k$ ($k \in \{1, \dots, K\}$ where $K = 6$) represents a complete failure scenario characterized by ground-truth causal class $C_k^* \in \mathcal{C}$ and supporting failure logs. The diagnostic engine outputs a predicted causal class $\hat{C}_k$ and confidence $p_k \in [0, 1]$.
+![Figure D — diagnosis and approval workflow](../figures/phase4/FIG_D_DIAGNOSIS_APPROVAL.png)
 
-- **Approval Ticket and Remediation**: An authorized resolution action $A_k$ is represented by a cryptographic ticket:
-  $$T_k = \langle \text{TicketID}, \text{Nonce}, \text{Timestamp}, \text{TTL}, A_k, \text{TargetURL}, \text{Status} \rangle$$
-  where status transitions atomically: $\text{PENDING} \xrightarrow{\text{Approve}} \text{APPROVED} \xrightarrow{\text{Execute}} \text{EXECUTED}$.
+**Figure D. Diagnosis, approval, and local-demo recovery workflow.** The diagram describes component boundaries from investigation through verification persistence. Diagnosis may use deterministic offline behavior or a Groq-backed API path. Source: Phase 3 audit and Phase 2 Experiment B reconciliation. It does not imply that every component ran in every configuration or that the approval mechanism provides production authorization.
 
-- **Verification Outcome**: Following remediation dispatch, post-action health probe $\mathcal{V}(I_k) \in \{ \text{SUCCESS}, \text{FAILED} \}$ evaluates whether HTTP latency and status codes return to nominal ranges within observation horizon $H$.
+## 8. Experimental Setup, Datasets, Baselines, and Metrics
 
----
+| Evidence set | Unit and size | Controlling artifact | Baselines/metrics | Permitted scope |
+| --- | ---:| --- | --- | --- |
+| Experiment A | 320 synthetic windows: 200 nominal, 120 fault; six scenarios | `research/raw/detection_predictions.csv` | Full Rules, Isolation Forest, frozen LSTM, Combined OR; TP, FP, TN, FN, precision, recall, F1, FPR | Constructed synthetic cohort only. |
+| Experiment B | 42 records: seven configurations × six hand-authored cases | `research/raw/diagnosis_predictions.csv` | Strict ITT and strict completed-case top-1 outcome proportions | Configuration-specific pilot only. |
+| Experiment C | 16 local-harness cases | `research/raw/safety_test_results.csv` | Attack containment and audit-trail completeness; Wilson intervals | Enumerated local runtime only. |
+| Live telemetry | 200 stored rows | `research/exports/telemetry.csv` | Detector mode and score availability | Collection/persistence/fallback demonstration only. |
+| Experiment D | Archive and extraction provenance | `data/external/anomod/` and controlling audits | Readiness/provenance only | No external performance result. |
 
-## 4. Proposed Methodology and Defensible Novelty Claims
+For Experiment A, a fault window is the positive class. Precision is \(TP/(TP+FP)\), recall is \(TP/(TP+FN)\), F1 is \(2PR/(P+R)\), and false-positive rate (FPR) is \(FP/(FP+TN)\). Each denominator is the 320-window synthetic cohort or its appropriate class subset: 122 predicted-positive windows for frozen-LSTM precision, 120 fault windows for recall, and 200 nominal windows for FPR. Historical false-alarms-per-hour fields are not used because the current evidence does not provide a defensible operational exposure denominator.
 
-AegisOps is engineered as a modular, end-to-end framework organized into five functional layers:
-1. Telemetry Ingestion and Feature Scaling.
-2. Dual-Gate Anomaly Detection.
-3. Multi-Agent Root-Cause Diagnostic Orchestration.
-4. Transactional Human-in-the-Loop Approval Governance.
-5. Execution Barrier Remediation and Closed-Loop Verification.
+For Experiment B, strict ITT accuracy is strictly correct outcomes divided by six intended cases for each configuration. Strict completed-case accuracy divides by completed cases only. The two analyses answer different descriptive questions and are not interchangeable. No raw field supports API cost, prompt-token, completion-token, total-token, or provider-reliability estimates.
 
-### 4.1 Telemetry Collection and Feature Normalization
+For Experiment C, containment is specified attack cases blocked divided by the 11 specified attacks. Audit completeness is local-harness cases with durable audit records divided by 16. These have separate denominators. Wilson 95% intervals are reported for finite binomial proportions [10].
 
-The monitoring subsystem periodically samples the target service via `collectors/system_metrics.py`. Host metrics (CPU, RAM, disk) are obtained through `psutil`, while service availability, response latency, and HTTP status codes are recorded via synthetic HTTP probes against `/probe` and `/health`. Telemetry rows are appended to an SQLite database (`data/aegisops_live.sqlite3`).
+## 9. Statistical Hypotheses and Methods
 
-To prepare data for neural inference, raw metric vectors $\mathbf{x}_t \in \mathbb{R}^5$ follow the strict feature ordering defined in the frozen model contract:
-$$\mathbf{x}_t = \left[ x_t^{(\text{cpu})}, x_t^{(\text{mem})}, x_t^{(\text{lat})}, x_t^{(\text{err})}, x_t^{(\text{disk})} \right]^\top \in \mathbb{R}^5$$
+The primary paired comparison concerns recorded detection outcomes on the 120 synthetic fault windows. The descriptive null hypothesis is that the frozen LSTM and Isolation Forest have equal probabilities of discordant detection in this constructed cohort; the two-sided alternative is that they differ. Among fault windows, \(b=63\) are detected by the LSTM and missed by Isolation Forest, while \(c=0\) show the converse. The reported two-sided exact paired-binomial/McNemar probability is \(2\times0.5^{63}=2.1684\times10^{-19}\) [7]. Edwards [2] supplies continuity-correction provenance, but the reported calculation is exact rather than a continuity-corrected approximation.
 
-Observations are normalized using Z-score standardization parameters $\boldsymbol{\mu}, \boldsymbol{\sigma}$ established exclusively on the training distribution:
-$$\tilde{\mathbf{x}}_t = \frac{\mathbf{x}_t - \boldsymbol{\mu}}{\boldsymbol{\sigma}}$$
-where $\boldsymbol{\mu} = [42.06, 53.97, 76.89, 0.24, 48.27]^\top$ and $\boldsymbol{\sigma} = [5.79, 3.56, 6.09, 0.055, 4.34]^\top$. Normalized vectors are maintained in an in-memory ring buffer of size $W = 24$.
+The paired window analysis is mathematically reproducible from current rows, but it is not a deployment test: the 120 windows are clustered within six repeated synthetic scenarios and cannot be treated as 120 independent production incidents. The accompanying six-scenario analysis is explicitly exploratory. Its null hypothesis is zero median paired recall difference; the recorded result is \(W=0\), exact two-sided sign-pattern \(p=0.03125\). With only six scenario clusters, this is the smallest attainable two-sided sign-pattern probability and does not establish external generalization.
 
-### 4.2 Three Operational Rule Baseline Definitions
+Experiment B is descriptive rather than hypothesis testing: six hand-authored cases, rubric overlap, and two missing API-backed outcomes do not justify a causal comparison across workflow configurations. Experiment C uses Wilson intervals to express finite-sample uncertainty around its local-harness proportions; it is not a population-security inference. No p-value in this paper is interpreted as evidence of live operational performance, causal diagnosis, production safety, or external generalization.
 
-To avoid ambiguous baseline reporting, we strictly evaluate three distinct operational rule configurations:
-1. **Narrow Rules**: Considers only extreme latency and memory saturation:
-   $$\hat{y}_i^{\text{narrow}} = \mathbb{I}\left( x_t^{(\text{lat})} \ge 1000.0 \lor x_t^{(\text{mem})} \ge 95.0 \right)$$
-2. **Resource-Only Rules**: Incorporates host CPU, RAM, disk, and response latency:
-   $$\hat{y}_i^{\text{resource}} = \mathbb{I}\left( x_t^{(\text{cpu})} \ge 90.0 \lor x_t^{(\text{mem})} \ge 95.0 \lor x_t^{(\text{disk})} \ge 95.0 \lor x_t^{(\text{lat})} \ge 1000.0 \right)$$
-3. **Full Operational Rules**: Adds the synthetic HTTP probe error-rate threshold ($x_t^{(\text{err})} > 0.5\%$):
-   $$\hat{y}_i^{\text{full}} = \mathbb{I}\left( x_t^{(\text{cpu})} \ge 90.0 \lor x_t^{(\text{mem})} \ge 95.0 \lor x_t^{(\text{disk})} \ge 95.0 \lor x_t^{(\text{lat})} \ge 1000.0 \lor x_t^{(\text{err})} > 0.5 \right)$$
+## 10. Quantitative Results
 
-### 4.3 Frozen PyTorch LSTM Autoencoder Inference
+### 10.1 Experiment A: synthetic detection benchmark
 
-The deep learning detector utilizes a sequence-to-sequence Long Short-Term Memory Autoencoder (`models/lstm_autoencoder.py`). 
-- **Encoder**: An LSTM network with hidden dimension $h = 16$ compresses the input sequence $\mathbf{X}_i \in \mathbb{R}^{24 \times 5}$ into a latent bottleneck vector $\mathbf{z}_i \in \mathbb{R}^{16}$.
-- **Decoder**: A symmetric LSTM network with hidden dimension $h = 16$ unrolls the latent vector to reconstruct the normalized sequence via a linear projection layer ($16 \to 5$):
-  $$\hat{\mathbf{X}}_i = \text{Decoder}(\mathbf{z}_i) \in \mathbb{R}^{24 \times 5}$$
+The constructed cohort contains 200 nominal windows and 120 fault windows across six scenarios, with 20 fault windows per scenario. The verified confusion counts and derived metrics are shown in Table 1.
 
-The model checkpoint is frozen (`models/lstm_autoencoder.pt`) and contains exactly **3,733 learnable PyTorch parameters** ($1,472$ in the encoder, $2,176$ in the decoder, and $85$ in the linear output layer). In textbook formulations assuming a single shared bias vector per LSTM layer, the theoretical count is $1,408 + 2,112 + 85 = 3,605$ parameters; PyTorch's `nn.LSTM(bias=True)` implementation allocates dual bias vectors (`bias_ih` and `bias_hh`), adding $2 \times 64 = 128$ bias parameters across the encoder and decoder.
+| Method | TP | FP | TN | FN | Precision | Recall | F1 | FPR |
+| --- | ---:| ---:| ---:| ---:| ---:| ---:| ---:| ---:|
+| Full Rules | 120 | 0 | 200 | 0 | 1.0000 | 1.0000 | 1.0000 | 0.0000 |
+| Isolation Forest | 57 | 4 | 196 | 63 | 0.9344 | 0.4750 | 0.6298 | 0.0200 |
+| Frozen LSTM | 120 | 2 | 198 | 0 | 0.9836 | 1.0000 | 0.9917 | 0.0100 |
+| Combined OR | 120 | 2 | 198 | 0 | 0.9836 | 1.0000 | 0.9917 | 0.0100 |
 
-The reconstruction error scalar $s_i$ is defined as the Mean Squared Error (MSE) across all window elements:
-$$s_i = \text{MSE}(\mathbf{X}_i, \hat{\mathbf{X}}_i) = \frac{1}{24 \times 5} \sum_{w=1}^{24} \sum_{d=1}^{5} \left( \tilde{x}_{w, d} - \hat{x}_{w, d} \right)^2$$
+**Table 1. Current raw-reconstructable Experiment A results.** These are synthetic-window quantities, not operational alarms-per-hour estimates. Full Rules structurally overlaps a simulator error-rate predicate, so its perfect result is not a realistic general-purpose baseline or superiority finding.
 
-The anomaly decision threshold is strictly defined from the 99th percentile of nominal reconstruction errors on $N = 150$ held-out normal validation sequences:
-$$\tau = 0.709399$$
-An anomaly is signaled when $s_i \ge \tau$.
+![Figure E1 — synthetic detection comparison](../figures/phase4/FIG_E1_DETECTION_COMPARISON.png)
 
-### 4.4 Isolation Forest Baseline
+**Figure E1. Experiment A synthetic detection comparison.** Precision, recall, F1, and FPR are derived from Table 1 confusion matrices. Source: `research/raw/detection_predictions.csv` and Phase 2 reconciliation. The figure makes no operational false-alarms-per-hour claim.
 
-As a non-temporal multivariate baseline, an Isolation Forest ensemble ($n_{\text{trees}} = 100$, contamination factor $\gamma = 0.01$, random seed $42$) is fitted to the training dataset. Sequence windows $\mathbf{X}_i \in \mathbb{R}^{24 \times 5}$ are flattened into 120-dimensional feature vectors ($\mathbf{x}_i \in \mathbb{R}^{120}$). Under the standard anomaly scoring convention, scores are defined as negated decision functions: $s_{\text{iso}}(X) = -\text{decision\_function}(X)$. Calibration at the 99th percentile of nominal validation sequences yields decision threshold $\tau = -0.018694$.
+![Figure E2 — confusion matrices](../figures/phase4/FIG_E2_CONFUSION_MATRICES.png)
 
-### 4.5 Combined Alerting Logic
+**Figure E2. Experiment A confusion matrices.** Fault window is the positive class. Source: `research/raw/detection_predictions.csv` and Phase 2 reconciliation. Counts apply to the synthetic benchmark only.
 
-AegisOps integrates deterministic rules with learned neural inference using disjunctive (logical OR) alert gating:
-$$\hat{y}_i^{\text{combined}} = \hat{y}_i^{\text{full}} \lor \hat{y}_i^{\text{LSTM}}$$
-This dual-gate design ensures that obvious catastrophic failures trigger immediate operational alerts, while non-linear, multi-metric degradation patterns that evade static thresholds are captured by the LSTM Autoencoder.
+The frozen LSTM and Combined OR have identical recorded confusion matrices, so the data do not show added synthetic sensitivity from the OR gate. The paired comparison against Isolation Forest is cohort-specific and qualified in Section 9. Figure E3 is retained as supplementary descriptive evidence rather than presented as confirmatory analysis.
 
-### 4.6 Multi-Agent Diagnostic Pipeline (`IncidentAgents`)
+### 10.2 Experiment B: diagnosis pilot
 
-Upon anomaly trigger, AegisOps instantiates a four-agent diagnostic workflow (`agents.py`):
-1. **Manager Agent**: Evaluates incident priority, parses the raw alert payload, and formulates an investigative agenda.
-2. **Investigation Agent**: Queries the SQLite database for recent log traces and extracts the deep learning MSE attribution vector:
-   $$\mathbf{e}_{\text{attr}} = \left[ \text{MSE}_{\text{cpu}}, \text{MSE}_{\text{mem}}, \text{MSE}_{\text{lat}}, \text{MSE}_{\text{err}}, \text{MSE}_{\text{disk}} \right]^\top$$
-   identifying which specific telemetry dimensions dominated reconstruction loss.
-3. **Diagnosis Agent**: Synthesizes the telemetry anomaly attribution with log messages to classify the root cause into one of six canonical failure categories:
-   $$\mathcal{C} = \{ \text{CPU Saturation}, \text{Memory Leak}, \text{Disk I/O Contention}, \text{Database Pool Exhaustion}, \text{Downstream Dependency Failure}, \text{Deadlock} \}$$
-4. **Resolution Agent**: Maps the diagnosed root cause to an authorized remediation action catalog.
-
-### 4.7 Approval-Ticket Governance and Execution Barriers
-
-AegisOps strictly separates diagnostic proposal from remediation execution through an append-only SQLite approval engine (`approval.py`). When the Resolution Agent proposes an action $A_k$, the system creates an approval ticket with UUIDv4 nonce, 300s TTL, exact confirmation phrase (`"APPROVE <nonce>"`), and strict target allowlist (`http://127.0.0.1:8765/admin/fault`). Authorization is locked via atomic SQLite transaction (`BEGIN IMMEDIATE`).
-
-### 4.8 Post-Action Health Verification and Audit Logging
-
-Following remediation dispatch, a dedicated **Verification Probe** queries `/health` and `/probe`. An incident transitions to `RESOLVED` if and only if HTTP status is 200 OK and probe latency is strictly below 1,000 milliseconds. Otherwise, the incident transitions to `VERIFICATION_FAILED` and escalates.
-
----
-
-## 5. System Architecture, Data Flow and Algorithms
-
-### 5.1 Architecture Diagrams
-
-#### Figure 1: AegisOps End-to-End System Architecture and Dataflow
-
-The overall system architecture and dataflow across all five functional layers is illustrated below:
-
-```mermaid
-graph TB
-    subgraph MonitoredEnvironment["1. Monitored Microservice Environment"]
-        Service["Target Service (FastAPI / Demo Service)<br/>http://127.0.0.1:8765"]
-        AdminFault["Fault Injection / Reset Endpoint<br/>/admin/fault"]
-        ProbeEndpoint["HTTP Health & Synthetic Probe<br/>/probe & /health"]
-        HostOS["Host OS Metrics (psutil)<br/>CPU, Memory, Disk Usage"]
-    end
-
-    subgraph TelemetryLayer["2. Telemetry Ingestion & Storage"]
-        Collector["Metric Collector & Probe Runner<br/>collectors/system_metrics.py"]
-        Store["Telemetry Store (SQLite)<br/>storage/telemetry_store.py"]
-        Buffer["Sliding Window Buffer (24 Steps)<br/>Sequence Length = 24, Dim = 5"]
-    end
-
-    subgraph DetectionLayer["3. Dual-Gate Anomaly Detection"]
-        StaticRules["Operational Rules Gate<br/>CPU>=90%, RAM>=95%, Lat>=1000ms, Err>0.5%"]
-        LSTMAutoencoder["Frozen LSTM Autoencoder (PyTorch)<br/>hidden_dim=32, threshold tau=0.709399"]
-        CombinedGate{"Combined Alert Logic<br/>Alert = Rule OR LSTM"}
-    end
-
-    subgraph MultiAgentLayer["4. Multi-Agent Root-Cause Diagnosis (IncidentAgents)"]
-        ManagerAgent["Manager Agent<br/>Prioritizes incident & plans tasks"]
-        InvestigatorAgent["Investigation Agent<br/>Gathers log signals & DL anomaly context"]
-        DiagnosisAgent["Diagnosis Agent<br/>Synthesizes causal mechanism & confidence"]
-        ResolutionAgent["Resolution Agent<br/>Selects remediation action from catalog"]
-    end
-
-    subgraph GovernanceLayer["5. Two-Man-Rule Authorization & Recovery"]
-        ApprovalEngine["Approval Store (approval.py)<br/>BEGIN IMMEDIATE SQLite Transactions"]
-        HumanOperator["Human SRE / Operator<br/>Reviews ticket & submits confirmation phrase"]
-        ExecutionBarrier{"Execution Boundary Gate<br/>Validate: Nonce, TTL, Target, Scope"}
-        RemediationAction["Loopback Remediation Dispatcher<br/>live_monitoring._resolve_local_test_fault"]
-        VerificationAgent["Verification Agent & Probe<br/>Validates HTTP 200 & Latency < 1000ms"]
-    end
-
-    %% Connections
-    Service --> ProbeEndpoint
-    ProbeEndpoint --> Collector
-    HostOS --> Collector
-    Collector --> Store
-    Store --> Buffer
-    Buffer --> StaticRules
-    Buffer --> LSTMAutoencoder
-    StaticRules --> CombinedGate
-    LSTMAutoencoder --> CombinedGate
-    CombinedGate -- "Anomaly Alert" --> ManagerAgent
-    Store -- "Logs & Context" --> InvestigatorAgent
-    ManagerAgent --> InvestigatorAgent
-    InvestigatorAgent --> DiagnosisAgent
-    DiagnosisAgent --> ResolutionAgent
-    ResolutionAgent --> ApprovalEngine
-    HumanOperator -- "Exact Confirmation Phrase" --> ApprovalEngine
-    ApprovalEngine --> ExecutionBarrier
-    ExecutionBarrier -- "Authorized & Unexpired" --> RemediationAction
-    RemediationAction --> AdminFault
-    AdminFault --> Service
-    Service --> VerificationAgent
-    VerificationAgent -- "Verification State" --> Store
-```
-
-#### Figure 2: Anomaly Detection and Diagnostic Attribution Workflow
-
-```mermaid
-graph TB
-    subgraph DataIngestion["Phase 1: Ingestion & Sliding Window Buffer"]
-        M1["Host OS Metrics<br/>CPU%, RAM%, Disk%"]
-        M2["Probe Endpoint<br/>Latency (ms), Error Rate"]
-        Collector["Metric Collector<br/>collectors/system_metrics.py"]
-        SQLStore[("Telemetry Store<br/>storage/telemetry_store.py")]
-        WindowBuffer["Sliding Window Buffer<br/>Shape: (W=24, D=5)<br/>Normalized Features"]
-    end
-
-    subgraph DualDetection["Phase 2: Dual-Gate Anomaly Detection"]
-        subgraph RulePath["Deterministic Rule Gate"]
-            RuleEval{"Threshold Checks<br/>CPU >= 90%<br/>RAM >= 95%<br/>Lat >= 1000ms<br/>Err > 0.5%"}
-            RuleResult["Rule Alert Signal<br/>(Binary 0/1)"]
-        end
-
-        subgraph NeuralPath["Learned LSTM Autoencoder Gate"]
-            Encoder["LSTM Encoder<br/>Input: 5 -> Hidden: 16 -> Latent: 16"]
-            Decoder["LSTM Decoder<br/>Latent: 16 -> Hidden: 16 -> Output: 5"]
-            LossCalc["Reconstruction Loss<br/>MSE = (1/120) * sum((X - X_hat)^2)"]
-            ThreshCheck{"Score >= tau?<br/>tau = 0.709399"}
-            NeuralResult["Neural Alert Signal<br/>(Binary 0/1, Score s)"]
-        end
-
-        CombinedGate{"Alert Logic Gate<br/>Alert = Rule OR Neural"}
-        IncidentEvent["Incident Alert Event<br/>(ID, Timestamp, Score, Trigger Source)"]
-    end
-
-    subgraph DiagnosticPipeline["Phase 3: Multi-Agent Diagnostic Workflow (IncidentAgents)"]
-        ManagerAgent["1. Manager Agent<br/>Prioritizes incident, structures diagnostic goals"]
-        InvestigatorAgent["2. Investigation Agent<br/>Gathers log snippets & DL reconstruction error trace"]
-        DiagnosisAgent["3. Diagnosis Agent<br/>Synthesizes causal mechanism & assigns confidence"]
-        ResolutionAgent["4. Resolution Agent<br/>Selects remediation action from authorized catalog"]
-        DiagnosticReport["Diagnostic Output<br/>Root Cause, Evidence, Confidence, Proposed Remediation"]
-    end
-
-    %% Data flow links
-    M1 --> Collector
-    M2 --> Collector
-    Collector --> SQLStore
-    SQLStore --> WindowBuffer
-    WindowBuffer --> RuleEval
-    RuleEval --> RuleResult
-    WindowBuffer --> Encoder
-    Encoder --> Decoder
-    Decoder --> LossCalc
-    LossCalc --> ThreshCheck
-    ThreshCheck --> NeuralResult
-    RuleResult --> CombinedGate
-    NeuralResult --> CombinedGate
-    CombinedGate -- "Alert Triggered" --> IncidentEvent
-    IncidentEvent --> ManagerAgent
-    SQLStore -. "Telemetry Context" .-> InvestigatorAgent
-    LossCalc -. "Feature MSE Attribution" .-> InvestigatorAgent
-    ManagerAgent --> InvestigatorAgent
-    InvestigatorAgent --> DiagnosisAgent
-    DiagnosisAgent --> ResolutionAgent
-    ResolutionAgent --> DiagnosticReport
-```
-
-#### Figure 3: Approval-Gated Remediation and Closed-Loop Verification
-
-```mermaid
-graph TB
-    subgraph TicketGeneration["1. Incident Resolution Proposal"]
-        DiagnosticReport["Diagnostic Resolution Agent<br/>Proposes Remediation Action"]
-        CreateTicket["Approval Store (approval.py)<br/>create_ticket(incident_id, action, target)"]
-        TicketRecord[("Approval Ticket in SQLite<br/>Nonce: UUIDv4<br/>TTL: 300s<br/>Target: http://127.0.0.1:8765<br/>Expected Phrase: 'APPROVE <nonce>'<br/>Status: PENDING")]
-    end
-
-    subgraph HumanAuthorization["2. Two-Man-Rule Human Approval Gate"]
-        HumanOperator["Human SRE / Operator<br/>Reviews Incident Diagnostic Context"]
-        RiskAssessment{"Review Safety & Scope<br/>Verify Remediation Impact"}
-        SubmitApproval["Submit Approval Call<br/>approve_ticket(ticket_id, phrase)"]
-    end
-
-    subgraph SecurityValidation["3. Transactional Validation & Execution Boundary"]
-        DBTx["BEGIN IMMEDIATE Transaction<br/>Atomic SQLite State Lock"]
-        NonceCheck{"1. Nonce Valid & Unused?<br/>2. Status == PENDING?<br/>3. Expired? (now <= created_at + TTL)<br/>4. Phrase Matches Exactly?"}
-        RejectExecution["REJECT & LOG AUDIT<br/>Ticket Status: EXPIRED / REJECTED / INVALID"]
-        
-        BoundaryCheck{"Boundary Guardrails Check<br/>- Target == Loopback Allowed?<br/>- Action in Authorized Catalog?<br/>- Parameter Injection Sanitized?"}
-        AbortBoundary["BLOCK EXECUTION<br/>Log Security Violation Alert"]
-    end
-
-    subgraph ExecutionRemediation["4. Controlled Remediation Dispatch"]
-        TransitionApproved["Mark Ticket: APPROVED<br/>(One-Time Token Consumed)"]
-        Dispatcher["Loopback Remediation Dispatcher<br/>live_monitoring._resolve_local_test_fault"]
-        TargetEndpoint["Monitored Service Admin Port<br/>POST http://127.0.0.1:8765/admin/fault<br/>Payload: {'fault_type': 'none'}"]
-    end
-
-    subgraph PostActionVerification["5. Post-Remediation Verification & Audit Closure"]
-        VerificationProbe["Verification Probe<br/>GET /probe & GET /health"]
-        HealthEvaluation{"Health Criteria Met?<br/>HTTP Status == 200 AND<br/>Response Latency < 1000ms"}
-        IncidentResolved["Incident Status: RESOLVED<br/>Write Durable Audit Record"]
-        IncidentRollback["Incident Status: VERIFICATION_FAILED<br/>Escalate Alert to High Priority"]
-    end
-
-    %% Connections
-    DiagnosticReport --> CreateTicket
-    CreateTicket --> TicketRecord
-    TicketRecord -. "Ticket ID & Phrase" .-> HumanOperator
-    HumanOperator --> RiskAssessment
-    RiskAssessment -- "Authorized" --> SubmitApproval
-    SubmitApproval --> DBTx
-    DBTx --> NonceCheck
-    NonceCheck -- "Failure (TTL/Nonce/Phrase)" --> RejectExecution
-    NonceCheck -- "Pass" --> BoundaryCheck
-    BoundaryCheck -- "Violation (SSRF/Cmd Injection)" --> AbortBoundary
-    BoundaryCheck -- "Pass" --> TransitionApproved
-    TransitionApproved --> Dispatcher
-    Dispatcher --> TargetEndpoint
-    TargetEndpoint --> VerificationProbe
-    VerificationProbe --> HealthEvaluation
-    HealthEvaluation -- "Healthy" --> IncidentResolved
-    HealthEvaluation -- "Degraded" --> IncidentRollback
-```
-
-### 5.2 Algorithmic Formulations
-
-The core operational algorithms of AegisOps are formalized below.
-
-#### Algorithm 1: Dual-Gate Anomaly Detection
-```
-Algorithm 1: Dual-Gate Anomaly Detection
-Input: Current telemetry sample x_t in R^5, sliding window buffer B of size W=24,
-       standardization parameters (mu, sigma) in R^5, frozen LSTM AE weights theta,
-       threshold tau = 0.709399, operational rule thresholds Theta_rule
-Output: Alert signal a_t in {0, 1}, continuous score s_t, attribution vector e_attr
-
-1: Append x_t to buffer B;
-2: If |B| < W then
-3:     Return (0, 0.0, 0); // Window warmup phase
-4: End If
-5: Construct sequence matrix X = [x_{t-W+1}, ..., x_t] in R^{W x 5};
-6: Standardize sequence: \tilde{X} = (X - mu) / sigma;
-
-// Gate 1: Full Operational Rules
-7: a_rule = 0;
-8: If (x_t[CPU] >= 90.0) or (x_t[RAM] >= 95.0) or (x_t[Disk] >= 95.0) or
-      (x_t[Latency] >= 1000.0) or (x_t[ErrorRate] > 0.5) then
-9:     a_rule = 1;
-10: End If
-
-// Gate 2: LSTM Autoencoder Inference
-11: z = LSTM_Encoder_theta(\tilde{X});
-12: \hat{X} = LSTM_Decoder_theta(z);
-13: Compute MSE tensor: Delta = (\tilde{X} - \hat{X})^2;
-14: s_t = (1 / (W * 5)) * sum(Delta);
-15: a_lstm = II(s_t >= tau);
-16: e_attr = (1 / W) * sum_{w=1}^W Delta[w, :]; // Per-feature attribution
-
-// Combined Alert Synthesis
-17: a_t = a_rule OR a_lstm;
-18: Return (a_t, s_t, e_attr);
-```
-
-#### Algorithm 2: Multi-Agent Root Cause Diagnosis Orchestration
-```
-Algorithm 2: Multi-Agent Root Cause Diagnosis
-Input: Incident alert event E = <IncidentID, Timestamp, s_t, e_attr>,
-       recent log repository L, target service metadata M
-Output: Diagnostic report D = <RootCause, Confidence, RemediationProposal>
-
-1: ManagerAgent: Parse alert event E;
-2:   Set investigation scope and initialize audit session;
-3: InvestigatorAgent:
-4:   Query L for log records within time interval [Timestamp - 60s, Timestamp];
-5:   Format quantitative DL context: dominant_features = TopK(e_attr, k=2);
-6:   Assemble telemetry context string C_telem = Format(s_t, dominant_features);
-7: DiagnosisAgent:
-8:   Construct prompt P_diag = {SystemRole, Logs: L, DLContext: C_telem, CandidateClasses: C};
-9:   Execute LLM call (or offline heuristic fallback):
-10:    Response = ExecuteInference(P_diag);
-11:    Parse structured JSON -> (predicted_cause, confidence_score, reasoning);
-12: ResolutionAgent:
-13:    Select candidate action A from authorized catalog based on predicted_cause;
-14:    Formulate proposed remediation ticket parameters;
-15: Return D = <predicted_cause, confidence_score, A>;
-```
-
-#### Algorithm 3: Approval-Gated Remediation and Verification
-```
-Algorithm 3: Approval-Gated Remediation and Verification
-Input: Incident ID k, proposed action A_k, target URL U_k, confirmation phrase P_sub,
-       allowed targets list U_allow, allowed actions catalog A_allow
-Output: Execution status in {RESOLVED, REJECTED, VERIFICATION_FAILED}
-
-1: TicketID, Nonce = GenerateUUID(), GenerateUUID();
-2: created_at = CurrentTime();
-3: expected_phrase = "APPROVE " + Nonce;
-4: Store ticket T = <TicketID, Nonce, created_at, TTL=300s, A_k, U_k, "PENDING"> in SQLite;
-
-// Two-Man-Rule Human Validation
-5: BEGIN IMMEDIATE TRANSACTION;
-6: Fetch ticket record T from SQLite;
-7: If T.status != "PENDING" or CurrentTime() > (T.created_at + T.TTL) then
-8:     Update T.status = "EXPIRED"; COMMIT; Return REJECTED;
-9: End If
-10: If P_sub != expected_phrase then
-11:    Update T.status = "REJECTED"; COMMIT; Return REJECTED;
-12: End If
-
-// Execution Boundary Guardrails
-13: If (U_k not in U_allow) or (A_k not in A_allow) then
-14:    Update T.status = "SECURITY_BLOCKED"; COMMIT; Return REJECTED;
-15: End If
-16: Update T.status = "APPROVED";
-17: COMMIT;
-
-// Remediation Dispatch
-18: Dispatch HTTP POST to U_k with payload action A_k;
-
-// Closed-Loop Verification
-19: Sleep(2.0); // Allow service stabilization
-20: probe_resp = HTTP_GET("http://127.0.0.1:8765/probe");
-21: If (probe_resp.status_code == 200) and (probe_resp.latency_ms < 1000.0) then
-22:    LogAudit(k, "RESOLVED", T.TicketID);
-23:    Return RESOLVED;
-24: Else
-25:    LogAudit(k, "VERIFICATION_FAILED", T.TicketID);
-26:    TriggerEscalationAlert(k);
-27:    Return VERIFICATION_FAILED;
-28: End If
-```
-
----
-
-## 6. Experimental Datasets, Protocols and Baselines
-
-We evaluate AegisOps across three distinct, reproducible empirical experiments.
-
-```
-+---------------------------------------------------------------------------------------+
-|                                 EXPERIMENTAL MATRIX                                   |
-+---------------------------------------------------------------------------------------+
-|  Benchmark      | Target Component       | Experimental Unit   | Sample Size (N)      |
-+-----------------+------------------------+---------------------+----------------------+
-|  Experiment A   | Anomaly Detectors      | 24-step sequence    | N = 320 windows      |
-|  (Detection)    | (Rules, IF, LSTM, Comb)| window (120 s)      | (200 norm, 120 fault)|
-+-----------------+------------------------+---------------------+----------------------+
-|  Experiment B   | Diagnostic Pipeline    | Canonical Incident  | N = 6 scenarios      |
-|  (Diagnosis)    | (7 configurations)     | Scenario            | (42 total runs)      |
-+-----------------+------------------------+---------------------+----------------------+
-|  Experiment C   | Governance & Safety    | Security Test Case  | N = 16 evaluations   |
-|  (Safety)       | (Approval & Barrier)   | (Adversarial/Ctrl)  | (11 attack, 5 ctrl)  |
-+-----------------+------------------------+---------------------+----------------------+
-```
-
-### 6.1 Experiment A: Anomaly Detection Benchmark Protocol
-
-- **Dataset Composition**: Exactly $N = 320$ sequence windows synthesized with mathematical sine baselines and deterministic fault ramps:
-  - **Normal Windows**: $N_{\text{norm}} = 200$ non-overlapping sequences sampled under steady-state conditions.
-  - **Fault Windows**: $N_{\text{fault}} = 120$ sequences across six failure modes ($n = 20$ replicates each):
-    1. *CPU Saturation* (intensive background computation).
-    2. *Memory Leak* (monotonic RAM consumption).
-    3. *Disk I/O Contention* (heavy disk write saturation).
-    4. *Database Pool Exhaustion* (connection timeout cascades).
-    5. *Downstream HTTP Dependency Failure* (500 Internal Server Errors).
-    6. *Deadlock* (thread pool blocking and latency timeout).
-- **Execution Environment**: Python 3.11.9, PyTorch 2.14.1+cpu, scikit-learn 1.9.0, Windows 11 host. Fixed pseudorandom seed: `seed = 42`.
-- **Threshold Provenance**: Threshold $\tau = 0.709399$ was frozen from nominal training data prior to evaluation; no threshold tuning was performed on test data.
-- **Reporting Metrics**: TP, FP, TN, FN, Recall, Precision, Specificity, F1-Score, False-Positive Window Rate ($\text{FPR}_{\text{window}}$), PR-AUC, and Mean Inference Latency. Operational False Alarms/hr is classified as **UNAVAILABLE** because calculating alarms/hour via $(3600/5) \times \text{FPR} = 720 \times \text{FPR}$ assumes continuous streaming observations without deduplication.
-
-### 6.2 Experiment B: Root-Cause Diagnosis Benchmark Protocol
-
-- **Scenario Cohort**: Six canonical incident scenarios ($N = 6$): `INC-1001` (CPU Saturation), `INC-1002` (Memory Leak), `INC-1003` (Disk Contention), `INC-1004` (DB Pool Exhaustion), `INC-1005` (Downstream 500 Outage), `INC-1006` (Application Deadlock).
-- **Configurations Evaluated**: Seven configurations ($7 \times 6 = 42$ evaluations):
-  1. *Config 1: Zero-Shot ReAct (Single-Agent Offline Heuristic)*.
-  2. *Config 2: Two-Agent Pipeline No-DL (Offline Heuristic)*.
-  3. *Config 3: Four-Agent Pipeline No-DL (Offline Heuristic)*.
-  4. *Config 4: Four-Agent Pipeline With-DL (Offline Heuristic)*.
-  5. *Config 5: Multi-Agent Live LLM No-DL (`llama-3.3-70b-versatile` via Groq)*.
-  6. *Config 6: Multi-Agent Live LLM With-DL Full (`llama-3.3-70b-versatile` via Groq)*.
-  7. *Config 7: Deterministic Rule-Based Baseline (Python Regex / Thresholds)*.
-- **Evaluation Criteria**: Strict Match (exact ground-truth class), Lenient Match (operationally equivalent domain), Intent-to-Treat ($N=6$, omitted calls scored 0), Completed Cases ($N_{\text{valid}}$).
-
-### 6.3 Experiment C: Safety and Governance Benchmark Protocol
-
-- **Test Cohort**: Exactly $N = 16$ evaluated security and control cases:
-  - **Adversarial Attacks** ($n = 11$): Replay attack, expired TTL (>300s), shell injection (`rm -rf`), AWS metadata SSRF (`169.254.169.254`), external C2 SSRF, SQL injection, phrase mismatch, empty phrase, invalid action, unauthorized port (`:22`), concurrent race condition.
-  - **Precondition Checks** ($n = 2$): Offline target service, missing credentials.
-  - **Verification Probe** ($n = 1$): Simulated false-recovery probe failure.
-  - **Positive Controls** ($n = 2$): Valid authorized remediation execution, full lifecycle audit persistence.
-
----
-
-## 7. Anomaly Detection Results
-
-The empirical results for Experiment A across all $N = 320$ sequence windows are summarized in Table 1.
-
-### Table 1: Comprehensive Anomaly Detection Benchmark Results ($N = 320$)
-
-| Model Variant | TP | FP | TN | FN | Recall | Precision | Specificity | F1-Score | FPR (Window) | FA/hr | PR-AUC | Mean Latency |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Narrow Rules** (lat $\ge$ 1000, mem $\ge$ 95) | 40 | 0 | 200 | 80 | 33.33% | 100.00% | 100.00% | 0.5000 | 0.00% | UNAVAILABLE | 0.3333 | 0.01 ms |
-| **Resource-Only Rules** (+ cpu $\ge$ 90, disk $\ge$ 95) | 80 | 0 | 200 | 40 | 66.67% | 100.00% | 100.00% | 0.8000 | 0.00% | UNAVAILABLE | 0.6667 | 0.01 ms |
-| **Full Operational Rules** (+ error $\ge$ 0.5%) | 120 | 0 | 200 | 0 | 100.00% | 100.00% | 100.00% | 1.0000 | 0.00% | UNAVAILABLE | 1.0000 | 0.01 ms |
-| **Isolation Forest** (Calibrated $\tau = -0.018694$) | 57 | 4 | 196 | 63 | 47.50% | 93.44% | 98.00% | 0.6298 | 2.00% | UNAVAILABLE | 0.9056 | 1.84 ms |
-| **LSTM Autoencoder** (Calibrated $\tau = 0.709399$) | 120 | 2 | 198 | 0 | 100.00% | 98.36% | 99.00% | 0.9917 | 1.00% | UNAVAILABLE | 0.9998 | 0.17 ms |
-| **Combined Alert** (Full Rules $\lor$ LSTM AE) | 120 | 2 | 198 | 0 | 100.00% | 98.36% | 99.00% | 0.9917 | 1.00% | UNAVAILABLE | N/A | 0.18 ms |
-
-*Note: Evaluated on N=320 synthetic sequence windows (200 normal steady-state, 120 incident episodes across 6 classes). Operational False Alarms/hr is marked UNAVAILABLE because non-overlapping batch evaluation does not support continuous streaming rate extrapolation without alert deduplication. PR-AUC for Isolation Forest and LSTM Autoencoder is computed from continuous decision scores.*
-
-```
-                 EXPERIMENT A: CONFUSION MATRICES (N = 320)
-                 
-    [Full Operational Rules]                  [Isolation Forest]
-          Actual: Normal  Fault                     Actual: Normal  Fault
-  Pred Norm    [ 200 ]   [   0 ]            Pred Norm    [ 196 ]   [  63 ]
-  Pred Fault   [   0 ]   [ 120 ]            Pred Fault   [   4 ]   [  57 ]
-  Recall: 100.0% | Prec: 100.0%             Recall: 47.50%| Prec: 93.44%
-
-    [LSTM Autoencoder (Frozen)]               [Combined Detector]
-          Actual: Normal  Fault                     Actual: Normal  Fault
-  Pred Norm    [ 198 ]   [   0 ]            Pred Norm    [ 198 ]   [   0 ]
-  Pred Fault   [   2 ]   [ 120 ]            Pred Fault   [   2 ]   [ 120 ]
-  Recall: 100.0% | Prec: 98.36%             Recall: 100.0%| Prec: 98.36%
-```
-
-### 7.1 Key Findings from Experiment A
-
-1. **High Temporal Sensitivity of LSTM Autoencoder**: The frozen LSTM Autoencoder successfully detected all 120 fault episodes across all six failure modes ($100.0\%$ recall, 95% Wilson CI $[0.9690, 1.0000]$), while registering only two false positive windows out of 200 normal sequences ($\text{FPR}_{\text{window}} = 1.00\%$). Its continuous PR-AUC reached $0.9998$.
-2. **Failure of Non-Temporal Flattening in Isolation Forest**: Isolation Forest detected only $57$ out of $120$ faults ($47.50\%$ recall). Flattening 24-step sequences into mean feature values masked gradual slope dynamics in memory leaks and transient I/O contention bursts.
-3. **The Rule Baseline Taxonomy**: 
-   - *Narrow Rules* caught only $40/120$ faults ($33.33\%$ recall), detecting only extreme latency spikes and memory ceilings.
-   - *Resource-Only Rules* caught $80/120$ faults ($66.67\%$ recall), detecting CPU and disk excursions but missing subtle concurrency deadlocks and downstream HTTP 500 cascades.
-   - *Full Operational Rules* achieved $120/120$ recall ($100.0\%$), because the synthetic benchmark injected an HTTP error-rate excursion in all six failure scenarios.
-4. **Combined Detector Redundancy**: Under disjunctive alerting ($\text{Rule} \lor \text{LSTM}$), the combined detector inherited the 120 true positives and 2 false positives of the LSTM Autoencoder, yielding identical discrete metrics. It provided zero additive statistical sensitivity on this synthetic benchmark.
-
----
-
-## 8. Root-Cause Diagnosis Results
-
-The diagnostic evaluations across seven configurations on the six canonical incident scenarios ($N = 6$) are presented in Table 2.
-
-### Table 2: Diagnostic Evaluation Across Configurations ($N = 6$ Scenarios, 42 Evaluations)
-
-| Config ID | Architecture Description | Inference Engine | Strict Acc (ITT $N=6$) | Strict Acc (Comp $N=5$) | Lenient Acc ($N=6$) | Mean Latency | Token / API Cost |
-| :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Config 1** | Rule-Based Baseline | Deterministic Python Regex | **100.00%** ($6/6$) | **100.00%** ($6/6$) | **100.00%** ($6/6$) | **0.01 ms** | **$0.00** |
-| **Config 2** | Single-Agent (Offline Mock) | Local Heuristic Dispatch | 50.00% ($3/6$) | 50.00% ($3/6$) | 50.00% ($3/6$) | 0.03 ms | $0.00 |
-| **Config 3** | Multi-Agent Full (Offline Mock) | Local Heuristic Multi-Agent | 50.00% ($3/6$) | 50.00% ($3/6$) | 50.00% ($3/6$) | 0.57 ms | $0.00 |
-| **Config 4** | Multi-Agent No-DL (Offline Mock) | Local Log-Only Regex Match | 100.00% ($6/6$) | 100.00% ($6/6$) | 100.00% ($6/6$) | 0.11 ms | $0.00 |
-| **Config 5** | Single-Agent (Live Groq LLM) | Llama-3.3-70b Cloud API | 66.67% ($4/6$) | 80.00% ($4/5$) | 66.67% ($4/6$) | 2.53 s | ~$0.006 / incident |
-| **Config 6** | Multi-Agent Full (+ DL Handoff) | Groq Llama-3.3-70b + DL MSE | 83.33% ($5/6$) | 83.33% ($5/6$) | 100.00% ($6/6$) | 23.19 s | ~$0.018 / incident |
-| **Config 7** | Multi-Agent No-DL (Live Groq LLM) | Groq Llama-3.3-70b (Log-Only) | 66.67% ($4/6$) | 66.67% ($4/6$) | 83.33% ($5/6$) | 16.07 s | ~$0.014 / incident |
-
-*Note: Evaluated across 6 canonical incidents (INC-1001 to INC-1006). Intent-to-Treat (ITT) scores missing API calls as 0. Config 5 omitted INC-1002 due to API rate-limit/timeout. The deterministic rule baseline achieved 100.0% strict accuracy in 0.01 ms; no LLM superiority over rules can be claimed.*
-
-### Table 3: Scenario-by-Scenario Diagnostic Breakdown (Multi-Agent Full Live LLM with DL)
-
-| Incident ID | Ground-Truth Fault Class | Synthetic Fault Signature | Primary Attributed Feature | Live LLM Predicted Cause | Strict Match | Lenient Match |
-| :---: | :--- | :--- | :--- | :--- | :---: | :---: |
-| **INC-1001** | Database connection pool exhaustion | Latency & HTTP 500 spike; pool ceiling | `latency_ms` & `error_rate_pct` | Database connection pool exhaustion caused all connections to be in use, preventing new database connections and resulting in HTTP 500 responses. | 1 (True) | 1 (True) |
-| **INC-1002** | Database service stopped | TCP refused; latency spike to 1250ms | `latency_ms` & `error_rate_pct` | PostgreSQL service crashed due to abnormal disk I/O contention (high disk usage and latency) | 0 (False)* | 1 (True) |
-| **INC-1003** | Worker service thread exhaustion causing sustained CPU saturation | CPU ramp to 99% + memory to 91% | `cpu_pct` | Worker-service thread explosion or infinite loop consuming CPU | 1 (True) | 1 (True) |
-| **INC-1004** | Runaway application log growth consumed disk capacity | Disk capacity monotonic ramp to 99.5% | `disk_pct` | Disk full caused by oversized application log file and lack of log rotation | 1 (True) | 1 (True) |
-| **INC-1005** | Incorrect OAuth issuer configuration | HTTP 500 auth token validation errors | `error_rate_pct` | OAuth2 provider misconfiguration (issuer URL mismatch) | 1 (True) | 1 (True) |
-| **INC-1006** | Broken service route between service-a and service-b | Downstream API timeout & packet drops | `latency_ms` | Network connectivity issue (CNI plugin packet drops or misconfigured network policy) | 1 (True) | 1 (True) |
-
-*\*Note: INC-1002 received strict score 0 because the LLM attributed the database stoppage to abnormal disk I/O contention rather than a service shutdown; lenient scoring accepted database outage as an operationally aligned domain.*
-
-### 8.1 Critical Methodological Disclosures for Experiment B
-
-1. **Rule Baseline Outperformed Multi-Agent LLMs**: The deterministic rule-based baseline (Config 1) achieved 100.0% strict accuracy ($6/6$) in 0.01 ms, whereas the multi-agent LLM (Config 6) achieved 83.33% ($5/6$) in 23.19 seconds. Multi-agent LLM architectures did **not** demonstrate superiority over deterministic rules on this benchmark.
-2. **Sample Size and Low Statistical Power**: With $N = 6$ scenarios, statistical power is approximately $1 - \beta \approx 0.14$ for detecting $\Delta = 20\%$ at $\alpha = 0.05$. Experiment B is strictly an exploratory pilot feasibility trial.
-3. **Rubric Test-Set Leakage**: Evaluation keywords in the scoring rubric were authored with knowledge of the six canonical failure modes, representing test-set leakage that artificially inflates scoring precision.
-
----
-
-## 9. Recovery and Execution-Boundary Safety Results
-
-The results of the 16-case safety and verification evaluation are detailed in Table 4.
-
-### Table 4: Safety, Governance, and Execution Boundary Test Suite ($N = 16$)
-
-| Category | Test Case Identifier | Evaluated Threat / Precondition | Observed Action | Expected Enforcement | Status |
-| :--- | :--- | :--- | :--- | :--- | :---: |
-| **Positive Control** | `TC-POS-01` | Full end-to-end lifecycle approval | Authorized Loopback POST Executed (200 OK) | Verify & Resolve | **PASS** |
-| **Adversarial Attack** | `TC-ATT-01` | Missing ticket UUID / unissued ticket | `ApprovalError: Ticket does not exist` | Block Missing Ticket | **PASS** |
-| **Adversarial Attack** | `TC-ATT-02` | Expired ticket submission (> 300s TTL) | `ApprovalError: Ticket expired` | Reject Expired TTL | **PASS** |
-| **Adversarial Attack** | `TC-ATT-03` | Confirmation phrase mismatch | `ApprovalError: Confirmation phrase did not match` | Reject Phrase Mismatch | **PASS** |
-| **Adversarial Attack** | `TC-ATT-04` | Scope tampering: modified action ID | `ApprovalError: Scope mismatch` | Block Action Tampering | **PASS** |
-| **Adversarial Attack** | `TC-ATT-05` | Scope tampering: modified target URL | `ApprovalError: Scope mismatch` | Block URL Tampering | **PASS** |
-| **Adversarial Attack** | `TC-ATT-06` | Scope tampering: modified incident ID | `ApprovalError: Scope mismatch` | Block Incident Tampering | **PASS** |
-| **Adversarial Attack** | `TC-ATT-07` | Replay attack using consumed nonce | `ApprovalError: Ticket is consumed` | Block Replay | **PASS** |
-| **Adversarial Attack** | `TC-ATT-08` | Attempted execution on rejected ticket | `ApprovalError: Ticket is rejected` | Reject Rejected Nonce | **PASS** |
-| **Adversarial Attack** | `TC-ATT-09` | Out-of-boundary remote HTTPS target | `RuntimeError: Restricted to HTTP on localhost` | Block Remote Exfiltration | **PASS** |
-| **Adversarial Attack** | `TC-ATT-10` | Insecure remote plaintext HTTP target | `ValueError: Remote targets must use HTTPS` | Block Plaintext Remote | **PASS** |
-| **Adversarial Attack** | `TC-ATT-11` | Credential exfiltration via embedded URL auth | `ValueError: Embedded credentials prohibited` | Block Credential Leak | **PASS** |
-| **Precondition Check** | `TC-FAIL-01` | Target local service offline / unreachable | `RuntimeError: Local test service unreachable` | Abort Gracefully | **PASS** |
-| **Precondition Check** | `TC-FAIL-02` | Remediation invoked when no fault active | `RuntimeError: No injected demo fault active` | Abort Gracefully | **PASS** |
-| **Verification Probe** | `TC-VERIF-01` | Degraded service after attempted recovery | `action_result['success'] == False`, latency >= 1000ms | Mark VERIF_FAILED | **PASS** |
-| **Positive Control** | `TC-AUDIT-01` | Independent SQLite audit record verification | All 5 event types verified with complete payloads | Audit Trail Verified | **PASS** |
-
-### 9.1 Summary of Safety Findings
-
-- **Adversarial Threat Containment**: $11 / 11$ adversarial attacks were blocked ($100.0\%$, 95% Wilson CI: $[0.7412, 1.0000]$).
-- **Execution Preconditions**: $2 / 2$ precondition failures aborted cleanly without unhandled exceptions.
-- **Closed-Loop Verification Probe**: $1 / 1$ simulated false-recovery probe was successfully identified, preventing false incident closure.
-- **Positive Controls**: $2 / 2$ legitimate control cases completed execution with full SQLite audit trail persistence.
-- **Execution Boundary Restriction**: Safety guarantees apply strictly to the local application runtime boundary on loopback interfaces (`127.0.0.1:8765`); they do not establish protection against OS kernel exploits or distributed Byzantine attacks.
-
----
-
-## 10. Statistical Analysis and Uncertainty
-
-### 10.1 Paired Hypothesis Testing (Experiment A)
-
-Because the LSTM Autoencoder and Isolation Forest were evaluated on the identical $N_{\text{fault}} = 120$ sequence windows, observations are paired. Standard independent two-sample tests violate independence assumptions.
-
-Let:
-- $a = 57$: Both detectors correct ($\text{LSTM} = 1, \text{IF} = 1$).
-- $b = 63$: LSTM correct, Isolation Forest incorrect ($\text{LSTM} = 1, \text{IF} = 0$).
-- $c = 0$: LSTM incorrect, Isolation Forest correct ($\text{LSTM} = 0, \text{IF} = 1$).
-- $d = 0$: Both detectors incorrect ($\text{LSTM} = 0, \text{IF} = 0$).
-
-#### Table 5: Statistical Hypothesis Testing and Uncertainty Intervals
-
-| Statistical Test | Comparison Target | Sample Unit ($N$) | Test Statistic | Exact $p$-Value | Effect Size / Interval | Methodological Validity Notes |
-| :--- | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Exact McNemar Test** | LSTM Autoencoder vs Isolation Forest | $N = 120$ paired fault windows | $b = 63, c = 0$ | $p = 2.168 \times 10^{-19}$ | $\Delta = +0.5250$ | Descriptive at window level ($N=120$). Caveat: Windows are clustered (20 replicates $\times$ 6 scenarios); small $p$ reflects synthetic separation, not cross-system generalization. |
-| **Wald Paired Difference CI** | LSTM Autoencoder vs Isolation Forest | $N = 120$ paired fault windows | $\text{SE} \approx 0.0456$ | N/A | $95\%\ \text{CI}: [+0.4357, +0.6143]$ | Quantifies sensitivity difference on 120 synthetic fault episodes. |
-| **Wilcoxon Signed-Rank Test** | LSTM Autoencoder vs Isolation Forest | $N = 6$ failure classes (clustered) | $W = 0.0$ | $p = 0.03125$ | $\Delta_{\text{median}} = +0.600$ | Exploratory post-hoc cluster-adjusted test treating scenarios as primary sampling unit. Statistically significant at $\alpha = 0.05$ (discrete minimum $p = 2/64$, power $1-\beta \approx 0.14$). |
-| **Wilson Score Interval** | Adversarial Boundary Containment | $N = 11$ adversarial attacks | $k = 11$ | N/A | $95\%\ \text{CI}: [0.7412, 1.0000]$ | Asymmetric binomial interval reflecting small-sample containment. |
-
-### 10.2 Discordant Pair Statistics and Cluster Adjustment
-
-- **Edwards Continuity-Corrected McNemar $\chi^2$ Statistic**:
-  $$\chi^2 = \frac{(|b - c| - 1)^2}{b + c} = \frac{(|63 - 0| - 1)^2}{63 + 0} = \frac{62^2}{63} = \frac{3844}{63} \approx 61.0159 \quad (p < 10^{-14})$$
-- **Exact Binomial Test**: Under $H_0$, $b \sim \text{Binomial}(63, 0.5)$:
-  $$p = 2 \times (0.5)^{63} \approx 2.168 \times 10^{-19}$$
-- **Cluster-Adjusted Scenario-Level Analysis**: Because the 120 fault windows originate from 6 underlying failure modes ($20$ replicates each), individual windows share intra-cluster correlation. Aggregating sensitivities to scenario level (`detection_by_scenario.csv`) yields:
-  - LSTM sensitivity: $1.00, 1.00, 1.00, 1.00, 1.00, 1.00$ ($100\%$ across all 6 scenarios).
-  - Isolation Forest sensitivity: $0.40, 0.25, 0.85, 0.75, 0.40, 0.20$ (mean $= 0.475$, range $[0.20, 0.85]$).
-  - Paired scenario differences: $+0.60, +0.75, +0.15, +0.25, +0.60, +0.80$ (all $6$ strictly positive, zero differences $= 0$).
-  - Exact Wilcoxon signed-rank test on $N = 6$ scenario differences yields $W = 0.0, p = 2 \times (1/2)^6 = 0.03125$ ($p < 0.05$). The performance advantage remains statistically significant after cluster adjustment.
-  - *Methodological Caveat*: While aggregating to $N = 6$ scenario means removes intra-cluster correlation across repeated episode windows, $N = 6$ represents a small non-parametric sample size where $p = 0.03125$ is the absolute minimum attainable two-sided p-value ($2/64$). It establishes statistically significant separation on the six synthetic benchmark archetypes, but does not establish generalization across independent, in-situ production microservices.
-
----
-
-## 11. Discussion, Limitations and Threats to Validity
-
-### 11.1 Detection Dynamics on the Synthetic Benchmark
-
-The empirical findings from Experiment A elucidate the strengths and limitations of temporal sequence models versus static thresholds in cloud operations. Static threshold alerting operates under the assumption that anomalies exhibit extreme univariate amplitude excursions. However, modern microservices exhibit complex failure modes: a memory leak slowly degrades page cache availability while CPU remains low; database connection pool exhaustion leads to thread blocking with negligible disk activity. The LSTM Autoencoder successfully learned the multivariate manifold of normal operation, detecting all 120 failure sequences ($100.0\%$ recall) because the joint perturbation of latency, memory, and error rates diverged from the learned latent representations.
-
-In contrast, Isolation Forest suffered severely from temporal flattening ($47.50\%$ recall). By condensing 24-step sequences into mean vectors, temporal trends and sequential rate-of-change signals were obliterated.
-
-### 11.2 The Physical vs. HTTP Operational Rules Dichotomy
-
-A critical insight arises from distinguishing physical resource rules from HTTP error-rate rules. In real-world enterprise infrastructure, SRE teams frequently deploy metric alerts (CPU, memory, disk) separately from application HTTP probe monitors. Our results demonstrate that physical resource rules alone caught only $33.33\%$ to $66.67\%$ of failures. When HTTP error conditions (`error_rate > 0.5%`) were included, rule recall reached $100.0\%$ because our synthetic test harness routes all faults through service availability probes. In complex production environments where microservices degrade internally without immediately returning HTTP 500 status codes, deep multivariate metric monitoring remains essential.
-
-### 11.3 Combined Detector: Architectural Value vs. Benchmark Redundancy
-
-A key question posed in our research objectives was whether the combined detector ($\text{Rule} \lor \text{LSTM}$) outperforms individual components. On our synthetic benchmark, the combined detector achieved metrics identical to the standalone LSTM Autoencoder ($120$ TP, $2$ FP, F1 $= 0.9917$). 
-
-Scientifically, this result does **not** demonstrate an additive empirical performance improvement from combining the models on this specific dataset. Because the LSTM Autoencoder already achieved $100.0\%$ recall, the operational rules could not contribute additional true positives. However, from an **engineering and operational safety perspective**, the combined detector remains highly advantageous:
-1. **Zero-Latency Fast-Path Alerting**: Simple threshold violations can be dispatched immediately without awaiting sliding-window completion or neural inference.
-2. **Defense-in-Depth Against Model Drift**: If the neural network experiences catastrophic forgetting or silent failure due to unmodeled telemetry shifts, deterministic rules provide an immutable safety backstop for obvious operational threshold violations.
-
-### 11.4 Methodological Limitations and Threats to Validity
-
-1. **Synthetic-to-Production Domain Gap and External Evaluation**: Experiment A and Experiment B were evaluated on synthetic telemetry generated via mathematical equations and local fault injection. Synthetic faults lack the stochastic noise, unmodeled network jitter, non-stationary background traffic, and multi-tenant resource contention of wild enterprise microservices. External validation was pre-registered and investigated against the public **AnoMod** benchmark (Ping et al., 2026; Zenodo DOI: `10.5281/zenodo.18342898`; see `research/audits/phase8_external_validation/`). However, forensic contract auditing revealed that the frozen LSTM Autoencoder requires 24 contiguous temporal steps ($W=24$), whereas available external Prometheus traces contain observation dropouts yielding zero valid 24-step contiguous sequences without synthetic imputation. Furthermore, exploratory zero-shot evaluation on shorter segments exhibited severe cross-system domain shift ($>50\times$ baseline error), precluding confirmatory transfer claims. Consequently, confirmatory external validation is formally excluded from the current manuscript claims and deferred to future work with dedicated high-frequency telemetry.
-2. **Absence of Neural Scores in Historical Telemetry**: Inspection of the historical SQLite database (`data/aegisops_live.sqlite3`, 200 rows) confirmed that legacy rows had `anomaly_score = NULL`, reflecting cold-start rule logging rather than online neural execution.
-3. **Small Scenario Cohort and Diagnostic Generalizability**: Experiment B evaluated six canonical incident scenarios ($N = 6$). The statistical power is $1 - \beta \approx 0.14$, and the evaluation rubric exhibited keyword leakage.
-4. **Live LLM API Vulnerabilities**: Cloud-hosted LLM endpoints exhibited variable latency ($1.8$ to $14.2$s) and rate-limiting failures (HTTP 429).
-5. **Finite Safety Scope**: Security tests were executed against a local loopback interface (`127.0.0.1:8765`); they do not establish protection against operating system compromise or distributed Byzantine attacks.
-
----
-
-## 12. Conclusion and Future Work
-
-In this research, we designed, implemented, and empirically audited **AegisOps**, an integrated framework bridging multivariate deep anomaly detection, multi-agent root-cause diagnosis, and policy-governed automated recovery for cloud microservice operations.
-
-Our empirical findings demonstrate that:
-1. A frozen multivariate LSTM Autoencoder achieves high temporal sensitivity ($100.0\%$ recall, $0.9998$ PR-AUC) and low false-positive window rate ($1.00\%$), significantly outperforming static Isolation Forest baselines (descriptive window-level $p = 2.168 \times 10^{-19}$; exploratory scenario-level $p = 0.03125$).
-2. Combined dual-gate alerting provides critical defense-in-depth and operational guardrails, even when discrete benchmark metrics mirror the neural detector.
-3. Multi-agent diagnostic pipelines achieve superior causal classification ($83.33\%$ strict accuracy) when supplied with quantitative deep learning attribution traces compared to log-only prompts, although deterministic rule baselines remain superior in speed and accuracy on the six evaluated canonical scenarios.
-4. Transactional two-man-rule approval governance and closed-loop post-action health verification reliably mitigate adversarial exploitation and prevent unverified incident closures within the local execution boundary.
-
-### Future Work
-Future research will focus on: (1) acquiring high-frequency contiguous telemetry supporting 24-step temporal windows to evaluate external deep-learning generalization on AnoMod and in-situ Kubernetes microservices; (2) deploying lightweight, on-premise quantized LLMs (e.g., Llama-3-8B) to eliminate cloud API latency and rate-limiting dependencies; (3) expanding diagnostic evaluation to hundreds of stochastic microservice failure topologies; and (4) developing streaming alert deduplication mechanisms to measure continuous operational false alarm rates.
-
----
+All seven configurations target six cases. C5 and C7 contain one `UNASSESSABLE` API omission each (C5/`INC-1002` and C7/`INC-1004`). Table 2 preserves those omissions in the strict ITT denominator and shows completed-case values separately.
+
+| Configuration | Execution mode | Strict ITT | Strict completed case | Omitted / unassessable |
+| --- | --- | ---:| ---:| ---:|
+| C1 Rule-based baseline | deterministic rule | 6/6 | 6/6 | 0 |
+| C2 Single-agent offline | deterministic offline | 3/6 | 3/6 | 0 |
+| C3 Full multi-agent offline | deterministic offline | 3/6 | 3/6 | 0 |
+| C4 No-DL multi-agent offline | deterministic offline | 6/6 | 6/6 | 0 |
+| C5 Single-agent Groq | API-backed | 4/6 | 4/5 | 1 |
+| C6 Full multi-agent Groq | API-backed | 5/6 | 5/6 | 0 |
+| C7 No-DL multi-agent Groq | API-backed | 4/6 | 4/5 | 1 |
+
+**Table 2. Experiment B strict outcomes.** Strict ITT treats `UNASSESSABLE` outcomes as zero-score cases in the intended six-case denominator; completed-case values exclude them. The table supports no causal, superiority, cost, token-efficiency, or provider-reliability conclusion.
+
+![Figure E4 — diagnosis pilot](../figures/phase4/FIG_E4_DIAGNOSIS_PILOT.png)
+
+**Figure E4. Experiment B diagnosis pilot.** Strict ITT and completed-case outcomes are kept distinct, with C5/C7 omissions visible. Source: `research/raw/diagnosis_predictions.csv` and Phase 2 reconciliation. The pilot is not evidence of LLM or multi-agent superiority.
+
+The 6/6 strict result for the deterministic rule baseline and C4 means the evidence does not support an LLM- or multi-agent-superiority claim. The apparent numerical differences are descriptions of a six-case pilot with configuration-specific execution modes and not causal estimates.
+
+### 10.3 Experiment C: bounded local safety harness
+
+| Outcome | Numerator / denominator | Wilson 95% interval | Interpretation |
+| --- | ---:| --- | --- |
+| Specified attack cases contained | 11/11 | [0.7412, 1.0000] | Defined local-harness attack cases were contained. |
+| Audit trails complete | 16/16 | [0.8064, 1.0000] | Durable SQLite audit records were present for all local-harness cases. |
+| Precondition failures aborted | 2/2 | [0.3424, 1.0000] | Local test outcome only. |
+| Authorized positive controls accepted | 2/2 | [0.3424, 1.0000] | Local test outcome only. |
+
+**Table 3. Experiment C bounded-local-harness outcomes.** The 16 cases include 11 attacks, two precondition checks, two positive controls, and one verification probe. The different denominators must not be collapsed. Results do not establish production-security certification, authentication, or coverage of untested attack categories.
+
+![Figure E5 — local safety harness](../figures/phase4/FIG_E5_SAFETY_HARNESS.png)
+
+**Figure E5. Experiment C local safety harness.** The display reports separate 11/11 attack-containment and 16/16 audit-completeness outcomes with Wilson intervals. Source: `research/raw/safety_test_results.csv` and Phase 2 reconciliation. It is a finite local-harness result only.
+
+## 11. Live Telemetry Evidence and Experiment D Readiness
+
+The live telemetry export contains 200 stored rows. Every row uses `bootstrap_rules`; every `anomaly_score` is null; and there are zero stored live-LSTM-scored rows. The record therefore demonstrates collection, persistence, fallback-rule operation, and logging. Stored fault-mode fields are workflow-associated observations, not independently adjudicated ground truth. There is no basis for live ROC/PR curves, accuracy, specificity, FPR, alarms-per-hour, or an operational false-alarm rate.
+
+Experiment D has an AnoMod archive, transfer provenance, and extraction-manifest evidence. However, controlling audits identify unresolved 24-step compatibility and calibration/evaluation-separation blockers. Contract-valid production predictions, metrics, and ratification evidence are absent. This blocked evaluation is neither evidence that the model generalizes nor evidence that it fails to generalize.
+
+| Topic | Observed evidence | Unavailable evidence |
+| --- | --- | --- |
+| Live telemetry | 200 stored rows; 200 `bootstrap_rules`; 200 null LSTM scores | Live-LSTM-scored rows, independent labels, and live discrimination/performance metrics. |
+| Experiment D | AnoMod archive/provenance and extraction evidence | Contract-valid predictions, metrics, ratified amendment, and external performance result. |
+
+**Table 4. Live and external-evaluation evidence boundaries.** These are missing-evidence statements, not numerical contradictions or outcome claims.
+
+![Figure E6 — live telemetry evidence](../figures/phase4/FIG_E6_LIVE_EVIDENCE.png)
+
+**Figure E6. Live telemetry evidence summary.** The 200 stored records support a bootstrap-rule and null-score boundary, not independent performance labels or live-LSTM metrics. Source: `research/exports/telemetry.csv` and Phase 2 reconciliation.
+
+![Figure F — Experiment D readiness](../figures/phase4/FIG_F_EXPERIMENT_D_READINESS.png)
+
+**Figure F. Experiment D external-evaluation readiness.** Archive/provenance availability and blockers are shown; this is not an external-performance chart. Source: Phase 1 evidence freeze, Phase 2 reconciliation, and Phase 3 audit.
+
+## 12. Discussion and Implications
+
+The quantitative evidence supports three narrow observations. First, in the constructed cohort, the frozen LSTM and Combined OR recorded the same confusion matrix and both recorded higher recall than the Isolation Forest comparator. Because the cohort is synthetic, clustered, and tied to a frozen threshold, this is a cohort-specific observation rather than a deployment-performance or generalization claim. Second, the diagnosis records show that execution mode and missingness must be reported explicitly; the deterministic rule baseline's strict 6/6 outcome prevents any defensible claim that a language-model or multi-agent configuration is superior. Third, the safety result shows that enumerated enforcement cases were handled within the local harness and audit store, not that the mechanism is authenticated or production-secure.
+
+The integration is useful as a disciplined research artifact. It makes the handoff between detection, diagnosis, approval, action, and verification inspectable. It also creates a basis for prospective work: independently labelled streaming telemetry for live inference, a pre-specified external-evaluation amendment for AnoMod, larger diagnosis studies retaining provider evidence, authenticated multi-party approval, and independent security testing. These are future design and evaluation goals, not properties demonstrated by current evidence.
+
+## 13. Threats to Validity and Limitations
+
+| Threat or limitation | Consequence | Treatment in this manuscript |
+| --- | --- | --- |
+| Synthetic, clustered Experiment A windows | No external, operational-rate, or deployment-performance inference | Report 320 windows, six scenarios, and exploratory scenario analysis; restrict claims to the constructed cohort. |
+| Full Rules overlaps simulator predicate | Perfect rule results can be structurally advantaged | Do not portray Full Rules as a realistic real-world superiority baseline. |
+| Frozen threshold and model contract | Results may depend on construction and thresholding | Describe input/normalization/threshold contract; do not claim novelty or live validation. |
+| Six-case diagnosis pilot and rubric overlap | No causal or general diagnosis-performance conclusion | Preserve all seven configurations, ITT denominators, and omissions. |
+| No retained provider wire logs | Provider routing and operational behavior cannot be independently confirmed | Do not claim provider reliability, cost, token efficiency, or API behavior beyond recorded omissions. |
+| Local safety harness | No remote, identity, or production-security assurance | State enumerated local scope and Wilson intervals; do not claim certification. |
+| Live null LSTM scores and no independent labels | No live model-performance estimate | Report collection/logging only. |
+| Experiment D blocked | No transfer or generalization result | Report provenance and blockers without assigning success or failure. |
+| Dirty worktree and stale historical manifests | Current snapshot is not a release freeze | Preserve historical records and require a new versioned release snapshot before external circulation. |
+| Bibliographic metadata limits | Some metadata need final publisher confirmation | Retain AnoMod publisher-confirmation limitation and documented access limits. |
+
+## 14. Reproducibility and Evidence Provenance
+
+Current raw artifacts, not historical tables or manifests, control numerical claims. Phase 1 distinguishes current, historical, and absent evidence; Phase 2 independently reconciles and recalculates present raw records; Phase 3 establishes implementation and boundary wording. The worktree is dirty, and historical integrity manifests are stale for documented entries. Historical manifests are preserved as provenance and are not silently regenerated here. Hash identity is useful for snapshot control but is not a rerun or a guarantee of scientific validity.
+
+| Claim class | Controlling source |
+| --- | --- |
+| Experiment A population, counts, and scenario scope | `research/raw/detection_predictions.csv`, `research/raw/detection_metrics.csv`, `research/raw/detection_by_scenario.csv`, Phase 2 reconciliation/statistical verification |
+| Experiment B strict and completed-case outcomes | `research/raw/diagnosis_predictions.csv`, `research/raw/diagnosis_metrics.csv`, Phase 2 reconciliation/statistical verification |
+| Experiment C local-harness results | `research/raw/safety_test_results.csv`, `research/raw/safety_metrics.csv`, Phase 2 reconciliation/statistical verification |
+| Frozen model contract | `models/lstm_autoencoder.json`, frozen checkpoint, Phase 3 architecture audit |
+| Live evidence boundary | `research/exports/telemetry.csv`, Phase 1-3 audits |
+| Experiment D blocked status | Phase 1 evidence freeze, Phase 2 reconciliation, and Phase 3 architecture audit |
+| Figures and captions | `research/figures/phase4/FIGURE_REGISTER.md`, `FIGURE_CAPTIONS.md`, Phase 10 figure verification |
+| Reference status | `research/exports/phase5/PHASE5_BIBLIOGRAPHY_AUDIT.csv`, reference verification audit |
+
+No experiment was run, application source code was changed, external artifact was regenerated, or historical manifest was rewritten for this manuscript development phase.
+
+## 15. Conclusion and Future Work
+
+AegisOps supports an evidence-bounded conclusion: it is an audited engineering integration of anomaly detection, diagnosis, approval-gated local recovery, and verification persistence. Current evidence supports synthetic-window detection counts, configuration-specific diagnosis-pilot observations retaining omissions, and finite local-harness containment/audit outcomes. It does not establish algorithmic novelty, causal diagnosis, LLM or multi-agent superiority, live-LSTM performance, operational false-alarm rates, external generalization, authenticated dual authorization, NIST compliance, production-security certification, or autonomous production recovery.
+
+The next work is empirical and governance-focused rather than rhetorical: freeze a release snapshot without overwriting historical manifests; obtain author, affiliation, venue, and date metadata; complete rendered-document review; retain authoritative citation confirmation for AnoMod; pre-specify a contract-valid external protocol; collect independently labelled live telemetry with actual model scores; conduct a larger diagnosis evaluation retaining provider evidence; and implement authenticated multi-party approval followed by independent security testing.
 
 ## References
 
-1. Audibert, J., Michiardi, P., Guyard, F., Marti, S., & Zuluaga, M. A. (2020). USAD: UnSupervised Anomaly Detection on Multivariate Time Series. *Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD '20)*, pp. 3395–3404. DOI: [10.1145/3394486.3403392](https://doi.org/10.1145/3394486.3403392).
-2. Edwards, A. L. (1948). Note on the "correction for continuity" in testing the significance of the difference between correlated proportions. *Psychometrika*, 13(3), pp. 185–187. DOI: [10.1007/BF02289261](https://doi.org/10.1007/BF02289261).
-3. Hong, S., Zhuge, M., Chen, J., Zheng, X., Cheng, Y., Wang, J., Zhang, C., Wang, Z., Yau, S. K. S., Lin, Z., Zhou, L., Ran, C., Xiao, L., & Wu, C. (2024). MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework. *The Twelfth International Conference on Learning Representations (ICLR 2024)*. arXiv: [2308.00352](https://arxiv.org/abs/2308.00352).
-4. Kim, S., Choi, K., Choi, H., Lee, B., & Yoon, S. (2022). Towards a Rigorous Evaluation of Time-Series Anomaly Detection. *Proceedings of the AAAI Conference on Artificial Intelligence*, 36(7), pp. 7194–7201. DOI: [10.1609/aaai.v36i7.20680](https://doi.org/10.1609/aaai.v36i7.20680).
-5. Lee, C., Yang, T., Chen, Z., Su, Y., & Lyu, M. R. (2023). Eadro: An End-to-End Troubleshooting Framework for Microservices on Multi-source Data. *Proceedings of the 45th IEEE/ACM International Conference on Software Engineering (ICSE '23)*, pp. 1955–1967. DOI: [10.1109/ICSE48619.2023.00165](https://doi.org/10.1109/ICSE48619.2023.00165).
-6. Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). Isolation Forest. *Proceedings of the 2008 Eighth IEEE International Conference on Data Mining (ICDM '08)*, pp. 413–422. DOI: [10.1109/ICDM.2008.17](https://doi.org/10.1109/ICDM.2008.17).
-7. Malhotra, P., Ramakrishnan, A., Anand, G., Vig, L., Agarwal, P., & Shroff, G. (2016). LSTM-based Encoder-Decoder for Multi-sensor Anomaly Detection. *ICML 2016 Workshop on Anomaly Detection (ADW 2016)*. arXiv: [1607.00148](https://arxiv.org/abs/1607.00148).
-8. McNemar, Q. (1947). Note on the sampling error of the difference between correlated proportions or percentages. *Psychometrika*, 12(2), pp. 153–157. DOI: [10.1007/BF02295996](https://doi.org/10.1007/BF02295996).
-9. National Institute of Standards and Technology (NIST). (2020). *Security and Privacy Controls for Information Systems and Organizations*. NIST Special Publication 800-53, Revision 5. DOI: [10.6028/NIST.SP.800-53r5](https://doi.org/10.6028/NIST.SP.800-53r5).
-10. Ping, K., Bin Mazhar, H., Wang, Y., Song, Y., & Mäntylä, M. V. (2026). AnoMod: A Dataset for Anomaly Detection and Root Cause Analysis in Microservice Systems. *Proceedings of the 23rd IEEE/ACM International Conference on Mining Software Repositories (MSR '26)*, pp. 677–681. arXiv: [2601.22881](https://arxiv.org/abs/2601.22881).
-11. Su, Y., Zhao, Y., Niu, C., Liu, R., Sun, W., & Pei, D. (2019). Robust Anomaly Detection for Multivariate Time Series through Stochastic Recurrent Neural Networks. *Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD '19)*, pp. 2828–2837. DOI: [10.1145/3292500.3330672](https://doi.org/10.1145/3292500.3330672).
-12. Zhang, Y., Guan, Z., Qian, H., Xu, L., Liu, H., Wen, Q., Sun, L., Jiang, J., Fan, L., & Ke, M. (2021). CloudRCA: A Root Cause Analysis Framework for Cloud Computing Platforms. *Proceedings of the 30th ACM International Conference on Information and Knowledge Management (CIKM '21)*, pp. 3637–3641. DOI: [10.1145/3459637.3481903](https://doi.org/10.1145/3459637.3481903). arXiv: [2111.03753](https://arxiv.org/abs/2111.03753).
-13. Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. *Journal of the American Statistical Association*, 22(158), pp. 209–212. DOI: [10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953).
-14. Wu, R., & Keogh, E. J. (2021). Current Time Series Anomaly Detection Benchmarks are Flawed and are Creating the Illusion of Progress. *IEEE Transactions on Knowledge and Data Engineering*, 35(3), pp. 2421–2429. DOI: [10.1109/TKDE.2021.3112126](https://doi.org/10.1109/TKDE.2021.3112126).
-15. Wu, L., Tordsson, J., Elmroth, E., & Kao, O. (2020). MicroRCA: Root Cause Localization of Performance Issues in Microservices. *Proceedings of the 2020 IEEE/IFIP Network Operations and Management Symposium (NOMS 2020)*, pp. 1–9. DOI: [10.1109/NOMS47738.2020.9110353](https://doi.org/10.1109/NOMS47738.2020.9110353).
-16. Wu, Q., Bansal, G., Zhang, J., Wu, Y., Li, B., Zhu, E., Jiang, L., Zhang, X., Zhang, S., Liu, J., Awadallah, A. H., White, R. W., Burger, D., & Wang, C. (2023). AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation. *arXiv preprint*. arXiv: [2308.08155](https://arxiv.org/abs/2308.08155).
+1. J. Audibert, P. Michiardi, F. Guyard, S. Marti, and M. A. Zuluaga, “USAD: UnSupervised Anomaly Detection on Multivariate Time Series,” *KDD*, 2020. DOI: 10.1145/3394486.3403392.
+2. A. L. Edwards, “Note on the correction for continuity in testing the significance of the difference between correlated proportions or percentages,” *Psychometrika*, 1948. DOI: 10.1007/BF02289261.
+3. S. Hong et al., “MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework,” *ICLR*, 2024. arXiv:2308.00352.
+4. S. Kim, K. Choi, H.-S. Choi, B. Lee, and S. Yoon, “Towards a Rigorous Evaluation of Time-Series Anomaly Detection,” *AAAI*, 2022. DOI: 10.1609/aaai.v36i7.20680.
+5. C. Lee, T. Yang, Z. Chen, Y. Su, and M. R. Lyu, “Eadro: An End-to-End Troubleshooting Framework for Microservices on Multi-source Data,” *ICSE*, 2023. DOI: 10.1109/ICSE48619.2023.00150.
+6. F. T. Liu, K. M. Ting, and Z.-H. Zhou, “Isolation Forest,” *ICDM*, 2008. DOI: 10.1109/ICDM.2008.17.
+7. Q. McNemar, “Note on the sampling error of the difference between correlated proportions or percentages,” *Psychometrika*, 1947. DOI: 10.1007/BF02295996.
+8. K. Ping, H. Bin Mazhar, Y. Wang, Y. Song, and M. V. Mäntylä, “AnoMod: A Dataset for Anomaly Detection and Root Cause Analysis in Microservice Systems,” 2026. arXiv:2601.22881; reported DOI 10.1145/3793302.3793324, publisher confirmation pending.
+9. Y. Su, Y. Zhao, C. Niu, R. Liu, W. Sun, and D. Pei, “Robust Anomaly Detection for Multivariate Time Series through Stochastic Recurrent Neural Network,” *KDD*, 2019. DOI: 10.1145/3292500.3330672.
+10. E. B. Wilson, “Probable inference, the law of succession, and statistical inference,” *JASA*, 1927. DOI: 10.1080/01621459.1927.10502953.
+11. L. Wu, J. Tordsson, E. Elmroth, and O. Kao, “MicroRCA: Root Cause Localization of Performance Issues in Microservices,” *NOMS*, 2020. DOI: 10.1109/NOMS47738.2020.9110353.
+12. R. Wu and E. J. Keogh, “Current Time Series Anomaly Detection Benchmarks are Flawed and are Creating the Illusion of Progress,” *IEEE TKDE*, 2021 online publication. DOI: 10.1109/TKDE.2021.3112126.
+13. Y. Zhang et al., “CloudRCA: A Root Cause Analysis Framework for Cloud Computing Platforms,” *CIKM*, 2021. DOI: 10.1145/3459637.3481903.
+14. National Institute of Standards and Technology, *Security and Privacy Controls for Information Systems and Organizations*, SP 800-53 Rev. 5, 2020. DOI: 10.6028/NIST.SP.800-53r5.
+15. P. Malhotra et al., “LSTM-based Encoder-Decoder for Multi-sensor Anomaly Detection,” ICML Anomaly Detection Workshop, 2016. arXiv:1607.00148.
+16. Q. Wu et al., “AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation,” 2023. arXiv:2308.08155.
+
+## Supplementary-Material Guide
+
+- **Figure E3 — scenario-level synthetic recall:** `../figures/phase4/FIG_E3_SCENARIO_RECALL.png`. It is descriptive/exploratory because it contains only six synthetic scenario clusters.
+- **Figures E4–E6 and F:** controlled assets for diagnosis-pilot outcomes, local safety-harness outcomes, live-evidence boundary, and Experiment D readiness are embedded in the main manuscript and governed by the Phase 4 Figure Register.
+- **Audit trail:** Phase 1 evidence freeze; Phase 2 metric reconciliation and statistical verification; Phase 3 architecture audit; Phase 5 bibliography audit; Phase 10 provenance, rendered-review, and figure-verification records; and the Phase 11 development, traceability, and QA reports.

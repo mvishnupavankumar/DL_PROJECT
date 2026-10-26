@@ -5,7 +5,7 @@ graph TB
         TicketRecord[("Approval Ticket in SQLite<br/>Nonce: UUIDv4<br/>TTL: 300s<br/>Target: http://127.0.0.1:8765<br/>Expected Phrase: 'APPROVE <nonce>'<br/>Status: PENDING")]
     end
 
-    subgraph HumanAuthorization["2. Two-Man-Rule Human Approval Gate"]
+    subgraph HumanAuthorization["2. Human Approval Gate"]
         HumanOperator["Human SRE / Operator<br/>Reviews Incident Diagnostic Context"]
         RiskAssessment{"Review Safety & Scope<br/>Verify Remediation Impact"}
         SubmitApproval["Submit Approval Call<br/>approve_ticket(ticket_id, phrase)"]
@@ -29,7 +29,7 @@ graph TB
     subgraph PostActionVerification["5. Post-Remediation Verification & Audit Closure"]
         VerificationProbe["Verification Probe<br/>GET /probe & GET /health"]
         HealthEvaluation{"Health Criteria Met?<br/>HTTP Status == 200 AND<br/>Response Latency < 1000ms"}
-        IncidentResolved["Incident Status: RESOLVED<br/>Write Immutable Audit Record"]
+        IncidentResolved["Incident Status: RESOLVED<br/>Write Durable Audit Record"]
         IncidentRollback["Incident Status: VERIFICATION_FAILED<br/>Escalate Alert to High Priority"]
     end
 

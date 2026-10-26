@@ -8,6 +8,8 @@
 **Key Package Versions**: PyTorch `2.14.1`, Scikit-Learn `1.9.0`, SciPy `1.17.1`, Pandas `3.0.6`, NumPy `2.4.6`, Streamlit `1.42.0`, FastAPI `0.115.11`, Uvicorn `0.34.0`, Pytest `9.1.1`  
 **Auditors & Investigators**: Senior ML Researcher, Software Test Engineer, and Research-Methodology Auditor  
 
+> **Historical-report notice (2026-10-14):** This October 12 report is preserved for provenance and must not be used as the current metric source. `research/exports/FINAL_RAW_CSV_RECALCULATION.txt` and `research/paper/CANONICAL_METRIC_RECONCILIATION.md` supersede its stale PR-AUC, false-alarm-rate, diagnosis, and safety summaries.
+
 ---
 
 ## 1. Executive Summary & Audit Scope

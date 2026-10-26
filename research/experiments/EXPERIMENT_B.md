@@ -5,6 +5,8 @@
 **Tested Architectures**: Rule-based, Single-Agent, Multi-Agent (with DL), Multi-Agent (without DL / ablation).  
 **Execution Modes Evaluated**: Deterministic Offline Handlers vs. Live Cloud LLM (`openai/gpt-oss-20b`).
 
+> **Audit-correction note (2026-10-14):** This report preserves its original historical summary table. The current audited source of truth is `research/raw/diagnosis_predictions.csv`, `research/raw/diagnosis_metrics.csv`, and `research/paper/CANONICAL_METRIC_RECONCILIATION.md`. In particular, Config 5 and Config 7 each have completed-case strict accuracy of **4/5 = 80.00%**, not 100%; their omitted rows are `INC-1002` and `INC-1004`, respectively, both `UNASSESSABLE` due to the documented Groq TPM limit.
+
 ---
 
 ## 1. Experimental Methodology & Rubric

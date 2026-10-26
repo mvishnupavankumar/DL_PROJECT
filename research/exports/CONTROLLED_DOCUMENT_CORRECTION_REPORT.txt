@@ -1,0 +1,165 @@
+AegisOps — Controlled Manuscript and Evidence-Document Correction Report
+Date: 2026-10-14
+Scope: targeted documentation-only correction pass authorized by FINAL_RAW_CSV_RECALCULATION.txt.
+Final verdict: DOCUMENT CORRECTIONS COMPLETE — FINAL MANUAL REVIEW REQUIRED
+
+======================================================================
+1. REPOSITORY AND EVIDENCE BOUNDARY
+======================================================================
+Repository: C:\DL_PROJECT
+Branch / HEAD: publish/research-without-external-dataset / a32713c30a8ddca1425d44b1afbaf6d55a64c276 (both matched the expected state).
+The working tree was already dirty before this pass. Existing user modifications were preserved; no reset, checkout, stash, commit, push, merge, rebase, or branch switch occurred.
+
+No experiment was run. No live API was called. No raw CSV, source metrics CSV, model, threshold, checkpoint, production code, Experiment D protocol, external dataset, historical manifest, or package artifact was edited. The raw evidence hashes used by the prior gate remain:
+  detection_predictions.csv  246e14f8b84b8b89cbfce180fd7722ae82820f516894aa5dd11462866d10cfbb
+  diagnosis_predictions.csv  d43e43370349a1d005cd7de14aa1488486780fc459c2f796559241137b7d1a68
+  safety_test_results.csv    19391636c705166981b56120835b2b0a0b12218defaeffc899474acb8f220985
+
+Primary authority: research/exports/FINAL_RAW_CSV_RECALCULATION.txt.
+  Section 3: Experiment A recalculation and PR-AUC discrepancy.
+  Section 4: Experiment B denominators, omissions, and latencies.
+  Section 5: Experiment C taxonomy, containment interval, and latency.
+  Section 6: bibliography and approval-implementation limitations.
+  Section 7: historical-manifest status.
+
+======================================================================
+2. FILES CHANGED
+======================================================================
+Active manuscript/evidence documents corrected:
+  research/paper/AEGISOPS_RESEARCH_PAPER.md
+  research/paper/CANONICAL_METRIC_RECONCILIATION.md
+  research/paper/REFERENCE_VERIFICATION.md
+  research/paper/MANUSCRIPT_CLAIM_EVIDENCE_MATRIX.md
+  research/paper/FINAL_EVIDENCE_AUDIT.md
+  research/paper/FINAL_MANUSCRIPT_CHECKLIST.md
+  research/paper/MANUSCRIPT_FINALIZATION_PLAN.md
+  research/paper/00_MANUSCRIPT_EVIDENCE_GATE.md
+  research/paper/FIGURE_AND_TABLE_INDEX.md
+  research/paper/FIGURE_AND_TABLE_REGISTER.md
+  research/SAFETY_EVALUATION.md
+
+Historical/provenance documents annotated rather than rewritten:
+  research/experiments/EXPERIMENT_B.md
+  research/experiments/EXPERIMENT_C.md
+  research/FINAL_EXPERIMENT_REPORT.md
+  research/audits/MANUSCRIPT_CONSISTENCY_AUDIT.md
+
+This report is the sole new artifact from the correction pass.
+
+======================================================================
+3. EXPERIMENT A CORRECTIONS
+======================================================================
+Corrected LSTM trapezoidal PR-AUC:
+  Old active claim: 0.9998.
+  Corrected claim: 1.0000 from the current lstm_score rows.
+  Method: sklearn precision_recall_curve followed by trapezoidal auc(recall, precision), the method documented in run_experiment_a.py.
+  Supporting audit: FINAL_RAW_CSV_RECALCULATION.txt, Section 3.
+  Average precision remains a distinct metric and was not substituted for PR-AUC.
+
+The manuscript, canonical reconciliation, evidence gate, figure/table index, final evidence audit, final checklist, and conclusion now use 1.0000 or explicitly identify 0.9998 as unreproducible historical output. The canonical reconciliation records both the calculation method and the historical runner's binary-rule PR-AUC behavior.
+
+Verified current detection table values retained:
+  Operational Rules: TP 120, FP 0, TN 200, FN 0; precision 1.0000; recall 1.0000; specificity 1.0000; F1 1.0000; FPR 0.0000.
+  Isolation Forest: TP 57, FP 4, TN 196, FN 63; precision 0.9344; recall 0.4750; specificity 0.9800; F1 0.6298; FPR 0.0200.
+  LSTM Autoencoder: TP 120, FP 2, TN 198, FN 0; precision 0.9836; recall 1.0000; specificity 0.9900; F1 0.9917; FPR 0.0100.
+  Combined Alert: TP 120, FP 2, TN 198, FN 0; precision 0.9836; recall 1.0000; specificity 0.9900; F1 0.9917; FPR 0.0100.
+
+The paired counts b=63 and c=0 and exact two-sided McNemar p≈2.1684×10^-19 were retained with the required synthetic-clustering caveat. The manuscript continues to state that Combined Alert has no additive observed detection benefit over the LSTM.
+
+Narrow Rules (33.33%) and Resource-Only Rules (66.67%) are now explicitly identified as historical comparator outputs, not independently recalculated final-raw-CSV results. The final raw prediction table contains no flags for those variants. This limitation is marked UNVERIFIED in the claim-evidence matrix and finalization plan.
+
+======================================================================
+4. EXPERIMENT B CORRECTIONS
+======================================================================
+The active manuscript and canonical narrative already agreed with the audited table; their definitions remain explicit:
+  Strict ITT = strict successes / all six intended incidents.
+  Completed-case strict = strict successes / completed cases, excluding only documented omissions.
+  Lenient ITT = existing rubric lenient successes / six intended incidents.
+  Mean completed latency excludes non-executed zero-placeholder rows.
+
+Historical Experiment B report annotation added:
+  Old active-looking claim: Config 5 and Config 7 each achieved 100% strict accuracy on five completed cases.
+  Corrected audited result: each is 4/5 = 80.00% completed-case strict; both are 4/6 = 66.67% strict ITT.
+  Omitted records: Config 5 / INC-1002 and Config 7 / INC-1004, each UNASSESSABLE due to the documented Groq TPM rate limit.
+  Supporting audit: FINAL_RAW_CSV_RECALCULATION.txt, Section 4.
+
+The report retains its original table for provenance but now points readers to the canonical raw CSVs and reconciliation document. No LLM-supremacy, token-usage, provider-billing, or provider-wire-log claim was added.
+
+======================================================================
+5. EXPERIMENT C CORRECTIONS
+======================================================================
+Active safety documentation now consistently reports:
+  total evaluations = 16;
+  attack cases = 11 (TC-ATT-01 through TC-ATT-11);
+  attack containment = 11/11 = 100.0%, Wilson 95% CI [0.7412, 1.0000];
+  precondition checks = 2/2;
+  verification probes = 1/1;
+  positive controls = 2/2;
+  audit completeness = 16/16;
+  mean attack-enforcement latency = 11.32 ms.
+
+Old active claim: SAFETY_EVALUATION.md final prose used Wilson [0.7719, 1.0000].
+Corrected claim: [0.7412, 1.0000].
+Supporting audit: FINAL_RAW_CSV_RECALCULATION.txt, Section 5.
+
+EXPERIMENT_C.md retains its original 15-test/four-probe/10.64-ms table only as a plainly labeled historical report. It now directs readers to the current raw records and canonical reconciliation. The safety runner source still contains the old 0.7719 text; it was not changed because this pass forbids production-code edits. Rerunning that source could reintroduce stale prose and is a remaining maintenance blocker.
+
+======================================================================
+6. BIBLIOGRAPHIC AND GOVERNANCE CORRECTIONS
+======================================================================
+Eadro:
+  Old: pp. 1955–1967.
+  Corrected: pp. 1750–1762, with the verified author list and title retained.
+  Source: https://research.cuhk.edu.hk/en/publications/eadro-an-end-to-end-troubleshooting-framework-for-microservices-o-2/
+
+AnoMod:
+  Verified unchanged: “AnoMod: A Dataset for Anomaly Detection and Root Cause Analysis in Microservice System”; DOI 10.1145/3793302.3793324; pp. 677–681.
+  Source: https://researchportal.helsinki.fi/en/publications/anomod-a-dataset-for-anomaly-detection-and-root-cause-analysis-in/
+
+CloudRCA:
+  Old: pp. 3637–3641.
+  Corrected: pp. 4373–4382, retaining the verified ten-author list and DOI 10.1145/3459637.3481903.
+  Source: https://ir.webis.de/anthology/publications/rec%2Bconf%2Bcikm%2BZhangGQXLW0JFK21
+
+MetaGPT:
+  Corrected the canonical reconciliation/reference author ordering and names to retain Jinlin Wang, Ceyao Zhang, Chenyu Ran, Lingfeng Xiao, and Jürgen Schmidhuber in the official ICLR author list.
+  Source: https://proceedings.iclr.cc/paper_files/paper/2024/hash/6507b115562bb0a305f1958ccc87355a-Abstract-Conference.html
+
+NIST dual authorization:
+  The active documentation now uses the requested NIST SP 800-53 Rev. 5 control-enhancement designation AC-3(2), “Dual Authorization,” and accurately limits its description to designated actions approved by two authorized individuals.
+  Implementation limitation added wherever the governance claim is active: approval.py has one unauthenticated approved_by label and does not enforce two distinct authenticated approvers. AegisOps therefore does not claim NIST-compliant or validated dual authorization.
+  Source requested for final manual review: https://csrc.nist.gov/CSRC/media/Projects/risk-management/800-53%20Downloads/800-53r5/SP_800-53_v5_1-derived-OSCAL.pdf
+
+REFERENCES_VERIFICATION.md remains preserved and labeled SUPERSEDED. It was not rewritten; its incorrect metadata remains historical rather than canonical.
+
+======================================================================
+7. FIGURES, TABLES, AND REMAINING REVIEW ITEMS
+======================================================================
+No raster figure was changed. Figure A.1 and A.2 display the verified confusion-matrix/bar-chart counts for Full Rules, Isolation Forest, LSTM, and Combined Alert; they do not embed the corrected PR-AUC value. The figure/table register and index were updated to state that Table 1 is CORRECTED and that Narrow/Resource values are historical comparators.
+
+Manual review still required:
+  1. Render the manuscript to PDF and perform visual/table-layout review.
+  2. Confirm all citations against the publisher/official records during final reference QA, including the requested AC-3(2) designation.
+  3. Decide whether to archive or update the dated audit copies that still contain 0.9998. They are retained as historical evidence and are identified by dated/archive paths or supersession notices.
+  4. Do not run the existing safety-report generator until its stale interval text is separately corrected under authorization.
+  5. Obtain raw flags or frozen evaluator output before promoting Narrow/Resource historical comparator values to independently verified results.
+
+======================================================================
+8. FINAL CROSS-DOCUMENT SWEEP
+======================================================================
+Active manuscript/canonical occurrences of 0.9998, page ranges 1955–1967 and 3637–3641, stale safety interval 0.7719, and the active 100%-on-five-completed diagnosis claims were corrected or converted to explicit historical-discrepancy notes.
+
+Residual occurrences are classified as follows:
+  - Dated audit/reconciliation copies and backup outputs with 0.9998: historical evidence; preserved, not active metrics.
+  - REFERENCES_VERIFICATION.md: explicitly superseded historical bibliography; preserved.
+  - research/experiments/run_safety_audit.py: stale generator source, not edited under this documentation-only scope; manual maintenance blocker.
+  - EXPERIMENT_C.md historical table: preserved with an explicit audit-correction note.
+
+The current claim-evidence matrix and finalization plan distinguish VERIFIED, CORRECTED, UNVERIFIED, and BLOCKED. Full Rules are VERIFIED; Narrow/Resource comparator claims are UNVERIFIED from the final raw-CSV perspective; Experiment D remains BLOCKED/excluded by the existing bounded-claims policy.
+
+======================================================================
+9. FINAL GIT / DIFF SUMMARY
+======================================================================
+The repository remains on the expected branch and commit, with no staged changes created by this pass. Existing working-tree modifications were not reverted. This pass added the report and made only the documentation changes listed in Section 2. git diff --check completed without whitespace errors; Windows line-ending warnings reflect pre-existing checkout normalization conditions, not evidence changes.
+
+DOCUMENT CORRECTIONS COMPLETE — FINAL MANUAL REVIEW REQUIRED

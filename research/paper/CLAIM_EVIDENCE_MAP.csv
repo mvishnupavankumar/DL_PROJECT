@@ -1,0 +1,30 @@
+claim_id,major_claim,claim_type,controlling_source,source_class,status,boundary
+C01,AegisOps contains telemetry persistence rules optional inference diagnosis approval and local demonstration recovery,implementation,PHASE3_IMPLEMENTATION_ARCHITECTURE_AUDIT.md; FIG_A_ARCHITECTURE.png,source audit and controlled figure,verified,Implemented components are not proof of use in every evaluation.
+C02,Frozen model contract is 24 time steps five ordered features and threshold 0.7093990445137024,implementation/model contract,models/lstm_autoencoder.json,metadata,verified,Synthetic-benchmark artifact; not live model evidence.
+C03,Experiment A contains 320 windows with 200 nominal and 120 fault across six scenarios,result,research/raw/detection_predictions.csv,raw observations,verified,Synthetic constructed cohort only.
+C04,LSTM confusion counts are TP120 FP2 TN198 FN0,result,research/raw/detection_predictions.csv,raw observations,verified,No operational rate or external-generalization inference.
+C05,Isolation Forest confusion counts are TP57 FP4 TN196 FN63,result,research/raw/detection_predictions.csv,raw observations,verified,Synthetic comparator only.
+C06,Combined OR has same confusion counts as LSTM,result,research/raw/detection_predictions.csv,raw observations,verified,Does not demonstrate additive sensitivity.
+C07,LSTM versus Isolation Forest discordant counts are b63 c0 and exact p about 2.1684e-19,derived statistic,PHASE2_STATISTICAL_VERIFICATION.md; detection_predictions.csv,derived analysis plus raw source,verified,Descriptive within clustered synthetic cohort.
+C08,Experiment B has 42 records across seven configurations and six cases,result,research/raw/diagnosis_predictions.csv,raw observations,verified,Pilot; not independent replications.
+C09,C5 INC-1002 and C7 INC-1004 are UNASSESSABLE in strict ITT,result,research/raw/diagnosis_predictions.csv,raw observations,verified,Must not be removed from strict ITT denominator.
+C10,Experiment C contained 11 of 11 specified attacks and completed 16 of 16 audit trails,result,research/raw/safety_test_results.csv; safety_metrics.csv,raw observations and metrics,verified,Bounded local harness only.
+C11,Live export has 200 records all bootstrap_rules and all null LSTM scores,result,research/exports/telemetry.csv,operational export,verified,No live-LSTM performance or independent labels.
+C12,AnoMod archive provenance exists but valid external evaluation is blocked,status,PHASE1_EVIDENCE_FREEZE_AUDIT.md; EXPERIMENT_D_READINESS_VERDICT.md,audit records,verified,No predictions metrics or ratified amendment.
+C13,LSTM encoder-decoder and Isolation Forest are established prior art,related work,PHASE5_BIBLIOGRAPHY_AUDIT.csv; References 6 and 15,bibliographic primary records,verified,Not an architecture-novelty claim.
+C14,Approval does not establish authenticated dual control or NIST compliance,negative boundary,PHASE3_UNSUPPORTED_ARCHITECTURE_CLAIMS.md; NIST SP 800-53,audit plus standard,verified,Approval label is unauthenticated.
+T01,Table 1 detection counts and rates,table,research/raw/detection_predictions.csv,raw observations,verified,Synthetic-window metrics only; excludes stale alarms-per-hour fields.
+T02,Table 2 diagnosis ITT and completed-case denominators,table,research/raw/diagnosis_predictions.csv; diagnosis_metrics.csv,raw observations and derived metrics,verified,Preserves two UNASSESSABLE omissions.
+T03,Table 3 safety outcomes and Wilson intervals,table,research/raw/safety_test_results.csv; safety_metrics.csv,raw observations and derived metrics,verified,Local-harness denominators only.
+T04,Table 4 live and Experiment D availability,table,research/exports/telemetry.csv; PHASE1_EVIDENCE_FREEZE_AUDIT.md,operational export and audit,verified,No live performance or external result.
+F01,Figure A architecture,figure,PHASE3_DIAGRAM_SPECIFICATION.md; FIG_A_ARCHITECTURE.png,diagram specification and controlled asset,verified,Implementation/observed-path boundary only.
+F02,Figure B frozen model contract,figure,models/lstm_autoencoder.json; FIG_B_FROZEN_LSTM.png,metadata and controlled asset,verified,Synthetic contract only.
+F03,Figure C telemetry flow,figure,telemetry.csv; PHASE3_DIAGRAM_SPECIFICATION.md; FIG_C_TELEMETRY_FLOW.png,export audit and controlled asset,verified,No live scoring/performance.
+F04,Figure D workflow,figure,PHASE3_COMPONENT_SOURCE_TRACEABILITY.csv; FIG_D_DIAGNOSIS_APPROVAL.png,source traceability and controlled asset,verified,No authenticated approval or universal execution.
+F05,Figure E1 detection comparison,figure,detection_predictions.csv; FIG_E1_DETECTION_COMPARISON.png,raw observations and controlled asset,verified,Synthetic results only.
+F06,Figure E2 confusion matrices,figure,detection_predictions.csv; FIG_E2_CONFUSION_MATRICES.png,raw observations and controlled asset,verified,Synthetic results only.
+F07,Figure E3 scenario recall,figure,detection_predictions.csv; FIG_E3_SCENARIO_RECALL.png,raw observations and controlled asset,verified,Exploratory six-scenario analysis.
+F08,Figure E4 diagnosis pilot,figure,diagnosis_predictions.csv; FIG_E4_DIAGNOSIS_PILOT.png,raw observations and controlled asset,verified,No superiority/cost/API claim.
+F09,Figure E5 safety harness,figure,safety_test_results.csv; FIG_E5_SAFETY_HARNESS.png,raw observations and controlled asset,verified,Not production-security certification.
+F10,Figure E6 live evidence,figure,telemetry.csv; FIG_E6_LIVE_EVIDENCE.png,operational export and controlled asset,verified,No independent labels or live performance.
+F11,Figure F Experiment D readiness,figure,PHASE1_EVIDENCE_FREEZE_AUDIT.md; FIG_F_EXPERIMENT_D_READINESS.png,audit and controlled asset,verified,Not external performance.

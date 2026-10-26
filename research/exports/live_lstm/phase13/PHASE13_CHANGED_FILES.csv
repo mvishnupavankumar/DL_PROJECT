@@ -1,0 +1,10 @@
+path,change_type,purpose
+.env.example,modified,Documents explicit checkpoint selection and required gap configuration without a default tolerance
+dl/live_training.py,modified,Adds bounded checkpoint selection provenance identity and gap parser while retaining existing loader
+live_monitoring.py,modified,Adds temporal window validation sanitized fallback provenance persistence and UI display
+storage/telemetry_store.py,modified,Adds bounded inference reason vocabulary and additive nullable provenance migration fields
+test_live_monitoring.py,modified,Adds deterministic temporary database selection window failure persistence and migration tests
+research/exports/live_lstm/phase13/PHASE13_IMPLEMENTATION_REPORT.md,created,Phase 13 implementation record
+research/exports/live_lstm/phase13/PHASE13_TEST_RESULTS.md,created,Phase 13 validation and smoke-test record
+research/exports/live_lstm/phase13/PHASE13_CHANGED_FILES.csv,created,Phase 13 changed-file register
+research/exports/live_lstm/phase13/PHASE13_EVIDENCE_PRESERVATION.md,created,Phase 13 evidence preservation record

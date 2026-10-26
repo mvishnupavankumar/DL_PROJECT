@@ -1,9 +1,17 @@
-# AegisOps: Bibliographic References Verification Audit
+# AegisOps: Bibliographic References Verification Audit [SUPERSEDED]
+
+> [!WARNING]
+> **STATUS: SUPERSEDED DOCUMENT**
+> This file (`REFERENCES_VERIFICATION.md`) is historical and contains superseded bibliographic draft entries.
+> The authoritative, canonical reference verification document is:
+> [`research/paper/REFERENCE_VERIFICATION.md`](REFERENCE_VERIFICATION.md)
+> All official citations, author verifications, DOIs, and primary scholarly registries are maintained exclusively in `REFERENCE_VERIFICATION.md`.
 
 **Document Path**: `research/paper/REFERENCES_VERIFICATION.md`  
+**Superseded By**: `research/paper/REFERENCE_VERIFICATION.md`
 **Associated Manuscript**: `research/paper/AEGISOPS_RESEARCH_PAPER.md`  
 **Audit Date**: October 2026  
-**Status**: Fully Verified Against Primary Scholarly Registries (No Hallucinated Citations)  
+**Status**: HISTORICAL / SUPERSEDED
 
 ---
 

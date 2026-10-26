@@ -70,6 +70,28 @@ for config_name, mode, dl_flag in configurations:
         pred = str(row["predicted_cause"])
         pred_lower = pred.lower()
 
+        # Check for omitted/aborted calls (e.g. rate limit / timeout)
+        if (
+            pred_lower.startswith("n/a")
+            or "omitted" in pred_lower
+            or "rate limit" in pred_lower
+            or str(row.get("rubric_verdict", "")).upper() == "UNASSESSABLE"
+        ):
+            records.append({
+                "incident_id": inc_id,
+                "configuration": config_name,
+                "execution_mode": mode,
+                "dl_evidence_supplied": dl_flag,
+                "ground_truth_cause": gt_cause,
+                "predicted_cause": pred,
+                "rubric_verdict": "UNASSESSABLE",
+                "top1_strict": 0,
+                "top1_lenient": 0,
+                "rubric_rationale": "API call omitted or aborted during evaluation due to Groq Cloud free-tier rate limits.",
+                "latency_ms": 0.0,
+            })
+            continue
+
         # Detailed rubric scoring
         verdict = "INCORRECT"
         strict = 0
@@ -209,7 +231,13 @@ for config_name, mode, dl_flag in configurations:
     # Per-Protocol Accuracy (Completed cases only)
     per_protocol_acc = round(strict_correct / completed_incidents, 4) if completed_incidents > 0 else 0.0
 
-    mean_lat = round(float(sub[sub["rubric_verdict"] != "UNASSESSABLE"]["latency_ms"].mean()), 2) if completed_incidents > 0 else 0.0
+    valid_timing = sub[(sub["rubric_verdict"] != "UNASSESSABLE") & (sub["latency_ms"] > 0.0)]
+    if len(valid_timing) > 0:
+        mean_lat = round(float(valid_timing["latency_ms"].mean()), 2)
+    elif completed_incidents > 0:
+        mean_lat = round(float(sub[sub["rubric_verdict"] != "UNASSESSABLE"]["latency_ms"].mean()), 2)
+    else:
+        mean_lat = 0.0
 
     summary_rows.append({
         "configuration": config_name,

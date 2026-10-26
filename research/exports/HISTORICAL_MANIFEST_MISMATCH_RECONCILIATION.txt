@@ -1,0 +1,65 @@
+ AegisOps - Historical Manifest Mismatch Reconciliation
+Date: 2026-10-15
+Scope: read-only comparison of research/MANIFEST_SHA256.json against current files. The historical manifest was not modified or regenerated.
+
+Historical manifest:
+  Path: research/MANIFEST_SHA256.json
+  SHA-256: 659fd33091b3c45405df166adf2fc5da178e00fed52babf8f095709f4c15948a
+  Timestamp recorded in manifest: 2026-10-12T08:44:36Z
+
+Method:
+  For every artifact entry, compare the manifest's relative_path and sha256 with the current on-disk path and SHA-256. All six entries below exist at their recorded paths. There is no missing-file, path-resolution, or comparison-method explanation.
+
+Summary:
+  The historical manifest contains six current hash mismatches. Earlier final-raw and controlled-correction reports documented five: SAFETY_EVALUATION.md plus the four diagnosis/safety raw CSVs. The sixth current mismatch, research/FINAL_EXPERIMENT_REPORT.md, is a real listed-artifact changed-file mismatch and was omitted from that earlier five-item accounting. It is not harmless by assertion; it requires a provenance decision before any new release manifest is made.
+
+1. research/SAFETY_EVALUATION.md
+  Listed in historical manifest: yes
+  Recorded SHA-256: d4e1b41b9113cd3277fb0ef4660a351cff8e8e09762758b47b9ceb1c7213d4d6
+  Current SHA-256:  80ba11097693eb94744959cf7633f5844fa0ac0c985895a9b3b7a31a950fb9fe
+  Recorded/current size: 7752 / 8069 bytes
+  Classification: expected post-audit modification, documented.
+  Evidence: CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt records the Wilson interval correction to [0.7412, 1.0000]. The file is a changed listed artifact, so it cannot be represented as historical-manifest reproduction.
+
+2. research/FINAL_EXPERIMENT_REPORT.md
+  Listed in historical manifest: yes
+  Recorded SHA-256: 6291ae81b0ffade14d9bef983c8f6607894e43366b22b2a9f7bb2096fb646c40
+  Current SHA-256:  e147595fd74b7689cee0a73fe1504389192315a4700efc19e3316c509a7669de
+  Recorded/current size: 19023 / 19357 bytes
+  Classification: changed listed artifact; provenance is partially documented but omission from the prior five-mismatch list is a documentation discrepancy.
+  Evidence: CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt lists this historical report among documents annotated with a current-raw/canonical supersession notice. The raw-evidence report did not list it among its five manifest mismatches. No path or comparison error exists.
+
+3. research/raw/diagnosis_metrics.csv
+  Listed in historical manifest: yes
+  Recorded SHA-256: c3633e23d7a2fc9efeb093394a9bbd84b40578eab9a15c48c713fbf4fb38f403
+  Current SHA-256:  79bf2f53fb0de1c6d24afcb88b475e48c78e8cedd27d45ac051d948d505fc307
+  Recorded/current size: 868 / 862 bytes
+  Classification: changed raw-evidence artifact; reason must remain explicitly reconciled rather than assumed.
+  Evidence: FINAL_RAW_CSV_RECALCULATION.txt and CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt list this diagnosis evidence family among prior manifest mismatches. The current metrics are the raw-evidence authority for current claims but do not match the historical manifest.
+
+4. research/raw/diagnosis_predictions.csv
+  Listed in historical manifest: yes
+  Recorded SHA-256: 7719bdc39f1bf5d3443f486ec66e2319a02a5f9c13ac3dc2eb61c6fad99d8860
+  Current SHA-256:  d43e43370349a1d005cd7de14aa1488486780fc459c2f796559241137b7d1a68
+  Recorded/current size: 11891 / 11982 bytes
+  Classification: changed raw-evidence artifact; reason must remain explicitly reconciled rather than assumed.
+  Evidence: FINAL_RAW_CSV_RECALCULATION.txt and CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt list it among prior manifest mismatches. Current diagnosis reconciliation uses this file, with the historical manifest retained intact.
+
+5. research/raw/safety_metrics.csv
+  Listed in historical manifest: yes
+  Recorded SHA-256: d118d6f221402fbba7537a7ee7ab027f78baa2d85ee49e1aef3fa06f9f0d311c
+  Current SHA-256:  08145f57939c33f8b3db4b017e0833cbfda84a5678f13c54a837ff1335ec0b9a
+  Recorded/current size: 997 / 1126 bytes
+  Classification: changed raw-evidence artifact; reason must remain explicitly reconciled rather than assumed.
+  Evidence: FINAL_RAW_CSV_RECALCULATION.txt and CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt list this safety evidence family among prior manifest mismatches. Current safety values are reconciled separately from the historical manifest.
+
+6. research/raw/safety_test_results.csv
+  Listed in historical manifest: yes
+  Recorded SHA-256: edd67e373f58ffab9c0e64c9072ffa654825bab32261d18717fd4888b3c362cb
+  Current SHA-256:  19391636c705166981b56120835b2b0a0b12218defaeffc899474acb8f220985
+  Recorded/current size: 3008 / 3029 bytes
+  Classification: changed raw-evidence artifact; reason must remain explicitly reconciled rather than assumed.
+  Evidence: FINAL_RAW_CSV_RECALCULATION.txt and CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt list it among prior manifest mismatches. The current suite taxonomy and 16/16 audit data are used with an explicit historical-manifest limitation.
+
+Conclusion:
+  Historical byte-for-byte reproduction is not established. The manifest must remain preserved as a historical record. A future release manifest may be created only after final release contents, author/venue metadata, approved figure assets, and a faithful rendered manuscript are finalized, and only under separate authorization.

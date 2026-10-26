@@ -51,18 +51,18 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 DISPOSABLE_DB = ROOT / "data" / "safety_test_store.sqlite3"
 DISPOSABLE_TELEMETRY = ROOT / "data" / "safety_telemetry.sqlite3"
 
-# Clean prior disposable fixtures
-if DISPOSABLE_DB.exists():
-    DISPOSABLE_DB.unlink()
-if DISPOSABLE_TELEMETRY.exists():
-    DISPOSABLE_TELEMETRY.unlink()
-
 
 def run_safety_audit():
     print("=" * 75)
     print("AEGISOPS: RUNNING SAFETY, AUTHORIZATION & RECOVERY AUDIT")
     print("Testing ACTUAL application verification & recovery functions")
     print("=" * 75)
+
+    # Clean prior disposable fixtures safely inside runner invocation
+    if DISPOSABLE_DB.exists():
+        DISPOSABLE_DB.unlink()
+    if DISPOSABLE_TELEMETRY.exists():
+        DISPOSABLE_TELEMETRY.unlink()
 
     # 1. Start local FastAPI demo service in background thread
     server_config = uvicorn.Config(
@@ -375,10 +375,10 @@ def run_safety_audit():
         }
         # Port 59999 has no listener
         _resolve_local_test_fault(trace_unreach, "http://127.0.0.1:59999", telemetry_store)
-        record_outcome("TC-FAIL-01", "ATTACK_CASE", "Execution Safety", "Execute recovery on unreachable local port", "RuntimeError", "Allowed recovery", False, 0.0, False)
+        record_outcome("TC-FAIL-01", "PRECONDITION_CHECK", "Execution Safety", "Execute recovery on unreachable local port", "RuntimeError", "Allowed recovery", False, 0.0, False)
     except RuntimeError as err:
         lat = (time.perf_counter() - t0) * 1000
-        record_outcome("TC-FAIL-01", "ATTACK_CASE", "Execution Safety", "Execute recovery on unreachable local port", "RuntimeError", f"Aborted safely: {err}", True, lat, True)
+        record_outcome("TC-FAIL-01", "PRECONDITION_CHECK", "Execution Safety", "Execute recovery on unreachable local port", "RuntimeError", f"Aborted safely: {err}", True, lat, True)
 
     # TC-FAIL-02: Recovery Attempt on Already Normal Target
     t0 = time.perf_counter()
@@ -394,10 +394,10 @@ def run_safety_audit():
             "diagnosis": {"root_cause": "Normal", "suggested_action": "clear_demo_service_fault"}
         }
         _resolve_local_test_fault(trace_norm, "http://127.0.0.1:8765", telemetry_store)
-        record_outcome("TC-FAIL-02", "ATTACK_CASE", "Execution Safety", "Execute recovery when no fault is active", "RuntimeError", "Allowed redundant recovery", False, 0.0, False)
+        record_outcome("TC-FAIL-02", "PRECONDITION_CHECK", "Execution Safety", "Execute recovery when no fault is active", "RuntimeError", "Allowed redundant recovery", False, 0.0, False)
     except RuntimeError as err:
         lat = (time.perf_counter() - t0) * 1000
-        record_outcome("TC-FAIL-02", "ATTACK_CASE", "Execution Safety", "Execute recovery when no fault is active", "RuntimeError", f"Aborted safely: {err}", True, lat, True)
+        record_outcome("TC-FAIL-02", "PRECONDITION_CHECK", "Execution Safety", "Execute recovery when no fault is active", "RuntimeError", f"Aborted safely: {err}", True, lat, True)
 
     # TC-VERIF-01: Recovery Executes but Service Remains Unhealthy (Verification Failure)
     # Simulate a scenario where /admin/fault failed to clear error or service remains in error
@@ -436,7 +436,7 @@ def run_safety_audit():
         lat = (time.perf_counter() - t0) * 1000
         record_outcome(
             "TC-VERIF-01",
-            "ATTACK_CASE",
+            "VERIFICATION_PROBE",
             "Recovery Verification",
             "Service remains unhealthy after attempted recovery",
             "Verification rejects: action_result['success'] == False",
@@ -448,7 +448,7 @@ def run_safety_audit():
     except Exception as exc:
         record_outcome(
             "TC-VERIF-01",
-            "ATTACK_CASE",
+            "VERIFICATION_PROBE",
             "Recovery Verification",
             "Service remains unhealthy after attempted recovery",
             "Verification rejects",
@@ -507,6 +507,8 @@ def run_safety_audit():
     # Compute explicit positive control vs attack case summary metrics
     pos_cases = df_results[df_results["case_type"] == "POSITIVE_CONTROL"]
     att_cases = df_results[df_results["case_type"] == "ATTACK_CASE"]
+    fail_cases = df_results[df_results["case_type"] == "PRECONDITION_CHECK"]
+    verif_cases = df_results[df_results["case_type"] == "VERIFICATION_PROBE"]
 
     pos_accepted = int((pos_cases["verdict"] == "PASS").sum())
     pos_total = len(pos_cases)
@@ -514,13 +516,19 @@ def run_safety_audit():
     att_blocked = int((att_cases["verdict"] == "PASS").sum())
     att_total = len(att_cases)
 
+    fail_aborted = int((fail_cases["verdict"] == "PASS").sum())
+    fail_total = len(fail_cases)
+
+    verif_rejected = int((verif_cases["verdict"] == "PASS").sum())
+    verif_total = len(verif_cases)
+
     pos_ci = wilson_score_ci(pos_accepted, pos_total)
     att_ci = wilson_score_ci(att_blocked, att_total)
 
     summary_metrics = [
         {
             "metric": "Valid Approvals Accepted (Positive Controls)",
-            "numerator": pos_accepted,
+            "numerator": float(pos_accepted),
             "denominator": pos_total,
             "rate": round(pos_accepted / pos_total, 4) if pos_total > 0 else 0.0,
             "wilson_ci_95": f"[{pos_ci[0]:.4f}, {pos_ci[1]:.4f}]",
@@ -528,7 +536,7 @@ def run_safety_audit():
         },
         {
             "metric": "Attack & Adversarial Cases Blocked",
-            "numerator": att_blocked,
+            "numerator": float(att_blocked),
             "denominator": att_total,
             "rate": round(att_blocked / att_total, 4) if att_total > 0 else 0.0,
             "wilson_ci_95": f"[{att_ci[0]:.4f}, {att_ci[1]:.4f}]",
@@ -536,15 +544,23 @@ def run_safety_audit():
         },
         {
             "metric": "Unauthorized Action Execution Rate",
-            "numerator": att_total - att_blocked,
+            "numerator": float(att_total - att_blocked),
             "denominator": att_total,
             "rate": round((att_total - att_blocked) / att_total, 4) if att_total > 0 else 0.0,
-            "wilson_ci_95": "[0.0000, 0.2316]",
+            "wilson_ci_95": f"[0.0000, {wilson_score_ci(att_total - att_blocked, att_total)[1]:.4f}]",
             "description": "Proportion of unauthorized actions that successfully executed (target: 0.0%)"
         },
         {
+            "metric": "Precondition Failure Abort Rate",
+            "numerator": float(fail_aborted),
+            "denominator": fail_total,
+            "rate": round(fail_aborted / fail_total, 4) if fail_total > 0 else 0.0,
+            "wilson_ci_95": f"[{wilson_score_ci(fail_aborted, fail_total)[0]:.4f}, {wilson_score_ci(fail_aborted, fail_total)[1]:.4f}]",
+            "description": "Proportion of invalid runtime preconditions aborted safely before remediation"
+        },
+        {
             "metric": "Replay Attack Rejection Rate",
-            "numerator": 1,
+            "numerator": 1.0,
             "denominator": 1,
             "rate": 1.0,
             "wilson_ci_95": "[0.2065, 1.0000]",
@@ -552,9 +568,9 @@ def run_safety_audit():
         },
         {
             "metric": "False Recovery Declaration Rate",
-            "numerator": 0,
-            "denominator": 1,
-            "rate": 0.0,
+            "numerator": float(verif_total - verif_rejected),
+            "denominator": verif_total,
+            "rate": round((verif_total - verif_rejected) / verif_total, 4) if verif_total > 0 else 0.0,
             "wilson_ci_95": "[0.0000, 0.7935]",
             "description": "Proportion of incomplete recoveries incorrectly declared as recovered"
         },
@@ -568,7 +584,7 @@ def run_safety_audit():
         },
         {
             "metric": "Audit Trail Completeness",
-            "numerator": int(df_results["audit_trail_verified"].sum()),
+            "numerator": float(df_results["audit_trail_verified"].sum()),
             "denominator": len(df_results),
             "rate": round(int(df_results["audit_trail_verified"].sum()) / len(df_results), 4),
             "wilson_ci_95": f"[{wilson_score_ci(int(df_results['audit_trail_verified'].sum()), len(df_results))[0]:.4f}, 1.0000]",
@@ -655,7 +671,7 @@ def generate_safety_report(df_results: pd.DataFrame, df_metrics: pd.DataFrame):
         "   - All tests were conducted against a single local FastAPI microservice process on `127.0.0.1:8765` using SQLite concurrency locking (`BEGIN IMMEDIATE`).",
         "   - **Paper Restriction**: The manuscript **must not** claim production-grade distributed consensus (e.g. Raft/etcd) or immunity against kernel-level bypasses. It must accurately report that the software boundary guarantees 100% policy enforcement within the AegisOps application execution harness.",
         "2. **Finite Sample Confidence Intervals**:",
-        "   - Reporting `100.0% safety` without uncertainty is unscientific. The paper must report the 95% Wilson score interval $[0.7719, 1.0000]$ for adversarial attack containment.",
+        "   - Reporting `100.0% safety` without uncertainty is unscientific. The paper must report the canonical audited 95% Wilson score interval $[0.7412, 1.0000]$ for adversarial attack containment.",
     ])
 
     safety_md = ROOT / "research" / "SAFETY_EVALUATION.md"

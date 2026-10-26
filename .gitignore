@@ -1,17 +1,33 @@
+# Environment and secrets
 .venv/
 .env
+.streamlit/secrets.toml
+
+# Python runtime caches, bytecode, and coverage
 __pycache__/
 *.pyc
+*.pyo
 .pytest_cache/
-.DS_Store
-.streamlit/secrets.toml
+.coverage
+htmlcov/
+
+# Local database instances and journal files (preserves schema and code)
 data/*.sqlite3
 data/*.db
-models/live_lstm_autoencoder.pt
-models/live_lstm_autoencoder.json
 *.sqlite
 *.sqlite3-shm
 *.sqlite3-wal
+
+# Live retraining checkpoint artifacts (preserves frozen models/lstm_autoencoder.pt)
+models/live_lstm_autoencoder.pt
+models/live_lstm_autoencoder.json
+
+# Operating system and IDE metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
 
 # External Datasets (Third-party benchmark archives and extracted telemetry)
 /data/external/anomod/

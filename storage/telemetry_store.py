@@ -8,6 +8,17 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB_PATH = ROOT / "data" / "aegisops_live.sqlite3"
+INFERENCE_REASON_CODES = frozenset({
+    "checkpoint_absent",
+    "checkpoint_selection_rejected",
+    "insufficient_rows",
+    "invalid_features",
+    "window_not_ready",
+    "timestamp_gap_exceeded",
+    "checkpoint_load_failure",
+    "inference_failure",
+    "inference_success",
+})
 
 
 class TelemetryStore:
@@ -46,7 +57,10 @@ class TelemetryStore:
                     detector_mode TEXT NOT NULL DEFAULT 'bootstrap_rules',
                     model_anomaly INTEGER,
                     rule_anomaly INTEGER,
-                    combined_anomaly INTEGER
+                    combined_anomaly INTEGER,
+                    inference_reason TEXT,
+                    checkpoint_provenance TEXT,
+                    checkpoint_identity TEXT
                 )
             """)
             # Add columns when upgrading a database created by an earlier prototype build.
@@ -60,6 +74,12 @@ class TelemetryStore:
             columns = {row[1] for row in conn.execute("PRAGMA table_info(telemetry_samples)").fetchall()}
             if "combined_anomaly" not in columns:
                 conn.execute("ALTER TABLE telemetry_samples ADD COLUMN combined_anomaly INTEGER")
+            if "inference_reason" not in columns:
+                conn.execute("ALTER TABLE telemetry_samples ADD COLUMN inference_reason TEXT")
+            if "checkpoint_provenance" not in columns:
+                conn.execute("ALTER TABLE telemetry_samples ADD COLUMN checkpoint_provenance TEXT")
+            if "checkpoint_identity" not in columns:
+                conn.execute("ALTER TABLE telemetry_samples ADD COLUMN checkpoint_identity TEXT")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_timestamp ON telemetry_samples(timestamp)")
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS incident_events (
@@ -119,12 +139,18 @@ class TelemetryStore:
         mode: str,
         model_anomaly: bool | None = None,
         rule_anomaly: bool | None = None,
+        inference_reason: str | None = None,
+        checkpoint_provenance: str | None = None,
+        checkpoint_identity: str | None = None,
     ) -> None:
+        if inference_reason is not None and inference_reason not in INFERENCE_REASON_CODES:
+            raise ValueError("Unsupported inference reason code")
         with self._connect() as conn:
             conn.execute(
                 """UPDATE telemetry_samples
                    SET anomaly_score=?, is_anomaly=?, detector_mode=?,
-                       model_anomaly=?, rule_anomaly=?, combined_anomaly=?
+                       model_anomaly=?, rule_anomaly=?, combined_anomaly=?,
+                       inference_reason=?, checkpoint_provenance=?, checkpoint_identity=?
                    WHERE id=?""",
                 (
                     None if score is None else float(score),
@@ -133,6 +159,9 @@ class TelemetryStore:
                     None if model_anomaly is None else int(model_anomaly),
                     None if rule_anomaly is None else int(rule_anomaly),
                     int(is_anomaly),
+                    inference_reason,
+                    checkpoint_provenance,
+                    checkpoint_identity,
                     int(sample_id),
                 ),
             )

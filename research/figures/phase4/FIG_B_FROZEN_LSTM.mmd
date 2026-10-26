@@ -1,0 +1,11 @@
+flowchart LR
+  X[Input window (24,5)\ncpu, memory, latency, error rate, disk] --> N[Frozen mean/std normalization]
+  N --> E[Encoder LSTM 5→16]
+  E --> H[final h: 16 dimensions]
+  H --> R[repeat h for 24 steps]
+  R --> D[Decoder LSTM 16→16]
+  D --> P[Linear projection 16→5]
+  P --> M[Reconstruction + global MSE]
+  M --> T{score > 0.7093990445137024}
+  T --> F[Per-feature comparisons where applicable]
+  L[Intended live checkpoint\nseparate / unavailable] -. not audited .-> T

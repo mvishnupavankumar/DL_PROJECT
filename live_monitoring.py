@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import time
+from datetime import datetime
 from typing import Any
 from urllib.parse import urlparse
 
@@ -23,7 +24,10 @@ from approval import ApprovalStore, ApprovalError
 from dl.anomaly_detector import FEATURES, SEQUENCE_LENGTH
 from dl.live_training import (
     LIVE_MODEL_PATH,
+    CheckpointSelection,
+    configured_max_inter_sample_gap_seconds,
     load_live_detector,
+    select_inference_checkpoint,
     train_live_model,
 )
 from storage.telemetry_store import TelemetryStore
@@ -138,108 +142,63 @@ def _bootstrap_analysis(sample: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _analyze_latest(
-    store: TelemetryStore,
+def _parse_timestamp(value: Any) -> datetime:
+    parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError("timestamp must include a timezone")
+    return parsed
+
+
+def _valid_inference_window(
     samples: list[dict[str, Any]],
+    max_gap_seconds: float | None,
+) -> tuple[np.ndarray | None, str | None]:
+    """Build a window only when its shape, values, and timestamps are admissible."""
+    if len(samples) < SEQUENCE_LENGTH:
+        return None, "insufficient_rows"
+    if max_gap_seconds is None:
+        return None, "window_not_ready"
+
+    window_rows = samples[-SEQUENCE_LENGTH:]
+    try:
+        window = np.asarray(
+            [[float(row[feature]) for feature in FEATURES] for row in window_rows],
+            dtype=np.float32,
+        )
+    except (KeyError, TypeError, ValueError):
+        return None, "invalid_features"
+    if window.shape != (SEQUENCE_LENGTH, len(FEATURES)) or not np.isfinite(window).all():
+        return None, "invalid_features"
+
+    try:
+        timestamps = [_parse_timestamp(row["timestamp"]) for row in window_rows]
+    except (KeyError, TypeError, ValueError):
+        return None, "window_not_ready"
+
+    for previous, current in zip(timestamps, timestamps[1:]):
+        gap_seconds = (current - previous).total_seconds()
+        if gap_seconds <= 0:
+            return None, "window_not_ready"
+        if gap_seconds > max_gap_seconds:
+            return None, "timestamp_gap_exceeded"
+    return window, None
+
+
+def _bootstrap_with_reason(
+    store: TelemetryStore,
+    latest: dict[str, Any],
+    selection: CheckpointSelection,
+    reason: str,
 ) -> tuple[dict[str, Any], str]:
-    latest = samples[-1]
-
-    if LIVE_MODEL_PATH.exists() and len(samples) >= SEQUENCE_LENGTH:
-        try:
-            detector = load_live_detector()
-            window_rows = samples[-SEQUENCE_LENGTH:]
-
-            window = np.asarray(
-                [
-                    [float(row[feature]) for feature in FEATURES]
-                    for row in window_rows
-                ],
-                dtype=np.float32,
-            )
-
-            analysis = detector.detect(window)
-            analysis["data_source"] = (
-                "Live host metrics and HTTP probe telemetry"
-            )
-
-            guard_reasons: list[str] = []
-            status_code = int(latest.get("status_code", 0))
-
-            if status_code != 200:
-                guard_reasons.append(
-                    f"HTTP probe status {status_code}"
-                )
-
-            if float(latest.get("latency_ms", 0)) >= 1000:
-                guard_reasons.append(
-                    f"Probe latency {float(latest['latency_ms']):.1f} ms"
-                )
-
-            if float(latest.get("cpu_pct", 0)) >= 90:
-                guard_reasons.append(
-                    f"CPU {float(latest['cpu_pct']):.1f}%"
-                )
-
-            if float(latest.get("memory_pct", 0)) >= 95:
-                guard_reasons.append(
-                    f"Memory {float(latest['memory_pct']):.1f}%"
-                )
-
-            if float(latest.get("disk_pct", 0)) >= 95:
-                guard_reasons.append(
-                    f"Disk {float(latest['disk_pct']):.1f}%"
-                )
-
-            analysis["model_anomaly"] = bool(
-                analysis.get("is_anomaly", False)
-            )
-            analysis["live_guard_triggered"] = bool(guard_reasons)
-            analysis["live_guard_reasons"] = guard_reasons
-
-            analysis["is_anomaly"] = bool(
-                analysis.get("is_anomaly", False)
-                or guard_reasons
-                or not latest.get("service_available", False)
-            )
-
-            if (
-                analysis["is_anomaly"]
-                and analysis.get("severity") == "NORMAL"
-            ):
-                analysis["severity"] = (
-                    "HIGH"
-                    if status_code >= 500
-                    or not latest.get("service_available", False)
-                    else "MEDIUM"
-                )
-
-            mode = "live_lstm_autoencoder"
-
-            store.annotate_sample(
-                int(latest["id"]),
-                analysis.get("score"),
-                analysis["is_anomaly"],
-                mode,
-                model_anomaly=analysis["model_anomaly"],
-                rule_anomaly=bool(guard_reasons) or not latest.get("service_available", False),
-            )
-
-            return analysis, mode
-
-        except (
-            ValueError,
-            KeyError,
-            RuntimeError,
-            OSError,
-            TypeError,
-        ) as exc:
-            st.warning(
-                "The live DL model could not analyze this window. "
-                f"Using rule-based fallback. Details: {exc}"
-            )
-
+    """Persist the safe fallback without retaining exception details or stale scores."""
     analysis = _bootstrap_analysis(latest)
-
+    analysis.update(
+        {
+            "inference_reason": reason,
+            "checkpoint_provenance": selection.provenance,
+            "checkpoint_identity": selection.identity,
+        }
+    )
     store.annotate_sample(
         int(latest["id"]),
         None,
@@ -247,9 +206,89 @@ def _analyze_latest(
         "bootstrap_rules",
         model_anomaly=None,
         rule_anomaly=analysis["is_anomaly"],
+        inference_reason=reason,
+        checkpoint_provenance=selection.provenance,
+        checkpoint_identity=selection.identity,
     )
-
     return analysis, "bootstrap_rules"
+
+
+def _analyze_latest(
+    store: TelemetryStore,
+    samples: list[dict[str, Any]],
+) -> tuple[dict[str, Any], str]:
+    latest = samples[-1]
+    selection = select_inference_checkpoint()
+    if selection.reason is not None:
+        return _bootstrap_with_reason(store, latest, selection, selection.reason)
+
+    window, window_reason = _valid_inference_window(
+        samples,
+        configured_max_inter_sample_gap_seconds(),
+    )
+    if window_reason is not None:
+        return _bootstrap_with_reason(store, latest, selection, window_reason)
+
+    try:
+        detector = load_live_detector(selection.path)
+    except Exception:
+        st.warning("Live LSTM checkpoint loading failed. Using rule-based fallback.")
+        return _bootstrap_with_reason(store, latest, selection, "checkpoint_load_failure")
+
+    try:
+        analysis = detector.detect(window)
+        if not np.isfinite(float(analysis.get("score"))):
+            raise ValueError("non-finite inference score")
+        analysis["data_source"] = "Live host metrics and HTTP probe telemetry"
+
+        guard_reasons: list[str] = []
+        status_code = int(latest.get("status_code", 0))
+        if status_code != 200:
+            guard_reasons.append(f"HTTP probe status {status_code}")
+        if float(latest.get("latency_ms", 0)) >= 1000:
+            guard_reasons.append(f"Probe latency {float(latest['latency_ms']):.1f} ms")
+        if float(latest.get("cpu_pct", 0)) >= 90:
+            guard_reasons.append(f"CPU {float(latest['cpu_pct']):.1f}%")
+        if float(latest.get("memory_pct", 0)) >= 95:
+            guard_reasons.append(f"Memory {float(latest['memory_pct']):.1f}%")
+        if float(latest.get("disk_pct", 0)) >= 95:
+            guard_reasons.append(f"Disk {float(latest['disk_pct']):.1f}%")
+
+        analysis["model_anomaly"] = bool(analysis.get("is_anomaly", False))
+        analysis["live_guard_triggered"] = bool(guard_reasons)
+        analysis["live_guard_reasons"] = guard_reasons
+        analysis["is_anomaly"] = bool(
+            analysis.get("is_anomaly", False)
+            or guard_reasons
+            or not latest.get("service_available", False)
+        )
+        if analysis["is_anomaly"] and analysis.get("severity") == "NORMAL":
+            analysis["severity"] = (
+                "HIGH" if status_code >= 500 or not latest.get("service_available", False) else "MEDIUM"
+            )
+        analysis.update(
+            {
+                "inference_reason": "inference_success",
+                "checkpoint_provenance": selection.provenance,
+                "checkpoint_identity": selection.identity,
+            }
+        )
+        mode = "live_lstm_autoencoder"
+        store.annotate_sample(
+            int(latest["id"]),
+            analysis.get("score"),
+            analysis["is_anomaly"],
+            mode,
+            model_anomaly=analysis["model_anomaly"],
+            rule_anomaly=bool(guard_reasons) or not latest.get("service_available", False),
+            inference_reason="inference_success",
+            checkpoint_provenance=selection.provenance,
+            checkpoint_identity=selection.identity,
+        )
+        return analysis, mode
+    except Exception:
+        st.warning("Live LSTM inference failed. Using rule-based fallback.")
+        return _bootstrap_with_reason(store, latest, selection, "inference_failure")
 
 
 def _service_logs(service_url: str) -> list[str]:
@@ -696,6 +735,13 @@ def render_live_monitoring() -> None:
         )
         latest["detector_mode"] = mode
 
+        st.caption(
+            "Inference state: "
+            f"{analysis.get('inference_reason', 'not_recorded')} · "
+            f"provenance: {analysis.get('checkpoint_provenance', 'not_recorded')} · "
+            f"checkpoint: {analysis.get('checkpoint_identity', 'not_recorded')}"
+        )
+
         metrics = st.columns(5)
         metrics[0].metric("CPU", f"{latest['cpu_pct']:.1f}%")
         metrics[1].metric("Memory", f"{latest['memory_pct']:.1f}%")
@@ -817,6 +863,13 @@ def render_live_monitoring() -> None:
             "fault_mode",
             "anomaly_score",
             "is_anomaly",
+            "detector_mode",
+            "model_anomaly",
+            "rule_anomaly",
+            "combined_anomaly",
+            "inference_reason",
+            "checkpoint_provenance",
+            "checkpoint_identity",
         ]
 
         available_cols = [

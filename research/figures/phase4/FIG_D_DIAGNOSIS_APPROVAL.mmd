@@ -1,0 +1,6 @@
+flowchart LR
+  M[Manager] --> I[Investigation] --> D[Diagnosis\noffline deterministic or Groq API] --> R[Resolution selection]
+  R --> H[Human approval / ticket consumption\nunauthenticated audit label]
+  H --> L[clear_demo_service_fault\nlocal demo only]
+  L --> V[Independent health / probe check] --> E[Verification + event persistence]
+  D -. no visible retry / timeout / rate-limit handling .-> G[Groq/API boundary]

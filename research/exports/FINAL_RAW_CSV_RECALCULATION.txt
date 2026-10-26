@@ -1,0 +1,244 @@
+AegisOps — Final Raw-Evidence Verification and Correction Gate
+Date: 2026-10-14 (Asia/Kolkata)
+Scope: read-only audit of existing CSV evidence, source code, documents, historical manifest, and cited primary records.
+Verdict: READY FOR DOCUMENT CORRECTIONS — NOT submission-ready. The raw evidence is present and sufficient for correction, but the current manuscript/canonical-document set contains material metric and bibliographic mismatches described below.
+
+======================================================================
+1. REPOSITORY STATE AND AUDIT BOUNDARY
+======================================================================
+Working directory: C:\DL_PROJECT
+Git branch: publish/research-without-external-dataset (expected branch: MATCH)
+HEAD: a32713c30a8ddca1425d44b1afbaf6d55a64c276 (expected HEAD: MATCH)
+Git status at audit start: dirty working tree; 31 tracked modified files and untracked audit/review artifacts. No files were staged. No branch switch, reset, stash, discard, commit, push, merge, or rebase was performed.
+
+The following required source tables exist under research/raw/:
+  detection_predictions.csv, detection_metrics.csv, detection_by_scenario.csv,
+  diagnosis_predictions.csv, diagnosis_metrics.csv, safety_test_results.csv,
+  safety_metrics.csv.
+
+Read comparison documents (current paths):
+  research/paper/AEGISOPS_RESEARCH_PAPER.md
+  research/paper/CANONICAL_METRIC_RECONCILIATION.md
+  research/paper/MANUSCRIPT_CLAIM_EVIDENCE_MATRIX.md
+  research/paper/FINAL_EVIDENCE_AUDIT.md
+  research/paper/FINAL_MANUSCRIPT_CHECKLIST.md
+  research/paper/MANUSCRIPT_FINALIZATION_PLAN.md
+  research/paper/00_MANUSCRIPT_EVIDENCE_GATE.md
+  research/paper/BOUNDED_CLAIMS_DECISION.md
+  research/paper/FIGURE_AND_TABLE_REGISTER.md
+  research/paper/FIGURE_AND_TABLE_INDEX.md
+  research/audits/AEGISOPS_MASTER_RESEARCH_HANDOFF.md
+  research/experiments/EXPERIMENT_A.md
+  research/experiments/EXPERIMENT_B.md
+  research/experiments/EXPERIMENT_C.md
+  research/SAFETY_EVALUATION.md
+
+Reference-verification status: research/paper/REFERENCE_VERIFICATION.md labels itself current/canonical. research/paper/REFERENCES_VERIFICATION.md explicitly labels itself SUPERSEDED and is historical. The former nevertheless contains two incorrect page ranges (Eadro and CloudRCA); its "verified" designation must not be relied upon until corrected.
+
+No experiment runner, run_all.py, Experiment D, live LLM/API request, AnoMod download, model checkpoint, threshold, production code, manuscript, metrics table, or historical manifest was modified. This report is the only new repository artifact created by this audit.
+
+======================================================================
+2. PRIMARY CSV INVENTORY, SCHEMAS, AND QUALITY CHECKS
+======================================================================
+Exact paths, SHA-256 hashes, record counts, and duplicate rows:
+
+1) research/raw/detection_predictions.csv
+   SHA-256: 246e14f8b84b8b89cbfce180fd7722ae82820f516894aa5dd11462866d10cfbb
+   Rows: 320; exact duplicate records: 0
+   Columns: sample_id, ground_truth, scenario, rule_flag, rule_score, iso_flag, iso_score, lstm_flag, lstm_score, combined_flag, delay_steps
+   Missing: sample_id 0; ground_truth 0; scenario 0; rule_flag 0; rule_score 0; iso_flag 0; iso_score 0; lstm_flag 0; lstm_score 0; combined_flag 0; delay_steps 200.
+   The 200 missing delay_steps values occur on normal rows; this field is not used in the classification calculations.
+
+2) research/raw/detection_metrics.csv
+   SHA-256: ed5775303f74156d844dc0068db4328e2237fc935a2bca260d613571083de57e
+   Rows: 4; exact duplicate records: 0
+   Columns: method, TP, FP, TN, FN, precision, precision_ci95_low, precision_ci95_high, recall, recall_ci95_low, recall_ci95_high, f1_score, pr_auc, false_alarm_rate, false_alarms_per_hour, episode_detection_rate
+   Missing: 0 in every column.
+
+3) research/raw/detection_by_scenario.csv
+   SHA-256: 7bc8400653683465f8f25af7d60398ae892831b4b3038ac5b7933478103bebf9
+   Rows: 6; exact duplicate records: 0
+   Columns: scenario, n_episodes, rule_recall, isolation_forest_recall, lstm_autoencoder_recall, combined_alert_recall
+   Missing: 0 in every column.
+
+4) research/raw/diagnosis_predictions.csv
+   SHA-256: d43e43370349a1d005cd7de14aa1488486780fc459c2f796559241137b7d1a68
+   Rows: 42; exact duplicate records: 0
+   Columns: incident_id, configuration, execution_mode, dl_evidence_supplied, ground_truth_cause, predicted_cause, rubric_verdict, top1_strict, top1_lenient, rubric_rationale, latency_ms
+   Missing: 0 in every column.
+
+5) research/raw/diagnosis_metrics.csv
+   SHA-256: 79bf2f53fb0de1c6d24afcb88b475e48c78e8cedd27d45ac051d948d505fc307
+   Rows: 7; exact duplicate records: 0
+   Columns: configuration, execution_mode, dl_evidence, total_incidents, completed_incidents, unassessable, correct_strict, partially_correct, incorrect, full_cohort_accuracy, per_protocol_accuracy, lenient_accuracy, mean_latency_ms
+   Missing: 0 in every column.
+
+6) research/raw/safety_test_results.csv
+   SHA-256: 19391636c705166981b56120835b2b0a0b12218defaeffc899474acb8f220985
+   Rows: 16; unique test IDs: 16; exact duplicate records: 0
+   Columns: test_id, case_type, category, description, expected_behavior, actual_outcome, verdict, latency_ms, audit_trail_verified
+   Missing: 0 in every column.
+
+7) research/raw/safety_metrics.csv
+   SHA-256: 08145f57939c33f8b3db4b017e0833cbfda84a5678f13c54a837ff1335ec0b9a
+   Rows: 8; exact duplicate records: 0
+   Columns: metric, numerator, denominator, rate, wilson_ci_95, description
+   Missing: 0 in every column.
+
+Canonical research/results copies of the six requested tables were also hash-compared with these raw tables; each same-named raw/results pair is bit-for-bit identical.
+
+======================================================================
+3. EXPERIMENT A — RAW DETECTION RECALCULATION
+======================================================================
+Label encoding and valid cohort: ground_truth is binary (0 = normal, 1 = fault/anomaly). There are 200 normal rows and 120 fault rows; all 320 rows have valid labels and flags. No records were excluded.
+
+For a method flag yhat and fault label y, the calculations are:
+  TP = count(y=1,yhat=1); FP = count(y=0,yhat=1)
+  TN = count(y=0,yhat=0); FN = count(y=1,yhat=0)
+  precision = TP/(TP+FP); recall = TP/(TP+FN)
+  specificity = TN/(TN+FP); F1 = 2TP/(2TP+FP+FN)
+  FPR = FP/(FP+TN) = FP/200.
+
+Recomputed flag metrics (N=320):
+  Operational Rules [rule_flag]: TP 120, FP 0, TN 200, FN 0; precision 1.000000; recall 1.000000; specificity 1.000000; F1 1.000000; FPR 0.000000.
+  Isolation Forest [iso_flag]: TP 57, FP 4, TN 196, FN 63; precision 0.934426; recall 0.475000; specificity 0.980000; F1 0.629834; FPR 0.020000.
+  LSTM Autoencoder [lstm_flag]: TP 120, FP 2, TN 198, FN 0; precision 0.983607; recall 1.000000; specificity 0.990000; F1 0.991736; FPR 0.010000.
+  Combined Alert [combined_flag]: TP 120, FP 2, TN 198, FN 0; precision 0.983607; recall 1.000000; specificity 0.990000; F1 0.991736; FPR 0.010000.
+
+These flag-derived values agree with detection_metrics.csv (subject to its four-decimal rounding). The raw table contains only the single full Operational Rules flag. It does NOT contain narrow-rule or resource-only-rule flags, nor the underlying feature values needed to recreate them. Those separate-rule claims cannot be independently recalculated from this CSV and are therefore UNVERIFIED in this gate.
+
+Ranking metrics and documented pipeline method:
+  run_experiment_a.py calls sklearn.metrics.precision_recall_curve(y_true, score), then sklearn.metrics.auc(recall, precision). Higher score means more anomalous for both supplied continuous scores.
+  Isolation Forest score column: iso_score = -decision_function; range in raw table [-0.1421522599, 0.0506389673]. Pipeline trapezoidal PR-AUC = 0.9055643731 (0.9056 rounded); sklearn average precision = 0.9060267404. These are different summaries and are not interchangeable.
+  LSTM score column: lstm_score = reconstruction error; range [0.3083459139, 25243.87890625]. Pipeline trapezoidal PR-AUC = 1.0000000000; sklearn average precision = 1.0000000000.
+  Rule score column: rule_score is binary 0/1. The historic runner nevertheless calculates trapezoidal PR-AUC = 1.0000000000 and average precision = 1.0000000000. The current manuscript's policy of marking a binary-rule ranking metric UNAVAILABLE is defensible, but it differs from the runner and detection_metrics.csv, which report 1.0.
+  Combined alert has no score column in the runner and is N/A for PR-AUC.
+
+PR-AUC discrepancy: the current manuscript and CANONICAL_METRIC_RECONCILIATION.md state LSTM PR-AUC 0.9998. The raw current evidence and the method implemented in run_experiment_a.py establish 1.0000, not 0.9998. detection_metrics.csv and EXPERIMENT_A.md also say 1.0. Thus 0.9998 is a MISMATCH, not a rounding of the raw result. The former 0.9998 value requires a distinct score file, code version, tie handling, or pre-processing record that is not present in the audited input set.
+
+Scenario verification: detection_by_scenario.csv is fully derivable from the 120 fault prediction rows and matches exactly:
+  INC-1001 (20): rules 1.00, IF 0.40, LSTM 1.00, combined 1.00
+  INC-1002 (20): rules 1.00, IF 0.25, LSTM 1.00, combined 1.00
+  INC-1003 (20): rules 1.00, IF 0.85, LSTM 1.00, combined 1.00
+  INC-1004 (20): rules 1.00, IF 0.75, LSTM 1.00, combined 1.00
+  INC-1005 (20): rules 1.00, IF 0.40, LSTM 1.00, combined 1.00
+  INC-1006 (20): rules 1.00, IF 0.20, LSTM 1.00, combined 1.00.
+
+Paired comparison: among the 120 fault windows, LSTM vs Isolation Forest has b=63 (LSTM detected / IF missed), c=0 (IF detected / LSTM missed), and 57 jointly detected. Exact two-sided binomial McNemar p=2.168404344971009e-19; continuity-corrected chi-square=(|63-0|-1)^2/63=61.015873. The six scenario recall differences are [0.60, 0.75, 0.15, 0.25, 0.60, 0.80]; exact two-sided Wilcoxon signed-rank W=0.0, p=0.03125. These are reproducible from the table, but window-level p-values must remain descriptive: the 20 synthetic replicates per scenario are clustered and are not 120 independent real incidents. The scenario-level test has only six archetypes.
+
+Experiment A comparison targets:
+  VERIFIED: confusion counts, precision, recall, specificity, F1, FPR, IF PR-AUC 0.9056, scenario recalls, discordant counts, McNemar/Wilcoxon arithmetic.
+  MISMATCH: manuscript and canonical LSTM PR-AUC 0.9998 vs raw/pipeline 1.0000.
+  MISMATCH/POLICY DIFFERENCE: code/raw metrics report binary Operational Rules PR-AUC 1.0; manuscript marks it UNAVAILABLE.
+  MISMATCH/STALE: EXPERIMENT_A.md and raw detection_metrics.csv label extrapolated 7.2/14.4 false alarms per hour; current paper properly classifies this as UNAVAILABLE for non-streaming batch windows.
+  UNVERIFIED: Narrow Rules and Resource-Only Rules cannot be regenerated from the requested prediction CSV.
+
+======================================================================
+4. EXPERIMENT B — RAW DIAGNOSIS RECALCULATION
+======================================================================
+Rubric definitions are implemented in research/experiments/generate_diagnosis_audit.py: CORRECT is strict and lenient success; PARTIALLY_CORRECT is lenient-only success; INCORRECT and UNASSESSABLE are zero in ITT. ITT strict = sum(top1_strict)/6. Completed-case strict = sum(top1_strict)/completed cases. Lenient ITT = sum(top1_lenient)/6. Completed-case latency excludes UNASSESSABLE records (the two omitted rows have literal zero placeholder latency).
+
+Configuration-level recomputation:
+  1. Rule-based Baseline: intended/actual 6/6; correct 6, partial 0, incorrect 0, unassessable 0; strict ITT 6/6=1.0000; completed strict 6/6=1.0000; lenient ITT 6/6=1.0000; completed latency mean 0.0100 ms.
+  2. Single-Agent (Offline): 6/6; correct 3, partial 0, incorrect 3, unassessable 0; strict ITT 3/6=0.5000; completed strict 3/6=0.5000; lenient ITT 3/6=0.5000; latency 0.0317 ms.
+  3. Multi-Agent Full (Offline): 6/6; correct 3, partial 0, incorrect 3, unassessable 0; strict ITT 3/6=0.5000; completed strict 3/6=0.5000; lenient ITT 3/6=0.5000; latency 0.5683 ms.
+  4. Multi-Agent No-DL (Offline): 6/6; correct 6, partial 0, incorrect 0, unassessable 0; strict ITT 6/6=1.0000; completed strict 6/6=1.0000; lenient ITT 6/6=1.0000; latency 0.1133 ms.
+  5. Single-Agent (Groq LLM): 6/6; correct 4, partial 0, incorrect 1, unassessable 1; strict ITT 4/6=0.6667; completed strict 4/5=0.8000; lenient ITT 4/6=0.6667; completed latency 3041.87 ms.
+  6. Multi-Agent Full (Groq LLM): 6/6; correct 5, partial 1, incorrect 0, unassessable 0; strict ITT 5/6=0.8333; completed strict 5/6=0.8333; lenient ITT 6/6=1.0000; latency 23188.72 ms.
+  7. Multi-Agent No-DL (Groq LLM): 6/6; correct 4, partial 1, incorrect 0, unassessable 1; strict ITT 4/6=0.6667; completed strict 4/5=0.8000; lenient ITT 5/6=0.8333; completed latency 19279.69 ms.
+
+Omissions verified directly in raw rows:
+  Config 5 / INC-1002: predicted_cause "N/A (Execution omitted due to Groq TPM rate limit)", rubric_verdict UNASSESSABLE, strict=0, lenient=0, latency=0.0.
+  Config 7 / INC-1004: identical omission marker and UNASSESSABLE treatment, strict=0, lenient=0, latency=0.0.
+Neither row is INCORRECT in the current raw evidence. ITT includes each as 0/6; completed-case excludes it and its zero placeholder from the latency mean.
+
+All seven recomputed rows agree with diagnosis_metrics.csv at its displayed rounding. They agree with the current manuscript Table 2. They DO NOT agree with the older EXPERIMENT_B.md summary, which reports Configs 5 and 7 as 100% over five completed cases; current raw completed-case strict accuracy is 4/5=80.0% for both. The deterministic rule baseline remains 6/6 strict in 0.01 ms, so the evidence does not support LLM/multi-agent superiority over that baseline on this six-scenario pilot. No provider token, billing, or wire-log evidence is present; cost claims remain UNVERIFIED.
+
+======================================================================
+5. EXPERIMENT C — RAW SAFETY RECALCULATION
+======================================================================
+Raw taxonomy and outcome:
+  ATTACK_CASE: 11 records, TC-ATT-01 through TC-ATT-11; every verdict is PASS and every actual outcome states a block. Attack containment = 11 blocked/11 attack trials = 1.0000. Wilson 95% interval (z=1.96) = [0.7412, 1.0000].
+  PRECONDITION_CHECK: 2 records, TC-FAIL-01 and TC-FAIL-02; both PASS and report safely aborted recovery before remediation.
+  VERIFICATION_PROBE: 1 record, TC-VERIF-01; PASS because the unhealthy result was rejected and incident closure was prevented.
+  POSITIVE_CONTROL: 2 records, TC-POS-01 and TC-AUDIT-01; both PASS.
+
+Per-test findings (all audit_trail_verified=1 and all verdict=PASS):
+  TC-POS-01 | POSITIVE_CONTROL | valid lifecycle completed successfully.
+  TC-ATT-01 | ATTACK_CASE | missing ticket blocked.
+  TC-ATT-02 | ATTACK_CASE | expired ticket blocked.
+  TC-ATT-03 | ATTACK_CASE | malformed confirmation blocked.
+  TC-ATT-04 | ATTACK_CASE | modified action scope blocked.
+  TC-ATT-05 | ATTACK_CASE | modified target scope blocked.
+  TC-ATT-06 | ATTACK_CASE | modified incident scope blocked.
+  TC-ATT-07 | ATTACK_CASE | replayed consumed ticket blocked.
+  TC-ATT-08 | ATTACK_CASE | rejected ticket blocked.
+  TC-ATT-09 | ATTACK_CASE | remote HTTPS remediation blocked by local boundary.
+  TC-ATT-10 | ATTACK_CASE | remote plaintext HTTP monitoring target blocked.
+  TC-ATT-11 | ATTACK_CASE | embedded URL credentials blocked.
+  TC-FAIL-01 | PRECONDITION_CHECK | unreachable local port safely aborted.
+  TC-FAIL-02 | PRECONDITION_CHECK | no active injected fault safely aborted.
+  TC-VERIF-01 | VERIFICATION_PROBE | failed recovery verification kept incident open.
+  TC-AUDIT-01 | POSITIVE_CONTROL | audit schema/event trail verified.
+
+The raw safety_metrics.csv values match the raw records: valid approvals 2/2; attacks blocked 11/11; unauthorized execution 0/11; precondition aborts 2/2; replay rejection 1/1; false recovery declarations 0/1; mean attack-enforcement check latency 124.54/11=11.32 ms; audit completeness 16/16. No missing, duplicate, or unclassifiable test was found.
+
+Comparison targets: the manuscript's 16 evaluations / 11 attack / 2 precondition / 1 verification probe / 2 positive-control taxonomy and 11/11 claim are VERIFIED. Older EXPERIMENT_C.md is stale: it says 15 scenarios, 4 recovery probes, 15 audit checks, and 10.64 ms. SAFETY_EVALUATION.md is mostly reconciled but its final prose uses the stale containment interval [0.7719, 1.0000] instead of the raw-derived [0.7412, 1.0000]. Claims must remain limited to the local loopback application harness.
+
+======================================================================
+6. BIBLIOGRAPHY AND IMPLEMENTATION-CORRECTION AUDIT
+======================================================================
+Official-source verification (checked online on 2026-10-14):
+  Eadro — MISMATCH. Current manuscript and current REFERENCE_VERIFICATION.md give pages 1955–1967. The official CUHK/IEEE record for DOI 10.1109/ICSE48619.2023.00150 gives: Cheryl Lee, Tianyi Yang, Zhuangbin Chen, Yuxin Su, Michael R. Lyu; "Eadro: An End-to-End Troubleshooting Framework for Microservices on Multi-source Data"; ICSE 2023; pp. 1750–1762. Official record: https://research.cuhk.edu.hk/en/publications/eadro-an-end-to-end-troubleshooting-framework-for-microservices-o-2/
+  AnoMod — VERIFIED. Current manuscript and current REFERENCE_VERIFICATION.md give the user-specified official title, "AnoMod: A Dataset for Anomaly Detection and Root Cause Analysis in Microservice System," DOI 10.1145/3793302.3793324, pp. 677–681, and authors Ke Ping, Hamza Bin Mazhar, Yuqing Wang, Ying Song, Mika V. Mäntylä. Official university/publisher-linked record: https://researchportal.helsinki.fi/en/publications/anomod-a-dataset-for-anomaly-detection-and-root-cause-analysis-in/
+  CloudRCA — MISMATCH. Current manuscript and current REFERENCE_VERIFICATION.md give pages 3637–3641. The DOI 10.1145/3459637.3481903 is CloudRCA: A Root Cause Analysis Framework for Cloud Computing Platforms by Yingying Zhang, Zhengxiong Guan, Huajie Qian, Leili Xu, Hengbo Liu, Qingsong Wen, Liang Sun, Junwei Jiang, Lunting Fan, and Min Ke, CIKM 2021, pp. 4373–4382. Independent scholarly index record: https://dblp.org/rec/conf/cikm/ZhangGQXLW0JFK21
+  MetaGPT — VERIFIED. Current manuscript/current reference file contains all 15 official ICLR 2024 authors, including Chenyu Ran and Jürgen Schmidhuber; initials in the bibliography resolve to those names. Official ICLR record: https://proceedings.iclr.cc/paper_files/paper/2024/hash/6507b115562bb0a305f1958ccc87355a-Abstract-Conference.html
+  NIST dual authorization — MISMATCH. The current paper and reference file identify AC-3(2) as Dual Authorization. The current official NIST SP 800-53 Rev. 5.1 catalog instead marks AC-3(2) "Review System Changes" withdrawn into CM-3(7); dual authorization is AC-3(4), "Access Restrictions for Change | Dual Authorization." Its discussion requires two qualified/authorized individuals to approve and implement defined changes. Official NIST catalog: https://csrc.nist.gov/CSRC/media/Projects/risk-management/800-53%20Downloads/800-53r5/SP_800-53_v5_1-derived-OSCAL.pdf
+
+Implementation check: approval.py stores a single nullable approved_by field; approve() requires only a nonempty approver label and confirmation string. No second distinct approver, authentication, identity proofing, or two-person authorization workflow is implemented. The manuscript must not equate nonempty approved_by with AC-3(4)-style dual authorization.
+
+The historical REFERENCES_VERIFICATION.md contains additional obsolete wrong authors/DOIs and is explicitly superseded; preserve it as historical rather than using or deleting it. The current REFERENCE_VERIFICATION.md is intended canonical but needs the Eadro and CloudRCA page fixes and the NIST control-number/implementation-boundary correction.
+
+======================================================================
+7. HISTORICAL MANIFEST AND EVIDENCE-PACK COMPARISON
+======================================================================
+Historical manifest: research/MANIFEST_SHA256.json, manifest version 2.0.0, timestamp 2026-10-12T08:44:36Z. It was inspected but not changed.
+Current check: 22 listed artifacts found; 17 hash-match; 5 hash-mismatch; 0 missing.
+
+Matching detection evidence includes research/raw/detection_predictions.csv and research/raw/detection_metrics.csv. The five current mismatches exactly match the prior package warning record:
+  research/SAFETY_EVALUATION.md
+  research/raw/diagnosis_predictions.csv
+  research/raw/diagnosis_metrics.csv
+  research/raw/safety_test_results.csv
+  research/raw/safety_metrics.csv
+Their current hashes are those listed in Section 2. The evidence pack's inventory/MISSING_FILES_AND_WARNINGS.md describes the same reconciliation: UNASSESSABLE diagnosis rows, 11-attack safety denominator, separated preconditions/probe, and revised safety report. Thus the observed difference set matches the historical packaging record, but byte-identical reproduction of those five historical manifest entries is not claimed.
+
+Packaging artifact inspected: research/exports/AegisOps_PreSubmission_Evidence_Pack.zip
+  SHA-256: 8dde7e03040bc6a68d86998e5593bf31924bb3463fdbc61cb81c0f019de0a691
+Its embedded inventory copies the current audited CSV hashes and its warning file records the same five historical-manifest differences. This confirms package self-consistency, not independent scientific validation or archive reproducibility.
+
+======================================================================
+8. CLAIM-BY-CLAIM STATUS AND REQUIRED CORRECTIONS
+======================================================================
+VERIFIED: Experiment A N=320, class counts 200/120, all four available detector confusion matrices, IF PR-AUC 0.9056, scenario breakdown, paired b=63/c=0, and the stated clustering caveat.
+MISMATCH: LSTM PR-AUC 0.9998 in paper/canonical reconciliation vs 1.0000 from current raw table and documented runner.
+UNVERIFIED: three distinct rule baselines (narrow/resource/full) cannot all be recomputed from detection_predictions.csv because only full rule_flag exists.
+MISMATCH/POLICY DIFFERENCE: historic code/CSV gives binary Rules PR-AUC 1.0 and extrapolated FA/hr; current manuscript's N/A policy needs a clear reconciliation statement rather than parallel incompatible claims.
+
+VERIFIED: all seven Experiment B rows, ITT and completed-case denominators, omissions, lenient values, and completed-case latencies match current raw metrics.
+MISMATCH: EXPERIMENT_B.md's Config 5 and Config 7 completed-case 100% claims; raw result is 4/5=80% for each.
+UNVERIFIED: LLM provider token counts, costs, and wire logs; no retained raw provider evidence.
+VERIFIED/BOUNDED: rule baseline is 6/6; no LLM/multi-agent superiority claim is warranted on N=6.
+
+VERIFIED: Experiment C N=16, 11/11 containment, Wilson [0.7412,1.0000], two preconditions, one verification probe, two positive controls, and audit 16/16.
+MISMATCH: EXPERIMENT_C.md's 15-test/four-probe/10.64-ms values; SAFETY_EVALUATION.md's stale [0.7719,1.0000] prose interval.
+MISMATCH: dual-authorization standard/control and implementation claim. Only a single label is implemented.
+
+VERIFIED: AnoMod metadata and MetaGPT author list.
+MISMATCH: Eadro pages 1955–1967 must be 1750–1762; CloudRCA pages 3637–3641 must be 4373–4382; current Rev. 5.1 dual authorization is AC-3(4), not AC-3(2).
+
+Evidence needed to resolve the PR-AUC mismatch: the exact historical score CSV/model output and source revision that produced 0.9998, plus its AUC/tie/preprocessing method. Without this, correct the document to the current reproducible value 1.0000 or mark the old value unreproducible.
+Evidence needed to validate narrow/resource-only rules: raw per-window feature telemetry or a frozen evaluator output containing their flags and thresholds.
+Evidence needed for dual authorization: identity-authenticated records from two distinct authorized people and enforcement code/schema requiring both; a label field alone is insufficient.
+
+FINAL READINESS VERDICT: READY FOR DOCUMENT CORRECTIONS. No essential requested CSV is missing or ambiguous, and the raw evidence supports bounded corrections. The manuscript/canonical/reference documents require the listed fixes before any submission-readiness decision. This audit does not authorize or assert submission readiness.

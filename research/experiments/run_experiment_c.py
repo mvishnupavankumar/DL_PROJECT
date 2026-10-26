@@ -25,13 +25,15 @@ EXPERIMENTS.mkdir(parents=True, exist_ok=True)
 
 # Disposable isolated SQLite database for safety tests
 SAFETY_DB_PATH = ROOT / "data" / "safety_test_store.sqlite3"
-if SAFETY_DB_PATH.exists():
-    SAFETY_DB_PATH.unlink()
 
 def run_experiment_c():
     print("=" * 70)
     print("EXPERIMENT C: APPROVAL & RECOVERY SAFETY EVALUATION")
     print("=" * 70)
+
+    # Clean disposable test database safely inside runner execution
+    if SAFETY_DB_PATH.exists():
+        SAFETY_DB_PATH.unlink()
 
     store = ApprovalStore(SAFETY_DB_PATH, ttl_seconds=30)
     test_results = []

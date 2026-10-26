@@ -1,5 +1,7 @@
 # Experiment A: Anomaly Detection Performance & Baseline Comparison
 
+> **Supersession notice (2026-10-15):** This dated experiment report preserves historical nominal FA/hr projections. The active manuscript and release documents supersede them: operational false alarms per hour are `UNAVAILABLE` for the non-streaming synthetic batch benchmark. Retain only the window-level FPRs as current evidence.
+
 **Date**: 2026-10-12  
 **Evaluation Units**: N = 320 held-out windows (200 normal steady-state + 120 injected incident episodes across 6 scenarios, 20 replicates each).  
 **Random Seed**: 2026 (held-out evaluation partition; strictly separate from training seed 42).  

@@ -1,0 +1,167 @@
+AegisOps - Final Cross-Document, Statistical and Rendered-Manuscript Release Gate
+Date: 2026-10-14
+Scope: documentation, static-source, artifact-inventory, and visual-source review only. No experiment, live API, raw-evidence generation, model inference, or safety runner was executed.
+
+FINAL VERDICT: NOT READY - MATERIAL CONSISTENCY OR RENDERING BLOCKERS REMAIN
+
+======================================================================
+1. EXACT CURRENT STATE AND PROVENANCE
+======================================================================
+Current branch: publish/research-without-external-dataset
+Current HEAD:   a32713c30a8ddca1425d44b1afbaf6d55a64c276
+Expected HEAD:  a32713c30a8ddca1425d44b1afbaf6d55a64c276 (MATCH)
+Staged changes: none.
+Working tree: dirty before this gate and remains uncommitted. Existing user changes were preserved. No reset, clean, stash, switch, commit, tag, merge, rebase, push, or publish occurred.
+
+Provenance distinction:
+  - Historical audited baseline: ec83d2fe501ba50f56839944ba7bd6347544f585 on main, retained only as a historical baseline.
+  - Current review revision: a32713c30a8ddca1425d44b1afbaf6d55a64c276 on publish/research-without-external-dataset.
+  - Corrected manuscript/evidence content: working-tree content, not a committed release revision. The historical baseline must not be represented as reproducing these uncommitted corrections.
+
+Existing audit artifacts confirmed:
+  research/exports/FINAL_RAW_CSV_RECALCULATION.txt
+    SHA-256: 2bb731a8e3f54a5170fa199f83298ff6ad98477ed27c416fb31d934e6ec667ad
+  research/exports/CONTROLLED_DOCUMENT_CORRECTION_REPORT.txt
+    SHA-256: b073b33997142ed7e6562f7ea3d5a98392c362e182fbd2653a171e6a56dc7ca4
+
+No prior AEGISOPS_RESEARCH_PAPER_REVIEW.pdf, AEGISOPS_RESEARCH_PAPER_REVIEW.docx, or FINAL_MANUSCRIPT_RELEASE_GATE.txt existed at the requested output paths before this gate.
+
+======================================================================
+2. FROZEN CONTRACT AND RAW-EVIDENCE PRESERVATION
+======================================================================
+Frozen checkpoint:
+  models/lstm_autoencoder.pt
+  SHA-256: 1cf44e6e82e459f543fcace25334f3076b76c77a357d46f65c11e3c44fd382de
+
+Frozen metadata:
+  models/lstm_autoencoder.json
+  SHA-256: 24826b053833b08e80fb84e7e694adfad5b4a1124d935ccf3e3cd4f575eb045f
+  Exact threshold: 0.7093990445137024
+  Threshold provenance: 99th percentile of 150 held-out nominal validation windows.
+  Canonical feature order: cpu_pct, memory_pct, latency_ms, error_rate_pct, disk_pct.
+
+The threshold, model weights, model metadata, source scores, raw CSVs, historical manifest, and reported experimental results were not altered by this gate. The current raw-evidence hashes for the audited prediction/test files remain:
+  research/raw/detection_predictions.csv: 246e14f8b84b8b89cbfce180fd7722ae82820f516894aa5dd11462866d10cfbb
+  research/raw/diagnosis_predictions.csv: d43e43370349a1d005cd7de14aa1488486780fc459c2f796559241137b7d1a68
+  research/raw/safety_test_results.csv: 19391636c705166981b56120835b2b0a0b12218defaeffc899474acb8f220985
+
+The historical manifest was preserved and not regenerated. A current read-only comparison found six mismatches, not the five previously documented:
+  research/SAFETY_EVALUATION.md
+  research/FINAL_EXPERIMENT_REPORT.md
+  research/raw/diagnosis_metrics.csv
+  research/raw/diagnosis_predictions.csv
+  research/raw/safety_metrics.csv
+  research/raw/safety_test_results.csv
+This mismatch-count contradiction must be reconciled through a separately authorized provenance decision; it is a release blocker.
+
+======================================================================
+3. STATISTICAL AND REPRODUCIBILITY RECONCILIATION
+======================================================================
+Corrections completed in active review documents:
+  - Disjoint seeds are now described as separate random realizations, not proof that 120 synthetic fault windows are 120 independent production incidents.
+  - The six fault scenario archetypes and 20 replicates per archetype are consistently treated as clustered synthetic data.
+  - McNemar discordant counts remain b=63 and c=0; exact two-sided p is approximately 2.1684 x 10^-19. It is described as descriptive evidence on clustered synthetic windows.
+  - Scenario-level Wilcoxon remains W=0.0, p=0.03125 across six archetypes. It is now explicitly post-hoc and exploratory, not pre-registered confirmatory inference or proof of general superiority.
+  - The paired sensitivity-difference Wald interval is standardized to approximately [0.4357, 0.6143], labeled nominal/window-level under independent-window assumptions, and not represented as cluster-robust or population-generalizable.
+  - Wilson intervals are described as binomial intervals for their synthetic samples, not external-validity estimates.
+  - "Bit-for-bit determinism" was replaced with numerical reproducibility within the measured floating-point tolerance: maximum absolute score difference 5.55e-17 and zero alert-flag disagreements.
+  - The manuscript retains the exact frozen threshold and validation provenance, and the canonical feature order is consistent with frozen metadata.
+
+======================================================================
+4. TABLES, FIGURES, COSTS, AND LATENCY
+======================================================================
+Actual manuscript inventory from AEGISOPS_RESEARCH_PAPER.md:
+  - Four manuscript tables: Tables 1 through 4.
+  - Three Mermaid source-diagram blocks.
+  - Zero Markdown image embeds.
+Supporting Statistical Analysis S1 in the index/audit is now explicitly not a manuscript table. This resolves the former four-table versus Table 5 inventory contradiction.
+
+Figure duplicate checks:
+  - Figure A.1 copies match exactly: 0784db0ef9c62667f403f243b52fd99c4689f7404de5e207bf73c5699e1f0337.
+  - Figure A.2 copies match exactly: ad1935fa98d5a48f5d02cc88a09679cf7d87f4931629c6114310c9ae8a060b7b.
+  - Figure A.1 was visually inspected and is legible; its four confusion-matrix counts match current audited values.
+  - Figure A.2 was visually inspected and is legible, but it displays stale FA/hr labels (14.4 for Isolation Forest; 7.2 for LSTM and Combined) even though operational FA/hr is UNAVAILABLE. It is not embedded in the manuscript. It was preserved unaltered and marked BLOCKED FOR RELEASE / excluded from release distribution pending separately authorized figure maintenance.
+
+The active diagnostic comparison table no longer contains unsupported $0.006, $0.018, or $0.014 API-cost estimates. API cost is now Not measured because token counts, billing records, applicable pricing, and reproducible calculation evidence are unavailable. The column identifies completed-case pipeline latency; omitted calls remain unassessable and excluded from completed-case mean latency.
+
+======================================================================
+5. SAFETY, CITATIONS, AND METADATA
+======================================================================
+Safety documentation remains consistent with the final raw-evidence report:
+  16 total evaluations; 11 attacks; 11/11 containment; Wilson 95% CI [0.7412, 1.0000]; two precondition checks; one verification probe; two positive controls; 11.32 ms mean attack-enforcement latency.
+
+The static narrative literal in research/experiments/run_safety_audit.py was changed from [0.7719, 1.0000] to the canonical audited [0.7412, 1.0000]. No audit logic, test definition, metric calculation, raw-file generation, or runner execution changed.
+
+The active manuscript and canonical reference material retain corrected Eadro pages 1750-1762 and DOI 10.1109/ICSE48619.2023.00150; AnoMod title, DOI 10.1145/3793302.3793324, and pages 677-681; CloudRCA DOI 10.1145/3459637.3481903 and pages 4373-4382; and MetaGPT authors including Chenyu Ran and Jürgen Schmidhuber. REFERENCES_VERIFICATION.md remains superseded historical material. The manuscript continues to use the requested NIST AC-3(2) dual-authorization wording while stating that the one unauthenticated approved_by label does not implement or validate that control.
+
+Author and affiliation fields are marked AUTHOR CONFIRMATION REQUIRED. Venue is marked VENUE CONFIRMATION REQUIRED. These missing confirmations block submission/release status.
+
+======================================================================
+6. RENDERING AND VISUAL REVIEW
+======================================================================
+Tool discovery command:
+  where.exe pandoc; where.exe pdflatex; where.exe xelatex; where.exe lualatex; where.exe typst; where.exe wkhtmltopdf; where.exe soffice
+Result: none of the required rendering tools is installed or available on PATH. The available Python environment also lacks markdown, weasyprint, reportlab, pypdf, pdfplumber, matplotlib, and PIL.
+
+Consequently, no faithful review PDF or DOCX was built. No PDF build command was run, no PDF/DOCX page count exists, and no PDF/DOCX output hash exists. Mermaid source was not rendered as ordinary text or misrepresented as a diagram preview. The unrendered Mermaid diagrams and the complete manuscript layout remain uninspected.
+
+Visual source checks completed:
+  - Reviewed Figure A.1 PNG: no clipping, overflow, or illegible labels observed; values concordant.
+  - Reviewed Figure A.2 PNG: no layout defect, but stale FA/hr content makes the image unsuitable for release distribution.
+
+======================================================================
+7. SAFE CHECKS EXECUTED
+======================================================================
+  - git branch --show-current; git rev-parse HEAD; git status --short
+    Exit: 0. Confirmed expected branch and HEAD; no staged changes.
+  - Get-FileHash SHA-256 checks for frozen checkpoint, metadata, audit reports, and raw evidence
+    Exit: 0.
+  - Read-only current-manifest hash comparison
+    Exit: 0. Found the six mismatches listed above; manifest preserved.
+  - Static searches for independence, hypothesis-test, determinism, threshold, feature-order, cost, false-alarm, and stale safety text
+    Exit: 0. Active inconsistencies listed in this report were corrected or explicitly qualified.
+  - Actual manuscript heading/inventory checks
+    Exit: 0. Four tables, three Mermaid blocks, zero Markdown image embeds.
+  - Duplicate PNG SHA-256 comparison and visual inspection
+    Exit: 0. Duplicate copies match; A.2 release issue recorded.
+  - git diff --check
+    Exit: 0. No whitespace errors. Windows line-ending warnings were emitted for existing working-tree files.
+
+No test suite was run because this release gate did not authorize runners, live services, external APIs, or experimental evidence generation. Historical test-result claims were not reused as current test execution.
+
+======================================================================
+8. FILES CHANGED IN THIS RELEASE GATE
+======================================================================
+  research/paper/AEGISOPS_RESEARCH_PAPER.md
+  research/paper/00_MANUSCRIPT_EVIDENCE_GATE.md
+  research/paper/FIGURE_AND_TABLE_INDEX.md
+  research/paper/FIGURE_AND_TABLE_REGISTER.md
+  research/paper/FINAL_EVIDENCE_AUDIT.md
+  research/paper/FINAL_MANUSCRIPT_CHECKLIST.md
+  research/paper/MANUSCRIPT_CLAIM_EVIDENCE_MATRIX.md
+  research/paper/MANUSCRIPT_FINALIZATION_PLAN.md
+  research/experiments/run_safety_audit.py
+  research/exports/FINAL_MANUSCRIPT_RELEASE_GATE.txt
+
+======================================================================
+9. REMAINING BLOCKERS AND REQUIRED CLOSURE EVIDENCE
+======================================================================
+1. Faithful manuscript rendering and full visual QA are unavailable in this environment.
+   Closure evidence: a review-only PDF built with Pandoc plus a suitable PDF engine (and Mermaid rendered to actual images where required), page images for every page, page count, SHA-256, and documented visual review.
+
+2. Figure A.2 has stale operational FA/hr labels.
+   Closure evidence: separately authorized, evidence-preserving regeneration or editing that replaces all FA/hr claims with UNAVAILABLE, followed by source-hash and visual verification.
+
+3. Historical manifest mismatch documentation says five, while current read-only verification finds six.
+   Closure evidence: authorized provenance decision explaining the additional FINAL_EXPERIMENT_REPORT.md mismatch and either an updated historical reconciliation document or a new manifest version; do not silently regenerate the historical manifest.
+
+4. Author, affiliation, corresponding-author, and venue information are not confirmed from project records.
+   Closure evidence: author-supplied identity/affiliation/correspondence details and venue-specific formatting requirements.
+
+5. Narrow Rules and Resource-Only Rules remain historical comparator outputs without flags in final raw predictions.
+   Closure evidence: frozen evaluator output or raw per-variant flags enabling independent reconstruction.
+
+6. AC-3(2) wording remains a governance reference only, not evidence of two authenticated approvers.
+   Closure evidence: if a compliance claim is desired, implementation evidence for two distinct authenticated approvers and an appropriate control-mapping review; otherwise retain the current non-compliance limitation.
+
+NOT READY - MATERIAL CONSISTENCY OR RENDERING BLOCKERS REMAIN

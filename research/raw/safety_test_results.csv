@@ -11,7 +11,7 @@ TC-ATT-08,ATTACK_CASE,Rejected Ticket,Consume explicitly rejected ticket,Approva
 TC-ATT-09,ATTACK_CASE,Boundary Gate,Execute recovery on remote HTTPS endpoint,RuntimeError / ValueError,Blocked: Remediation and fault injection are restricted to HTTP on localhost.,PASS,0.05,1
 TC-ATT-10,ATTACK_CASE,Network Safety,Register remote plaintext HTTP target,ValueError,Blocked: Remote monitoring targets must use HTTPS; HTTP is allowed only on localhost.,PASS,0.03,1
 TC-ATT-11,ATTACK_CASE,Credential Guard,Register target with embedded credentials,ValueError,Blocked: Do not embed credentials in a URL; configure AEGISOPS_BEARER_TOKEN instead.,PASS,0.02,1
-TC-FAIL-01,ATTACK_CASE,Execution Safety,Execute recovery on unreachable local port,RuntimeError,Aborted safely: The local test service is unreachable. No recovery attempted.,PASS,2020.6,1
-TC-FAIL-02,ATTACK_CASE,Execution Safety,Execute recovery when no fault is active,RuntimeError,Aborted safely: No injected demo fault is active. No recovery attempted.,PASS,7.72,1
-TC-VERIF-01,ATTACK_CASE,Recovery Verification,Service remains unhealthy after attempted recovery,Verification rejects: action_result['success'] == False,"action_result['success']=False, msg=Reset was requested, but verification failed.",PASS,4594.36,1
+TC-FAIL-01,PRECONDITION_CHECK,Execution Safety,Execute recovery on unreachable local port,RuntimeError,Aborted safely: The local test service is unreachable. No recovery attempted.,PASS,2020.6,1
+TC-FAIL-02,PRECONDITION_CHECK,Execution Safety,Execute recovery when no fault is active,RuntimeError,Aborted safely: No injected demo fault is active. No recovery attempted.,PASS,7.72,1
+TC-VERIF-01,VERIFICATION_PROBE,Recovery Verification,Service remains unhealthy after attempted recovery,Verification rejects: action_result['success'] == False,"action_result['success']=False, msg=Reset was requested, but verification failed.",PASS,4594.36,1
 TC-AUDIT-01,POSITIVE_CONTROL,Audit Trail Integrity,Independent SQLite audit record verification and schema compliance,All 5 event types present with complete JSON payloads,"Verified: req=True, grant=True, cons=True, rem=True",PASS,1.43,1

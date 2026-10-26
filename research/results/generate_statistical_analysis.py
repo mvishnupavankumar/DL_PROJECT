@@ -4,7 +4,7 @@ import scipy.stats as stats
 import pandas as pd
 import numpy as np
 
-ROOT = Path("c:/DL_PROJECT")
+ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "research" / "results"
 
 # Load experiment predictions
@@ -62,7 +62,7 @@ fa_b = int(np.sum((iso_fa == 1) & (lstm_fa == 0)))
 fa_c = int(np.sum((iso_fa == 0) & (lstm_fa == 1)))
 fa_exact_p = mcnemar_exact_test(fa_b, fa_c)
 
-auth_mask = df_safety["category"].isin(["Authorization", "Scope Binding", "Replay Defense", "Boundary Gate", "Network Safety", "Credential Guard"])
+auth_mask = df_safety["test_id"].str.startswith("TC-ATT-")
 auth_n = len(df_safety[auth_mask])
 auth_k = int((df_safety[auth_mask]["verdict"] == "PASS").sum())
 auth_ci = wilson_score_ci(auth_k, auth_n)
@@ -131,11 +131,11 @@ report_lines = [
     "",
     f"### D. Normal False Alarms Comparison ($N = {n_norm}$ Normal Windows)",
     "- **Observed False Alarms**:",
-    "  - LSTM Autoencoder: 2 / 200 (1.0%, Wilson 95% CI: [0.003, 0.036]) -> 7.2 false alarms / hour.",
-    "  - Isolation Forest: 4 / 200 (2.0%, Wilson 95% CI: [0.008, 0.050]) -> 14.4 false alarms / hour.",
+    "  - LSTM Autoencoder: 2 / 200 (1.0%, Wilson 95% CI: [0.003, 0.036]). Operational false alarms/hour: UNAVAILABLE (batch window benchmark).",
+    "  - Isolation Forest: 4 / 200 (2.0%, Wilson 95% CI: [0.008, 0.050]). Operational false alarms/hour: UNAVAILABLE (batch window benchmark).",
     f"- **Discordant False Alarm Analysis**: $b = {fa_b}$ (IsoForest alarmed only), $c = {fa_c}$ (LSTM alarmed only).",
     f"- **Exact Binomial p-value**: $p = {fa_exact_p:.4f}$.",
-    "- **Statistical Interpretation**: On a sample of $N = 200$ normal windows, the difference in false alarm rates (1.0% vs 2.0%) does not reach statistical significance ($p > 0.05$). Larger continuous monitoring runs are required to confirm long-term false alarm divergence.",
+    "- **Statistical Interpretation**: On a sample of $N = 200$ normal windows, the difference in false alarm rates (1.0% vs 2.0%) does not reach statistical significance ($p > 0.05$). Operational false alarms per hour cannot be extrapolated from synthetic batch windows without streaming observation and alert deduplication.",
     "",
     "---",
     "",
@@ -147,9 +147,9 @@ report_lines = [
     "- **Research Integrity Verdict**: **We explicitly refrain from claiming formal statistical significance between diagnostic agent configurations**.",
     "- **Empirical Findings**:",
     "  - Rule-based baseline: 6 / 6 (100.0%) top-1 accuracy on standard scenarios containing exact keyword signals.",
-    "  - Multi-Agent Full (Live LLM): 5 / 6 (83.3%) top-1 accuracy.",
-    "  - Single-Agent (Live LLM): 5 / 5 (100.0% of completed cases; 1 case aborted due to API JSON generation limits).",
-    "  - Multi-Agent No-DL (Live LLM): 5 / 5 (100.0% of completed cases; 1 case aborted due to rate limit JSON error).",
+    "  - Multi-Agent Full (Live LLM, openai/gpt-oss-20b via Groq): 5 / 6 (83.33% ITT strict match, 6/6 lenient match).",
+    "  - Single-Agent (Live LLM, openai/gpt-oss-20b via Groq): 4 / 6 (66.67% ITT; 4/5 = 80.0% of completed cases; 1 case omitted due to Groq rate limit).",
+    "  - Multi-Agent No-DL (Live LLM, openai/gpt-oss-20b via Groq): 4 / 6 (66.67% ITT; 4/5 = 80.0% of completed cases; 1 case omitted due to Groq rate limit).",
     "- **Recommendations for Manuscript**: Report point accuracies and qualitative failure analyses. Clearly state that $N = 6$ represents a pilot feasibility benchmark, not an asymptotic statistical comparison.",
     "",
     "---",
@@ -162,9 +162,9 @@ report_lines = [
     f"  - Successfully Blocked: $k = {auth_k}$",
     "  - Point Estimate: **100.0%**",
     f"  - **Wilson 95% Confidence Interval**: {auth_ci_str}",
-    "- Across 4 recovery verification probes:",
-    "  - Correctly Verified: 4 / 4 (100.0%, Wilson 95% CI: [0.510, 1.000])",
-    "  - False Recovery Claims Passed: 0 / 4 (0.0%).",
+    "- Across 2 execution precondition checks: 2 / 2 safely aborted without unhandled exceptions.",
+    "- Across 1 recovery verification probe: 1 / 1 verified failure correctly identified, preventing false incident closure.",
+    "- Across 2 positive controls: 2 / 2 completed with full SQLite audit trail persistence.",
     "",
     "---",
     "",

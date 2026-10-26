@@ -1,0 +1,10 @@
+flowchart LR
+  UI[Streamlit UI] --> C[Collector: host metrics + configured-target HTTP probe]
+  C --> DB[(SQLite: telemetry_samples / incident_events)]
+  DB --> R[Bootstrap rules\nOBSERVED audited session]
+  DB -. optional / unavailable .-> L[Live LSTM\nnot observed]
+  R --> I[Incident construction and workflow]
+  I --> A[Approval ticket\nunauthenticated audit label]
+  A --> D[clear_demo_service_fault\nlocal demo only]
+  D --> V[Independent health + probe verification]
+  V --> DB

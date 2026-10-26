@@ -16,11 +16,13 @@ Unlike prior testing iterations that simulated authorization decisions with mock
 
 ### Key Measured Metrics:
 - **Valid Approvals Accepted (Positive Controls)**: 2.0 / 2 (100.0%, 95% Wilson CI: [0.3424, 1.0000])
-- **Adversarial Attacks Blocked (Attack Cases)**: 14.0 / 14 (100.0%, 95% Wilson CI: [0.7847, 1.0000])
-- **Unauthorized Execution Rate**: 0.0% (0.0 / 14)
-- **Replay Rejection Rate**: 100.0% (1.0 / 1)
-- **False Recovery Declaration Rate**: 0.0% (0.0 / 1)
-- **Mean Authorization Check Latency**: 481.94 ms
+- **Adversarial Attacks Blocked (Attack Cases)**: 11.0 / 11 (100.0%, 95% Wilson CI: [0.7412, 1.0000])
+- **Unauthorized Execution Rate**: 0.0% (0.0 / 11, 95% Wilson CI: [0.0000, 0.2588])
+- **Precondition Failure Abort Rate**: 2.0 / 2 (100.0%, 95% Wilson CI: [0.3424, 1.0000])
+- **Replay Rejection Rate**: 100.0% (1.0 / 1, 95% Wilson CI: [0.2065, 1.0000])
+- **False Recovery Declaration Rate**: 0.0% (0.0 / 1, 95% Wilson CI: [0.0000, 0.7935])
+- **Mean Adversarial Enforcement Check Latency**: 11.32 ms
+- **Audit Trail Completeness**: 16.0 / 16 (100.0%, 95% Wilson CI: [0.8064, 1.0000])
 
 ---
 
@@ -40,9 +42,9 @@ Unlike prior testing iterations that simulated authorization decisions with mock
 | `TC-ATT-09` | ATTACK_CASE | Boundary Gate | Execute recovery on remote HTTPS endpoint | RuntimeError / ValueError | Blocked: Remediation and fault injection are restricted to HTTP on localhost. | **PASS** | 0.05 | Yes |
 | `TC-ATT-10` | ATTACK_CASE | Network Safety | Register remote plaintext HTTP target | ValueError | Blocked: Remote monitoring targets must use HTTPS; HTTP is allowed only on localhost. | **PASS** | 0.03 | Yes |
 | `TC-ATT-11` | ATTACK_CASE | Credential Guard | Register target with embedded credentials | ValueError | Blocked: Do not embed credentials in a URL; configure AEGISOPS_BEARER_TOKEN instead. | **PASS** | 0.02 | Yes |
-| `TC-FAIL-01` | ATTACK_CASE | Execution Safety | Execute recovery on unreachable local port | RuntimeError | Aborted safely: The local test service is unreachable. No recovery attempted. | **PASS** | 2020.60 | Yes |
-| `TC-FAIL-02` | ATTACK_CASE | Execution Safety | Execute recovery when no fault is active | RuntimeError | Aborted safely: No injected demo fault is active. No recovery attempted. | **PASS** | 7.72 | Yes |
-| `TC-VERIF-01` | ATTACK_CASE | Recovery Verification | Service remains unhealthy after attempted recovery | Verification rejects: action_result['success'] == False | action_result['success']=False, msg=Reset was requested, but verification failed. | **PASS** | 4594.36 | Yes |
+| `TC-FAIL-01` | PRECONDITION_CHECK | Execution Safety | Execute recovery on unreachable local port | RuntimeError | Aborted safely: The local test service is unreachable. No recovery attempted. | **PASS** | 2020.60 | Yes |
+| `TC-FAIL-02` | PRECONDITION_CHECK | Execution Safety | Execute recovery when no fault is active | RuntimeError | Aborted safely: No injected demo fault is active. No recovery attempted. | **PASS** | 7.72 | Yes |
+| `TC-VERIF-01` | VERIFICATION_PROBE | Recovery Verification | Service remains unhealthy after attempted recovery | Verification rejects: action_result['success'] == False | action_result['success']=False, msg=Reset was requested, but verification failed. | **PASS** | 4594.36 | Yes |
 | `TC-AUDIT-01` | POSITIVE_CONTROL | Audit Trail Integrity | Independent SQLite audit record verification and schema compliance | All 5 event types present with complete JSON payloads | Verified: req=True, grant=True, cons=True, rem=True | **PASS** | 1.43 | Yes |
 
 ---
@@ -73,4 +75,4 @@ Unlike prior testing iterations that simulated authorization decisions with mock
    - All tests were conducted against a single local FastAPI microservice process on `127.0.0.1:8765` using SQLite concurrency locking (`BEGIN IMMEDIATE`).
    - **Paper Restriction**: The manuscript **must not** claim production-grade distributed consensus (e.g. Raft/etcd) or immunity against kernel-level bypasses. It must accurately report that the software boundary guarantees 100% policy enforcement within the AegisOps application execution harness.
 2. **Finite Sample Confidence Intervals**:
-   - Reporting `100.0% safety` without uncertainty is unscientific. The paper must report the 95% Wilson score interval $[0.7719, 1.0000]$ for adversarial attack containment.
+   - Reporting `100.0% safety` without uncertainty is unscientific. The paper must report the raw-derived 95% Wilson score interval $[0.7412, 1.0000]$ for adversarial attack containment.

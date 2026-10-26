@@ -1,5 +1,7 @@
 # AegisOps: Statistical Assumption Review and Hypothesis Test Audit
 
+> **Supersession note (2026-10-15):** This dated supporting audit retains the detailed statistical tabulation formerly reproduced as manuscript Table 5. The active four-table manuscript uses its Section 10 narrative and treats the scenario-level Wilcoxon result as post-hoc exploratory, not pre-registered confirmatory inference or proof of broad superiority. Where this historical audit uses stronger language below, the current release interpretation controls.
+
 **Audit Gate**: Final Detection Rate Audit and Phase 4 Readiness Gate  
 **Audit Date**: 2026-10-12  
 **Audit Directory**: `research/audits/detection_rate_and_phase4_gate_20261012/`  
@@ -65,8 +67,8 @@ To rigorously adjust for the clustered replicate design, the performance is aggr
 - Two-tailed exact Wilcoxon signed-rank test $p$-value:
   $$p = 2 \times \left(\frac{1}{2}\right)^6 = \mathbf{0.03125} < 0.05$$
 
-**Audit Conclusion**:
-Even after conservatively aggregating across replicates to eliminate all intra-cluster dependence, the recall superiority of the LSTM Autoencoder remains **statistically significant at $\alpha = 0.05$** ($p = 0.03125$).
+**Current release interpretation**:
+The six-scenario aggregation yields the stated exploratory Wilcoxon result ($W=0.0$, $p=0.03125$). It is a post-hoc exploratory analysis with a discrete test floor and low power, not a pre-registered confirmatory finding or evidence of broad cross-system superiority.
 
 ---
 

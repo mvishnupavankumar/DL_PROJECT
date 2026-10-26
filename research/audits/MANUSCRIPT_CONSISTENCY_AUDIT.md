@@ -7,6 +7,8 @@
 **Audit Date**: October 2026  
 **Auditor**: Senior Research Scientist, Reproducibility Auditor & Methodology Reviewer  
 
+> **Supersession notice (2026-10-14):** This earlier consistency audit is retained as historical evidence. Its PR-AUC concordance and external-validation readiness statements are superseded by `research/exports/FINAL_RAW_CSV_RECALCULATION.txt` and the controlled document corrections; do not treat it as the current manuscript gate.
+
 ---
 
 ## 1. Executive Summary

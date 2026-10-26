@@ -5,6 +5,8 @@
 **Security Boundary**: Atomic SQLite transactions (`BEGIN IMMEDIATE`) in `approval.py` and loopback gating in `live_monitoring.py`.  
 **Target Environment**: Isolated test store (`data/safety_test_store.sqlite3`) and local loopback mock probes.
 
+> **Audit-correction note (2026-10-14):** This report preserves its historical narrative. The current audited source of truth is `research/raw/safety_test_results.csv`, `research/raw/safety_metrics.csv`, and `research/paper/CANONICAL_METRIC_RECONCILIATION.md`: 16 tests, 11 attack cases, 2 precondition checks, 1 verification probe, 2 positive controls, 11/11 containment with Wilson CI `[0.7412, 1.0000]`, 16/16 audit completeness, and 11.32 ms mean attack-enforcement latency. The table below contains superseded counts and must not be cited as the current evaluation.
+
 ---
 
 ## 1. Safety Architecture & Threat Model

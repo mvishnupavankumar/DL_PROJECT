@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import os
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +16,82 @@ from dl.anomaly_detector import FEATURES, HIDDEN_SIZE, LSTMAutoencoder, SEQUENCE
 
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_MODEL_PATH = ROOT / "models" / "live_lstm_autoencoder.pt"
+FROZEN_SMOKE_TEST_MODEL_PATH = ROOT / "models" / "lstm_autoencoder.pt"
+INFERENCE_CHECKPOINT_ENV = "AEGISOPS_LSTM_CHECKPOINT_PATH"
+FROZEN_SMOKE_TEST_ENV = "AEGISOPS_ENABLE_FROZEN_SMOKE_TEST"
+MAX_GAP_ENV = "AEGISOPS_LSTM_MAX_INTER_SAMPLE_GAP_S"
+
+
+@dataclass(frozen=True)
+class CheckpointSelection:
+    """A bounded inference checkpoint selection with durable provenance."""
+
+    path: Path | None
+    provenance: str
+    identity: str
+    reason: str | None = None
+
+
+def _enabled(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def checkpoint_identity(path: Path) -> str:
+    """Return a compact, non-secret checkpoint identity for telemetry provenance."""
+    try:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+        return f"{path.name}:sha256:{digest}"
+    except OSError:
+        return path.name
+
+
+def select_inference_checkpoint() -> CheckpointSelection:
+    """Select only the live checkpoint or an explicitly authorized frozen smoke-test one."""
+    configured = os.getenv(INFERENCE_CHECKPOINT_ENV, "").strip()
+    candidate = Path(configured) if configured else LIVE_MODEL_PATH
+    if not candidate.is_absolute():
+        candidate = ROOT / candidate
+    candidate = candidate.resolve()
+    live_path = LIVE_MODEL_PATH.resolve()
+    frozen_path = FROZEN_SMOKE_TEST_MODEL_PATH.resolve()
+
+    if candidate == live_path:
+        provenance = "live_trained"
+    elif candidate == frozen_path:
+        provenance = "frozen_synthetic_smoke_test"
+        if not _enabled(os.getenv(FROZEN_SMOKE_TEST_ENV)):
+            return CheckpointSelection(
+                None,
+                provenance,
+                checkpoint_identity(candidate),
+                "checkpoint_selection_rejected",
+            )
+    else:
+        return CheckpointSelection(
+            None,
+            "unapproved_checkpoint",
+            candidate.name,
+            "checkpoint_selection_rejected",
+        )
+
+    if not candidate.is_file():
+        return CheckpointSelection(
+            candidate,
+            provenance,
+            candidate.name,
+            "checkpoint_absent",
+        )
+    return CheckpointSelection(candidate, provenance, checkpoint_identity(candidate))
+
+
+def configured_max_inter_sample_gap_seconds() -> float | None:
+    """Return an explicitly configured positive, finite gap limit; otherwise None."""
+    raw = os.getenv(MAX_GAP_ENV, "").strip()
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return None
+    return value if np.isfinite(value) and value > 0 else None
 
 
 def _windows(rows: np.ndarray, sequence_length: int) -> np.ndarray:
@@ -106,5 +185,5 @@ def train_live_model(samples: list[dict[str, Any]], output_path: str | Path = LI
     }
 
 
-def load_live_detector() -> TelemetryAnomalyDetector:
-    return TelemetryAnomalyDetector.load(LIVE_MODEL_PATH)
+def load_live_detector(path: str | Path = LIVE_MODEL_PATH) -> TelemetryAnomalyDetector:
+    return TelemetryAnomalyDetector.load(path)

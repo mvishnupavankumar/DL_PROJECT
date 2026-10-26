@@ -14,7 +14,7 @@ graph TB
 
     subgraph DetectionLayer["3. Dual-Gate Anomaly Detection"]
         StaticRules["Operational Rules Gate<br/>CPU>=90%, RAM>=95%, Lat>=1000ms, Err>0.5%"]
-        LSTMAutoencoder["Frozen LSTM Autoencoder (PyTorch)<br/>hidden_dim=32, threshold tau=0.709399"]
+        LSTMAutoencoder["Frozen LSTM Autoencoder (PyTorch)<br/>hidden_dim=16, threshold tau=0.709399"]
         CombinedGate{"Combined Alert Logic<br/>Alert = Rule OR LSTM"}
     end
 
@@ -25,7 +25,7 @@ graph TB
         ResolutionAgent["Resolution Agent<br/>Selects remediation action from catalog"]
     end
 
-    subgraph GovernanceLayer["5. Two-Man-Rule Authorization & Recovery"]
+    subgraph GovernanceLayer["5. Scope-Bound Authorization & Recovery"]
         ApprovalEngine["Approval Store (approval.py)<br/>BEGIN IMMEDIATE SQLite Transactions"]
         HumanOperator["Human SRE / Operator<br/>Reviews ticket & submits confirmation phrase"]
         ExecutionBarrier{"Execution Boundary Gate<br/>Validate: Nonce, TTL, Target, Scope"}

@@ -1,0 +1,9 @@
+flowchart LR
+  C[Collect: host metrics + target probe\n5 s intended cadence] --> E[Rolling error-rate construction]
+  E --> P[Persist SQLite telemetry]
+  P --> W[Select last 24 in insertion order\nno timestamp continuity validation]
+  W -. optional live checkpoint .-> M[Model inference\nnot observed]
+  W --> G[Bootstrap-rule guard\nOBSERVED]
+  M --> G
+  G --> A[Annotate state + persist event]
+  S[Audited session: 200 rows; bootstrap only; 200 null LSTM scores] --- G

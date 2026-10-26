@@ -1,0 +1,76 @@
+AEGISOPS - FINAL MANUSCRIPT VERIFICATION AND PDF BUILD
+Date: 2026-10-15
+Scope: Read-only evidence checks plus narrowly scoped manuscript/index/checklist/closure-report corrections. No experiment, model inference, API call, dataset download, raw-evidence edit, threshold edit, weight edit, manifest edit, commit, or push was performed.
+
+1. CURRENT GIT STATE
+Branch: publish/research-without-external-dataset
+HEAD: a32713c30a8ddca1425d44b1afbaf6d55a64c276
+Staged tracked changes: 0
+Unstaged tracked changes: 40
+Untracked files: 122, including pre-existing review artifacts and this report.
+The existing dirty working tree was preserved. No reset, clean, checkout, or overwrite of unrelated changes was used.
+
+2. FIGURE A.2 VERIFICATION
+Release candidate:
+  Path: research/exports/detection_comparison_release.png
+  SHA-256 (rechecked): 701bd163df34d3acd965b55adf913798b23041e327016dbc5b0c30fa108dc69c
+  Result: MATCHES the reported hash.
+  Visual review: PASS FOR FIGURE CONTENT. The title, source statement, legend, metric labels, grouped values, latency table, and bottom limitation statement are legible. The plotted values are Full Rules 1.0000/1.0000/1.0000; Isolation Forest 0.9344/0.4750/0.6298; LSTM AE 0.9836/1.0000/0.9917; Combined 0.9836/1.0000/0.9917. The latency table reports 0.01, 1.84, 0.17, and 0.18 ms. It explicitly states operational false alarms per hour are UNAVAILABLE and contains no 14.4 or 7.2 FA/hr labels.
+
+Historical original:
+  Path: research/figures/detection_comparison.png
+  SHA-256 (rechecked): ad1935fa98d5a48f5d02cc88a09679cf7d87f4931629c6114310c9ae8a060b7b
+  Visual review: It visibly contains FA/hr 14.4 for Isolation Forest and 7.2 for LSTM Autoencoder and Combined Alert. It is preserved as historical evidence and excluded from release.
+
+Integration result:
+  - The manuscript now links the release candidate in the Experiment A results section.
+  - The figure register and index reference the candidate and classify the original as excluded.
+  - The manuscript has no Markdown image embeds; Figure A.2 is therefore a valid linked supplementary asset, not an inline image.
+
+3. MANUSCRIPT CONSISTENCY
+PASS - Exactly four numbered manuscript tables: Tables 1-4.
+PASS - No Table 5 is present. The detailed statistical table remains in supporting analysis (STATISTICAL_ASSUMPTION_REVIEW.md).
+PASS - External API costs are stated as not measured where records needed for calculation are unavailable; offline configurations state that no external API call occurred.
+PASS - Operational false alarms per hour are consistently UNAVAILABLE for the non-streaming batch evaluation.
+PASS - Current safety claims use the actual 16-case taxonomy: 11 attacks, two preconditions, one probe, and two positive controls. The 11 attack vectors are bounded to the documented ticket, scope, target, credential, and remote-target restrictions; prompt injection and traversal are not claimed as current-suite vectors.
+PASS - McNemar and scenario-level Wilcoxon results are explicitly descriptive/exploratory under clustered synthetic windows and low power; no generalized confirmatory interpretation is made.
+PASS - The abstract and conclusion retain the same synthetic-data, low-N diagnostic, unavailable FA/hr, local-runtime safety, and external-validation limitations as the results.
+PASS - Experiment D is described as preflight/diagnostic work with production confirmatory execution halted and explicitly unexecuted; confirmatory external validation is excluded.
+PASS - Active local Markdown links in the manuscript, figure index, figure register, and caption document resolve after correcting the stale diagnosis-results link. The manuscript bibliography contains 16 entries and the reference-verification register has 16 corresponding entries. Existing external bibliographic registry claims were read from the reference-verification record; no online re-verification was performed in this gate.
+
+4. AUTHOR AND VENUE METADATA
+The manuscript header contains explicit AUTHOR CONFIRMATION REQUIRED, AFFILIATION CONFIRMATION REQUIRED, and VENUE CONFIRMATION REQUIRED placeholders. No author identity, institution, corresponding author, target venue, or template was invented. These remain confirmation items.
+
+5. PDF BUILD AND VISUAL REVIEW
+Result: NO PDF GENERATED.
+Required target not produced: research/exports/AEGISOPS_RESEARCH_PAPER_REVIEW.pdf
+Reason: no reliable locally installed Markdown-to-PDF path can faithfully render the manuscript's equations, tables, three Mermaid diagrams, and image assets.
+Checked local tools/packages:
+  - pandoc, pdflatex, xelatex, lualatex, typst, wkhtmltopdf, soffice, pdftoppm, pdfinfo, and mmdc: NOT FOUND.
+  - @mermaid-js/mermaid-cli, marked, markdown-it, puppeteer, playwright, and mathjax-full local Node modules: NOT FOUND.
+  - Node.js is available (v25.3.0); npm.cmd is available (11.7.0); Edge (155.0.4283.45) and Chrome (155.0.8059.40) executables exist, but they do not supply a faithful Markdown, equation, and Mermaid conversion chain.
+No rendering command was run, so there is no PDF exit code, page count, PDF SHA-256, or page-by-page rendered-page inspection to report. No incomplete or lossy PDF was fabricated.
+Exact next environment requirement: an approved local toolchain with Pandoc, a compatible PDF engine, and Mermaid rendering support (or an equivalent trusted renderer), followed by one recorded build command and image review of every output PDF page.
+
+6. PROTECTED EVIDENCE AND STATIC CHECKS
+Historical manifest: research/MANIFEST_SHA256.json
+  Git comparison with HEAD: unchanged (exit 0)
+  SHA-256: 659fd33091b3c45405df166adf2fc5da178e00fed52babf8f095709f4c15948a
+Frozen model files: unchanged from HEAD (git comparison exit 0)
+  models/lstm_autoencoder.pt SHA-256: 1cf44e6e82e459f543fcace25334f3076b76c77a357d46f65c11e3c44fd382de
+Raw evidence was not edited in this gate. The current diagnosis and safety CSV hashes continue to differ from the historical manifest exactly as documented in HISTORICAL_MANIFEST_MISMATCH_RECONCILIATION.txt; those pre-existing mismatches were not normalized or concealed.
+git diff --check: exit 0. It emitted only pre-existing Windows LF/CRLF normalization warnings, not whitespace errors.
+
+7. FILES MODIFIED FOR THIS FINAL VERIFICATION
+  research/paper/AEGISOPS_RESEARCH_PAPER.md
+  research/paper/FIGURE_AND_TABLE_INDEX.md
+  research/paper/FINAL_MANUSCRIPT_CHECKLIST.md
+  research/exports/FINAL_CONTRADICTION_CLOSURE_REPORT.txt
+  research/exports/FINAL_MANUSCRIPT_VERIFICATION_REPORT.txt
+
+8. REMAINING BLOCKERS
+  1. A faithful PDF renderer is unavailable locally, so no review PDF or complete page-by-page visual inspection exists.
+  2. Author, affiliation, corresponding-author, venue, and venue-template details require user confirmation.
+  3. Six historical-manifest mismatches remain; four involve raw evidence and are transparently documented but prevent a byte-for-byte historical-manifest reproduction claim.
+
+FINAL VERDICT: NOT READY — EVIDENCE OR RENDERING BLOCKERS REMAIN

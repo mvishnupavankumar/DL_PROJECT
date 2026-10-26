@@ -87,8 +87,8 @@ def main():
     plot_script = ROOT / "research" / "experiments" / "plot_detection_figures.py"
     subprocess.run([sys.executable, str(plot_script)], cwd=ROOT, check=True)
 
-    # Step 3: Run Experiment B (Root-Cause Diagnosis Rubric Audit)
-    print("\n[Step 3/5] Running Experiment B (Diagnosis Rubric Evaluation)...")
+    # Step 3: Run Experiment B Offline Rubric Evaluation
+    print("\n[Step 3/5] Evaluating Offline Rubric on Prior Diagnostic Predictions (Experiment B Audit)...")
     diag_script = ROOT / "research" / "experiments" / "generate_diagnosis_audit.py"
     subprocess.run([sys.executable, str(diag_script)], cwd=ROOT, check=True)
 

@@ -1,5 +1,7 @@
 # AegisOps: Formal Statistical Audit & Hypothesis Testing Protocol
 
+> **Supersession notice (2026-10-15):** This historical audit retains nominal FA/hr projections. Current release documents supersede those values: operational false alarms per hour are `UNAVAILABLE` for the non-streaming synthetic batch benchmark. The active manuscript treats the window-level McNemar result as descriptive and the six-scenario Wilcoxon result as post-hoc exploratory.
+
 **Audit Date**: 2026-10-12  
 **Lead Auditor**: Senior ML Researcher & Software Testing Specialist  
 **Verification Status**: All calculations verified from raw observations; unit tests passing (`test_statistical_audit.py`).

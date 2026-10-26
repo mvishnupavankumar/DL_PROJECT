@@ -1,0 +1,160 @@
+AegisOps - Final Contradiction Closure and Release-Candidate Gate
+Date: 2026-10-15
+Scope: bounded document, supporting-figure, provenance, and renderer-inventory work. No experiment runner, model inference, safety audit, diagnosis generator, run_all.py, live API, download, raw-data modification, frozen-model modification, threshold modification, manifest regeneration, Git commit, tag, push, merge, or branch switch occurred.
+
+FINAL VERDICT: NOT READY — MATERIAL CONTRADICTIONS OR RENDERING BLOCKERS REMAIN
+
+======================================================================
+1. CURRENT REPOSITORY STATE
+======================================================================
+Branch: publish/research-without-external-dataset
+HEAD:   a32713c30a8ddca1425d44b1afbaf6d55a64c276
+Expected HEAD match: yes.
+Staged changes: none.
+Working tree: dirty before this gate and remains uncommitted. Existing user changes were preserved.
+
+Historical baseline vs current content:
+  - Historical audited baseline: ec83d2fe501ba50f56839944ba7bd6347544f585 on main.
+  - Current review HEAD: a32713c30a8ddca1425d44b1afbaf6d55a64c276 on publish/research-without-external-dataset.
+  - Current corrections and release-candidate assets are working-tree content, not a committed release revision. No historical commit is claimed to reproduce them.
+
+Key current hashes before/through this gate:
+  research/MANIFEST_SHA256.json: 659fd33091b3c45405df166adf2fc5da178e00fed52babf8f095709f4c15948a
+  models/lstm_autoencoder.pt: 1cf44e6e82e459f543fcace25334f3076b76c77a357d46f65c11e3c44fd382de
+  research/raw/detection_metrics.csv: ed5775303f74156d844dc0068db4328e2237fc935a2bca260d613571083de57e
+  research/raw/detection_predictions.csv: 246e14f8b84b8b89cbfce180fd7722ae82820f516894aa5dd11462866d10cfbb
+  research/raw/diagnosis_metrics.csv: 79bf2f53fb0de1c6d24afcb88b475e48c78e8cedd27d45ac051d948d505fc307
+  research/raw/diagnosis_predictions.csv: d43e43370349a1d005cd7de14aa1488486780fc459c2f796559241137b7d1a68
+  research/raw/safety_metrics.csv: 08145f57939c33f8b3db4b017e0833cbfda84a5678f13c54a837ff1335ec0b9a
+  research/raw/safety_test_results.csv: 19391636c705166981b56120835b2b0a0b12218defaeffc899474acb8f220985
+
+======================================================================
+2. CONTRADICTIONS FOUND AND DISPOSITIONS
+======================================================================
+1. Active manuscript Table 2 retained unsupported $0.006, $0.018, and $0.014 estimates.
+   Disposition: corrected. Configurations 1-4 now state "N/A - no external API call"; Configurations 5-7 state "Not measured." The note identifies missing token counts, billing records, applicable pricing, and reproducible calculation. Accuracy, omissions, and completed-case latencies were not changed.
+
+2. Active manuscript still contained numbered Table 5 despite the four-table decision.
+   Disposition: corrected. The Table 5 block was removed from the manuscript. Section 10 retains its methods, formulas, assumptions, and limitations. Detailed tabulation is retained as Supporting Statistical Analysis S1 in research/audits/detection_rate_and_phase4_gate_20261012/STATISTICAL_ASSUMPTION_REVIEW.md. Current manuscript table count: exactly four (Tables 1-4).
+
+3. Evidence gate still presented 7.2 and 14.4 false alarms/hour as qualified projections.
+   Disposition: corrected. Active policy is now operational FA/hr = UNAVAILABLE. The evidence gate identifies the arithmetic values as superseded historical calculations. The manuscript retains valid window-level FPR values only. Dated Experiment A and statistical-audit reports have visible supersession notices; their old numeric content remains historical evidence.
+
+4. FINAL_EVIDENCE_AUDIT.md and FINAL_MANUSCRIPT_CHECKLIST.md still presented prior readiness and Figure A.2 concordance.
+   Disposition: corrected. Both now display visible supersession notices and state the current NOT READY verdict. Figure A.1 remains verified for the current confusion-matrix values. The original Figure A.2 is blocked from release. Faithful PDF/DOCX inspection and author/venue details remain pending.
+
+5. Safety claim matrix named prompt injection and traversal as current-suite attacks.
+   Disposition: corrected. CLM-16 now lists the actual 11 raw-CSV vectors: missing/expired tickets, phrase mismatch, action/target/incident scope mismatches, consumed/rejected-ticket use, remote-target restrictions, and embedded credentials. It explicitly states that prompt injection and traversal are not current-suite vectors.
+
+6. Prior documents asserted readiness after the preceding gate.
+   Disposition: current release status was added to CANONICAL_METRIC_RECONCILIATION.md, AEGISOPS_MASTER_RESEARCH_HANDOFF.md, and UPDATED_SEVEN_PHASE_CHECKLIST.md. Their historical readiness statements remain provenance, not current verdicts.
+
+======================================================================
+3. ORIGINAL AND REPLACEMENT FIGURE A.2
+======================================================================
+Original historical asset:
+  Path: research/figures/detection_comparison.png
+  SHA-256: ad1935fa98d5a48f5d02cc88a09679cf7d87f4931629c6114310c9ae8a060b7b
+  Status: BLOCKED FROM RELEASE. It displays obsolete numeric FA/hr labels: 14.4 (Isolation Forest) and 7.2 (LSTM/Combined). It remains unmodified for provenance.
+
+Release candidate:
+  Path: research/exports/detection_comparison_release.png
+  SHA-256: 701bd163df34d3acd965b55adf913798b23041e327016dbc5b0c30fa108dc69c
+  Generation source: research/exports/generate_detection_comparison_release.ps1
+  Status: VISUALLY INSPECTED AND VERIFIED FOR FIGURE CONTENT.
+  Content: Full Operational Rules, Isolation Forest, LSTM Autoencoder, and Combined Alert only. Precision, recall, F1, and measured synthetic-batch mean latency match audited values. Operational FA/hr is explicitly UNAVAILABLE. Narrow and Resource-Only historical values are not plotted.
+
+The existing plotting script was inspected but not executed or changed. It recomputes values from result predictions and embeds stale FA/hr labels, so it is not safe for release-figure generation. The new narrowly scoped script uses fixed audited values only and invokes no model or experiment runner.
+
+======================================================================
+4. HISTORICAL MANIFEST RECONCILIATION
+======================================================================
+New reconciliation artifact:
+  research/exports/HISTORICAL_MANIFEST_MISMATCH_RECONCILIATION.txt
+
+Current read-only comparison finds six listed historical-manifest mismatches:
+  1. research/SAFETY_EVALUATION.md
+  2. research/FINAL_EXPERIMENT_REPORT.md
+  3. research/raw/diagnosis_metrics.csv
+  4. research/raw/diagnosis_predictions.csv
+  5. research/raw/safety_metrics.csv
+  6. research/raw/safety_test_results.csv
+
+All six files exist at their manifest-recorded paths; none is explained by a missing file, path discrepancy, or comparison-method issue. The first and final-report documentation changes are partly explained by controlled correction/supersession history. The four raw CSV differences remain changed raw-evidence artifacts whose provenance must remain explicit. The sixth item, FINAL_EXPERIMENT_REPORT.md, is a real current mismatch omitted from the earlier five-item mismatch list. The historical manifest is preserved unchanged and does not demonstrate current byte-for-byte reproduction.
+
+======================================================================
+5. RENDERING INVENTORY AND RESULT
+======================================================================
+Available local executables:
+  Microsoft Edge: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe, product version 155.0.4283.45
+  Google Chrome: C:\Program Files\Google\Chrome\Application\chrome.exe, product version 155.0.8059.40
+  Node.js: C:\Program Files\nodejs\node.exe, version v25.3.0
+  npm.cmd: version 11.7.0
+
+Unavailable rendering components:
+  Pandoc, TeX PDF engines, Office/soffice, Poppler/pdfinfo/pdftoppm, local Mermaid CLI, and Node modules @mermaid-js/mermaid-cli, marked, markdown-it, puppeteer, playwright, and mathjax-full.
+
+Attempt result:
+  No faithful review PDF or DOCX was generated. No PDF/DOCX output existed before or after this gate. Browser executables alone are insufficient because the Markdown cannot be faithfully converted with mathematical equations and all three Mermaid source blocks rendered as diagrams using the available local toolchain. No lossy or incomplete PDF was fabricated. Therefore no PDF build command, page count, output hash, or complete page-by-page review exists.
+
+Required closure evidence:
+  A local approved toolchain containing Pandoc plus a suitable PDF engine and Mermaid rendering path (or an equivalent trusted renderer); a rendered review PDF; page images for every page; page count and SHA-256; and documented visual inspection of every page.
+
+======================================================================
+6. REFERENCE, METADATA, AND EVIDENCE STATUS
+======================================================================
+The previously corrected Eadro, AnoMod, CloudRCA, MetaGPT, and limited NIST AC-3(2) wording remain in place. The manuscript continues to state that the current one-label approved_by implementation does not enforce two distinct authenticated approvers.
+
+Author, affiliation, corresponding-author, venue, and template requirements remain AUTHOR/VENUE CONFIRMATION REQUIRED. No identity or venue detail was invented.
+
+Frozen checkpoint, threshold 0.7093990445137024, metadata feature order, raw files, and historical manifest were preserved. No experimental result was regenerated.
+
+======================================================================
+7. FILES CHANGED IN THIS GATE
+======================================================================
+  research/paper/AEGISOPS_RESEARCH_PAPER.md
+  research/paper/00_MANUSCRIPT_EVIDENCE_GATE.md
+  research/paper/FIGURE_AND_TABLE_INDEX.md
+  research/paper/FIGURE_AND_TABLE_REGISTER.md
+  research/paper/FINAL_EVIDENCE_AUDIT.md
+  research/paper/FINAL_MANUSCRIPT_CHECKLIST.md
+  research/paper/MANUSCRIPT_CLAIM_EVIDENCE_MATRIX.md
+  research/paper/MANUSCRIPT_FINALIZATION_PLAN.md
+  research/paper/CANONICAL_METRIC_RECONCILIATION.md
+  research/figures/FIGURE_CAPTIONS.md
+  research/experiments/EXPERIMENT_A.md
+  research/STATISTICAL_AUDIT.md
+  research/audits/detection_rate_and_phase4_gate_20261012/STATISTICAL_ASSUMPTION_REVIEW.md
+  research/audits/AEGISOPS_MASTER_RESEARCH_HANDOFF.md
+  research/audits/UPDATED_SEVEN_PHASE_CHECKLIST.md
+  research/exports/generate_detection_comparison_release.ps1
+  research/exports/detection_comparison_release.png
+  research/exports/HISTORICAL_MANIFEST_MISMATCH_RECONCILIATION.txt
+  research/exports/FINAL_CONTRADICTION_CLOSURE_REPORT.txt
+
+Final safe check:
+  git diff --check: exit 0. No whitespace errors. Windows line-ending warnings reflect checkout normalization conditions.
+
+======================================================================
+8. FINAL MANUSCRIPT VERIFICATION UPDATE (2026-10-15)
+======================================================================
+The active manuscript now directly references the audited release candidate
+  research/exports/detection_comparison_release.png
+in the Experiment A results section. Its SHA-256 was rechecked as
+  701bd163df34d3acd965b55adf913798b23041e327016dbc5b0c30fa108dc69c.
+Fresh visual inspection confirmed legible title, metric labels, legend,
+latency table, caption text, and the explicit operational-FA/hr statement
+of UNAVAILABLE. The release candidate has no 14.4 or 7.2 FA/hr label.
+
+Fresh inspection of the preserved original figure confirmed that it still
+displays FA/hr 14.4 for Isolation Forest and 7.2 for LSTM/Combined. It is
+historical evidence only and remains excluded from release.
+
+The manuscript has exactly four numbered tables (Tables 1-4), no fifth
+statistical table, and three Mermaid source blocks. Its only local Markdown
+asset link is the new Figure A.2 link, which resolves. The reference
+verification register contains 16 entries. No local renderer was available
+that could faithfully resolve equations, tables, Mermaid diagrams, and image
+assets to PDF; no PDF was created, and no page-by-page PDF review exists.
+
+FINAL VERDICT: NOT READY — MATERIAL CONTRADICTIONS OR RENDERING BLOCKERS REMAIN

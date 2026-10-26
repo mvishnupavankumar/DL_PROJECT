@@ -1,0 +1,220 @@
+{
+  "schema": "phase4-figure-manifest-v1",
+  "files": [
+    {
+      "path": "FIG_A_ARCHITECTURE.mmd",
+      "bytes": 485,
+      "sha256": "a0a275dbe2d1c9c7cc381284dfc817e0eba075664d6c832faa6a48ea6c35b98d"
+    },
+    {
+      "path": "FIG_A_ARCHITECTURE.pdf",
+      "bytes": 174213,
+      "sha256": "3a2b3b4988db731148f9a1fb03eb2635b6ee8a348b8fef3ea5e8aec4dc6344f1"
+    },
+    {
+      "path": "FIG_A_ARCHITECTURE.png",
+      "bytes": 120294,
+      "sha256": "8ad18b9b8550f010d1f7aae557e8e03a636b1bcb9172622e1ac9d5ca26d2a4c0"
+    },
+    {
+      "path": "FIG_A_ARCHITECTURE.svg",
+      "bytes": 10873,
+      "sha256": "26bf64c1a072d9f6100ea45354ac955c85241f309113c42a9497529f4a6eb921"
+    },
+    {
+      "path": "FIG_B_FROZEN_LSTM.mmd",
+      "bytes": 485,
+      "sha256": "71db8246da1f47f9d03d6e5f2e603ce646a9eda0d20ec63890d565bf9dac7dd7"
+    },
+    {
+      "path": "FIG_B_FROZEN_LSTM.pdf",
+      "bytes": 165618,
+      "sha256": "30db598c36b0790116d4be56b557e455dd90491e836f564d16b089507e51a518"
+    },
+    {
+      "path": "FIG_B_FROZEN_LSTM.png",
+      "bytes": 99498,
+      "sha256": "a1125016a199d32a51e141b641487f768c7cf9f060e499b79f08354bb1355cdc"
+    },
+    {
+      "path": "FIG_B_FROZEN_LSTM.svg",
+      "bytes": 7614,
+      "sha256": "35474e691e6811f39fd33a99a06f2c1b1ba9d701af872d6ff9a1cec25c523d30"
+    },
+    {
+      "path": "FIG_C_TELEMETRY_FLOW.mmd",
+      "bytes": 471,
+      "sha256": "81c6102ea03d69a58c5459ef034da4130074eec89b61928d1a648636ffc24e9c"
+    },
+    {
+      "path": "FIG_C_TELEMETRY_FLOW.pdf",
+      "bytes": 154897,
+      "sha256": "c3fbb5b6320c64b7ed7854671d22d06b6eba7a2ffda0512cf66c70ffad56aa47"
+    },
+    {
+      "path": "FIG_C_TELEMETRY_FLOW.png",
+      "bytes": 107519,
+      "sha256": "8df3e3d0e786d034f90b8ce6003fb31edfa216c65d19a8197e73e7e29d498088"
+    },
+    {
+      "path": "FIG_C_TELEMETRY_FLOW.svg",
+      "bytes": 8370,
+      "sha256": "f9944826e7f1c6fccb5f93a8feff9c2f26dad36e895edaf6bcad21a4e6a9898c"
+    },
+    {
+      "path": "FIG_D_DIAGNOSIS_APPROVAL.mmd",
+      "bytes": 421,
+      "sha256": "5155e396797760526c4897d5c2759403528c4b89fba0608d761094a2b74b95ce"
+    },
+    {
+      "path": "FIG_D_DIAGNOSIS_APPROVAL.pdf",
+      "bytes": 187991,
+      "sha256": "9af7aeda71fca916a8ca13db34aa07b6c3b5a991f190ef6a79220bb737041f73"
+    },
+    {
+      "path": "FIG_D_DIAGNOSIS_APPROVAL.png",
+      "bytes": 111682,
+      "sha256": "3d44a1cb526050ef26c3f92e78404893a7c7eaff9d8227751372fb016a1530f5"
+    },
+    {
+      "path": "FIG_D_DIAGNOSIS_APPROVAL.svg",
+      "bytes": 9175,
+      "sha256": "585c17ea36d6f37aea31ccb978103310302590fbd0c7eed4564de9f01a5c3835"
+    },
+    {
+      "path": "FIG_E1_DETECTION_COMPARISON.pdf",
+      "bytes": 126228,
+      "sha256": "ff9c6c2aa62e5e938774527419f42c1e51c0388c6c37caf9f08b248e17bfc3e6"
+    },
+    {
+      "path": "FIG_E1_DETECTION_COMPARISON.png",
+      "bytes": 68213,
+      "sha256": "905f603ba1cc369efb11eec2fd3cf0bfcb26b8ac0cb2ee83d357bcb89bb7744f"
+    },
+    {
+      "path": "FIG_E1_DETECTION_COMPARISON.svg",
+      "bytes": 7934,
+      "sha256": "e3e26796e6953a70e95d535c1300fc2456543b2ad34941a5592c6da72fd704b6"
+    },
+    {
+      "path": "FIG_E2_CONFUSION_MATRICES.pdf",
+      "bytes": 113106,
+      "sha256": "5371d709b172f679877053c070007a5a2d5d68e721af2c7700fc2f4ddd2aaea3"
+    },
+    {
+      "path": "FIG_E2_CONFUSION_MATRICES.png",
+      "bytes": 75635,
+      "sha256": "55acfdf2007105ee2cd1ad0500d5bcbe2df1709e4e965ee17345a4d885b8eb02"
+    },
+    {
+      "path": "FIG_E2_CONFUSION_MATRICES.svg",
+      "bytes": 9364,
+      "sha256": "e5ca50e653c21e3e5347c4f31b20fc354aa8ed7dc72737ac2c39e9ca66a51ec9"
+    },
+    {
+      "path": "FIG_E3_SCENARIO_RECALL.pdf",
+      "bytes": 127192,
+      "sha256": "1dbc19c722dd26e1fb39bbdd2937bedfabcd76d177f44932bc629d8ef7fae436"
+    },
+    {
+      "path": "FIG_E3_SCENARIO_RECALL.png",
+      "bytes": 60884,
+      "sha256": "547a96647e25ad4dc450b5018cc8d4769db3e44ee441ddf0410cf600e3dd0dce"
+    },
+    {
+      "path": "FIG_E3_SCENARIO_RECALL.svg",
+      "bytes": 7402,
+      "sha256": "b586d88e1cf3d5501e0096e40f0359d93fd59c9b938c208daa8addfda5b22a54"
+    },
+    {
+      "path": "FIG_E4_DIAGNOSIS_PILOT.pdf",
+      "bytes": 130439,
+      "sha256": "58c3ba5c50a8959f5120bb8d8b57a1caab36e7bbe4420bc64354920d4b251bfb"
+    },
+    {
+      "path": "FIG_E4_DIAGNOSIS_PILOT.png",
+      "bytes": 71460,
+      "sha256": "00d70e4006c63c7a80d2635fb9decc1590b788489ae7ebf09b775188d5013db7"
+    },
+    {
+      "path": "FIG_E4_DIAGNOSIS_PILOT.svg",
+      "bytes": 8342,
+      "sha256": "458f97e191272b2537be8f2dcabd806533586f42a2ffb1d3e1faa9fd384b7017"
+    },
+    {
+      "path": "FIG_E5_SAFETY_HARNESS.pdf",
+      "bytes": 112292,
+      "sha256": "eb9e7cd28ad1dc66b9eab6b5722870d9a6ea11cc6d0289b908acb725385bb81f"
+    },
+    {
+      "path": "FIG_E5_SAFETY_HARNESS.png",
+      "bytes": 81281,
+      "sha256": "2c3c59ae4f26d1228df8873aa51dbabe5fa6b5332b53991abac830e5a32e4b0e"
+    },
+    {
+      "path": "FIG_E5_SAFETY_HARNESS.svg",
+      "bytes": 4618,
+      "sha256": "6a2e3db52c510ca8aad0f95a001796a72b07da9977f7b7e1c09cea6e0fd32d8c"
+    },
+    {
+      "path": "FIG_E6_LIVE_EVIDENCE.pdf",
+      "bytes": 137425,
+      "sha256": "165e9b17b56f312d6af5d6a06768105cfda1fe81212c7d453db66f7117a90a46"
+    },
+    {
+      "path": "FIG_E6_LIVE_EVIDENCE.png",
+      "bytes": 81692,
+      "sha256": "fccc1a69122841c30acbfbf63c5f53ec48a8a475689717bb501f7f6762e07add"
+    },
+    {
+      "path": "FIG_E6_LIVE_EVIDENCE.svg",
+      "bytes": 5073,
+      "sha256": "aebfc679d8322989d55094d92102cc2631213a38afa2e72971fecb8f071f320e"
+    },
+    {
+      "path": "FIG_F_EXPERIMENT_D_READINESS.pdf",
+      "bytes": 129981,
+      "sha256": "23e9fbef2b3b18ec3076d0cd066fba935715fc4f7b3516330747d3fe7cb39dd1"
+    },
+    {
+      "path": "FIG_F_EXPERIMENT_D_READINESS.png",
+      "bytes": 83186,
+      "sha256": "2494ab782f16d75902e204685b8e5343c2fb03b08df58c346fa7722c73544dd9"
+    },
+    {
+      "path": "FIG_F_EXPERIMENT_D_READINESS.svg",
+      "bytes": 6098,
+      "sha256": "86874721fdee6a87caaac54018030dacfc6a7e1235ad24c8a9aa58d4368d8102"
+    },
+    {
+      "path": "FIGURE_CAPTIONS.md",
+      "bytes": 6295,
+      "sha256": "3b3b1835cb9a0cc152932dd98e1c040865483b1b3b65d01dd938781b93a2e72b"
+    },
+    {
+      "path": "FIGURE_REGISTER.md",
+      "bytes": 3957,
+      "sha256": "57e6fe72d61783f4b45f494305d77e42d9bcfe4be22802a19ae5edafa3b86d6b"
+    },
+    {
+      "path": "FIGURE_VALIDATION_REPORT.md",
+      "bytes": 5086,
+      "sha256": "37c3ae09bb4d5e032e55484e3e2a7ee0efeecde7bceb570631de45c6d1b15a38"
+    },
+    {
+      "path": "FIGURE_VISUAL_REMEDIATION_REPORT.md",
+      "bytes": 5511,
+      "sha256": "2153ab3835755534e27f2187dbd5c1ea72aaab2755d1ec54252dbd7dc74ac6b0"
+    },
+    {
+      "path": "generate_phase4_figures.py",
+      "bytes": 62489,
+      "sha256": "d9726af337c22b908528a3272f11a1490d85ce63b237fc21f1cbc4e54d3466fb"
+    },
+    {
+      "path": "validate_phase41_assets.py",
+      "bytes": 2452,
+      "sha256": "22712365b2406c59b27640bdedcf0d8bc8d6f11c30d7f2090ce50c27a33236f7"
+    }
+  ]
+}

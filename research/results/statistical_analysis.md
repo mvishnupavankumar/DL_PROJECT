@@ -15,7 +15,7 @@ To adhere strictly to research integrity standards, every statistical test was p
 | **Experiment A (Detection)** | Episode-level Fault Detection (Recall) | Synthetic Fault Episode ($N = 120$, clustered in 6 classes) | $N = 120$ incident episodes | Paired McNemar's Test (Descriptive) & Wilcoxon Signed-Rank Test | $H_0$: LSTM Autoencoder and Isolation Forest have identical sensitivity. |
 | **Experiment A (False Alarms)** | False Alarm Rate on Steady-State Data | Independent 24-step Normal Window (seed=2026) | $N = 200$ normal windows | McNemar's Discordant Test | $H_0$: LSTM Autoencoder and Isolation Forest have identical false alarm probabilities. |
 | **Experiment B (Diagnosis)** | Top-1 Root-Cause Diagnostic Accuracy | Distinct Architectural Failure Scenario | $N = 6$ ground-truth incidents | Fisher's Exact / Descriptive Point Estimates | $H_0$: Multi-Agent architecture has equal diagnostic accuracy to Single-Agent baseline. |
-| **Experiment C (Safety)** | Authorization Enforcement Rate | Independent Adversarial Security Boundary Trial | $N = 3$ authorization attacks | Wilson Score Binomial Confidence Interval | $H_0$: Authorization enforcement rate $\le 95.0\%$. |
+| **Experiment C (Safety)** | Authorization Enforcement Rate | Independent Adversarial Security Boundary Trial | $N = 11$ authorization attacks | Wilson Score Binomial Confidence Interval | $H_0$: Authorization enforcement rate $\le 95.0\%$. |
 
 ---
 
@@ -56,11 +56,11 @@ To eliminate intra-cluster replicate correlation, performance is aggregated acro
 
 ### D. Normal False Alarms Comparison ($N = 200$ Normal Windows)
 - **Observed False Alarms**:
-  - LSTM Autoencoder: 2 / 200 (1.0%, Wilson 95% CI: [0.003, 0.036]) -> 7.2 false alarms / hour.
-  - Isolation Forest: 4 / 200 (2.0%, Wilson 95% CI: [0.008, 0.050]) -> 14.4 false alarms / hour.
+  - LSTM Autoencoder: 2 / 200 (1.0%, Wilson 95% CI: [0.003, 0.036]). Operational false alarms/hour: UNAVAILABLE (batch window benchmark).
+  - Isolation Forest: 4 / 200 (2.0%, Wilson 95% CI: [0.008, 0.050]). Operational false alarms/hour: UNAVAILABLE (batch window benchmark).
 - **Discordant False Alarm Analysis**: $b = 4$ (IsoForest alarmed only), $c = 2$ (LSTM alarmed only).
 - **Exact Binomial p-value**: $p = 0.6875$.
-- **Statistical Interpretation**: On a sample of $N = 200$ normal windows, the difference in false alarm rates (1.0% vs 2.0%) does not reach statistical significance ($p > 0.05$). Larger continuous monitoring runs are required to confirm long-term false alarm divergence.
+- **Statistical Interpretation**: On a sample of $N = 200$ normal windows, the difference in false alarm rates (1.0% vs 2.0%) does not reach statistical significance ($p > 0.05$). Operational false alarms per hour cannot be extrapolated from synthetic batch windows without streaming observation and alert deduplication.
 
 ---
 
@@ -72,9 +72,9 @@ To eliminate intra-cluster replicate correlation, performance is aggregated acro
 - **Research Integrity Verdict**: **We explicitly refrain from claiming formal statistical significance between diagnostic agent configurations**.
 - **Empirical Findings**:
   - Rule-based baseline: 6 / 6 (100.0%) top-1 accuracy on standard scenarios containing exact keyword signals.
-  - Multi-Agent Full (Live LLM): 5 / 6 (83.3%) top-1 accuracy.
-  - Single-Agent (Live LLM): 5 / 5 (100.0% of completed cases; 1 case aborted due to API JSON generation limits).
-  - Multi-Agent No-DL (Live LLM): 5 / 5 (100.0% of completed cases; 1 case aborted due to rate limit JSON error).
+  - Multi-Agent Full (Live LLM, openai/gpt-oss-20b via Groq): 5 / 6 (83.33% ITT strict match, 6/6 lenient match).
+  - Single-Agent (Live LLM, openai/gpt-oss-20b via Groq): 4 / 6 (66.67% ITT; 4/5 = 80.0% of completed cases; 1 case omitted due to Groq rate limit).
+  - Multi-Agent No-DL (Live LLM, openai/gpt-oss-20b via Groq): 4 / 6 (66.67% ITT; 4/5 = 80.0% of completed cases; 1 case omitted due to Groq rate limit).
 - **Recommendations for Manuscript**: Report point accuracies and qualitative failure analyses. Clearly state that $N = 6$ represents a pilot feasibility benchmark, not an asymptotic statistical comparison.
 
 ---
@@ -83,13 +83,13 @@ To eliminate intra-cluster replicate correlation, performance is aggregated acro
 
 ### A. Confidence Interval for Authorization Enforcement
 - Across 11 adversarial tests spanning invalid tokens, expired TTLs, mismatched actions, mismatched targets, mismatched incidents, replay attacks, and remote HTTP/HTTPS targets:
-  - Total Attacks: $N = 3$
-  - Successfully Blocked: $k = 3$
+  - Total Attacks: $N = 11$
+  - Successfully Blocked: $k = 11$
   - Point Estimate: **100.0%**
-  - **Wilson 95% Confidence Interval**: [0.4385, 1.0000]
-- Across 4 recovery verification probes:
-  - Correctly Verified: 4 / 4 (100.0%, Wilson 95% CI: [0.510, 1.000])
-  - False Recovery Claims Passed: 0 / 4 (0.0%).
+  - **Wilson 95% Confidence Interval**: [0.7412, 1.0000]
+- Across 2 execution precondition checks: 2 / 2 safely aborted without unhandled exceptions.
+- Across 1 recovery verification probe: 1 / 1 verified failure correctly identified, preventing false incident closure.
+- Across 2 positive controls: 2 / 2 completed with full SQLite audit trail persistence.
 
 ---
 

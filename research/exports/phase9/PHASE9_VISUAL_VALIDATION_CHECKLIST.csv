@@ -1,0 +1,6 @@
+figure,full_resolution_opened,complete_title_and_subtitle,complete_footer,labels_and_values_readable,column_scale_opened,column_scale_readable,header_nonwhite_x_range,footer_nonwhite_x_range,status
+FIG_B_FROZEN_LSTM,yes,yes,yes,yes,yes,yes,123-1397,120-1680,pass
+FIG_D_DIAGNOSIS_APPROVAL,yes,yes,yes,yes,yes,yes,123-1627,120-1680,pass
+FIG_E2_CONFUSION_MATRICES,yes,yes,yes,yes,yes,yes,123-1452,120-1680,pass
+FIG_E4_DIAGNOSIS_PILOT,yes,yes,yes,yes,yes,yes,123-1585,120-1680,pass
+FIG_E6_LIVE_EVIDENCE,yes,yes,yes,yes,yes,yes,123-1350,120-1680,pass
